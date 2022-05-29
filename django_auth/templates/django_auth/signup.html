@@ -1,0 +1,54 @@
+{% extends 'officials/base_public_forms.html' %}
+{% block title %}{{ form_title }} {% endblock title %}
+
+{% block content %}
+{% load crispy_forms_tags %}
+<div class="card-body">
+     <form method="post">
+          {% csrf_token %}
+          {{ form|as_crispy_errors }}
+          {{form.email|as_crispy_field}}
+          {{form.password1|as_crispy_field}}
+          {{form.password2|as_crispy_field}}
+          <div class="row justify-content-center text-center">
+               <div class="col-12 col-md-3">{{form.is_student|as_crispy_field}} </div>
+               <div class="col-12 col-md-3">{{form.is_official|as_crispy_field}} </div>
+               <div class="col-12 col-md-3">{{form.is_worker|as_crispy_field}} </div>
+          </div>
+          <div class="row justify-content-center">
+               <button type="submit" class="btn btn-warning px-4 py-2">Sign Up</button>
+          </div>
+     </form>
+</div>
+<div class="card-footer py-3">
+     {% csrf_token %}
+     <div class="row d-flex justify-content-center">
+          <a href="{% url 'django_auth:login' %}">Login</a>
+     </div>
+	<div class="row d-flex justify-content-center">
+		<a href="{% url 'institute:index' %}">Home</a>
+	</div>   
+</div>
+{% endblock content %}
+
+{% block script_links %}
+<script>
+     var s = document.getElementById('id_is_student');
+     var o = document.getElementById('id_is_official');
+     var w = document.getElementById('id_is_worker');
+
+     s.onclick =  () => {
+          o.checked = false;
+          w.checked = false;
+     }
+     w.onclick = () => {
+          s.checked = false;
+          o.checked = false;
+     }
+     o.onclick = () => {
+          s.checked = false;
+          w.checked = false;
+     }
+
+</script>
+{% endblock script_links %}

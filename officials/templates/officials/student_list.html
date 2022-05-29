@@ -1,0 +1,145 @@
+{% extends 'officials/base_officials.html' %}
+
+{% block title %}Student List{% endblock title %}
+
+{% block content %}
+
+<div class="text-center">
+  <h1>Students List</h1>
+  {% if request.user.entity.is_chief %}
+    <a href="{% url 'officials:register_student' %}" class="btn btn-primary">+ Add Student</a>
+  {% endif %}
+</div>
+<hr />
+<div class="row mb-4 px-4 align-items-center">
+  <div class="col-md mt-3 text-center">
+    Year:
+    <select class="ml-2 form-control w-50 d-inline" id="year_select">
+      <option value="">Select</option>
+    </select>
+  </div>
+  <div class="col-md mt-3 text-center">
+    Branch:
+    <select class="ml-2 form-control w-50 d-inline" id="branch_select">
+      <option value="">Select</option>
+    </select>
+  </div>
+  <div class="col-md  mt-3 text-center {% if not request.user.official.is_chief %} d-none {% endif %}">
+    Gender:
+    <select class="ml-2 form-control w-50 d-inline" id="gender_select">
+      <option value="">Select</option>
+    </select>
+  </div>
+  <div class="col-md  mt-3 text-center {% if not request.user.official.is_chief %} d-none {% endif %}">
+    Block:
+    <select class="ml-2 form-control w-50 d-inline" id="block_select">
+      <option value="">Select</option>
+    </select>
+  </div>
+</div>
+<div class="overflow-auto p-4">
+  <table class="table table-hover table-muted table-striped">
+    <thead>
+      <tr>
+        <th>Regd No</th>
+        <th>Name</th>
+        <th>Year</th>
+        <th>Branch</th>
+        <th>Gender</th>
+        <th>Block</th>
+        <th>Room No</th>
+        <th>Phone Number</th>
+        {% if request.user.official.is_chief %}
+        <th>Action</th>
+        {% endif %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for stud in object_list %}
+      <tr data-row-href="{% url 'officials:student_detail' stud.id %}">
+        <td>{{stud.regd_no}}</td>
+        <td>{{stud.name}}</td>
+        <td>{{stud.year}}</td>
+        <td>{{stud.branch}}</td>
+        <td>{{stud.gender}}</td>
+        <td>{{stud.roomdetail.block.short_name}}</td>
+        <td>{{stud.roomdetail.room}}</td>
+        <td>{{stud.phone}}</td>
+        {% if request.user.official.is_chief %}
+        <td nowrap>
+          <a href="{% url 'officials:edit_student' stud.id %}" target="_blank" class="btn btn-primary px-3">Edit</a>
+          <form action="{% url 'officials:delete_student' stud.id %}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete {{stud.name}}?');">{% csrf_token %}
+            <input type="submit" class="btn btn-danger ml-3" value="Delete" />
+          </form>
+        </td>
+        {% endif %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock content %}
+
+{% block script_links %}
+    
+<script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js"></script>
+<script>
+  $(document).ready(function () {
+    $('table').DataTable({
+      "lengthMenu": [[10, 25, 50, 100, 250, 500, 1000, -1], [10, 25, 50, 100, 250, 500, 1000, "All"]],
+      "info": false,
+      "dom": '<"row"<"col-3"l><"col"f><"col"p>>t',
+      initComplete: function () {
+        this.api().columns().every(function () {
+          var column = this;
+          // Change here to include other columns (index of columns are used)
+          if (column.index() == 2 || column.index() == 3 || column.index() == 4 || column.index() == 5) {
+            // Append label (get from header)
+            var select = $(`#${column.header().innerText.toLowerCase()}_select`)
+              .on('change', function () {
+                var val = $.fn.dataTable.util.escapeRegex($(this).val());
+                // On change search for selected value and re-draw the table.
+                column.search(val ? '^' + val + '$' : '', true, false).draw();
+              });
+
+            // Get unique values from the column and append to select.
+            column.data().unique().sort().each(function (d, j) {
+              select.append('<option value="' + d + '">' + d + '</option>')
+            });
+          }
+        });
+      }
+    });
+  });
+</script>
+{% endblock script_links %}
+
+<!-- 
+  Code to select filter of columns
+  "initComplete": function () {
+  this.api().columns().every(function () {
+    var column = this;
+    // Change here to include other columns (index of columns are used)
+    if (column.index() == 2 || column.index() == 3 || column.index() == 4 || column.index() == 5) {
+      // Create containers for select tags
+      var col = $('<div class="col-md"></div>')
+      // Append label (get from header)
+      col.append(column.header().innerHTML)
+      var select = $('<select class="form-control"><option value=""></option></select>')
+        .appendTo(col)
+        .on('change', function () {
+          var val = $.fn.dataTable.util.escapeRegex($(this).val());
+          // On change search for selected value and re-draw the table.
+          column.search(val ? '^' + val + '$' : '', true, false).draw();
+        });
+      col.appendTo($('#filters'));
+
+      // Get unique values from the column and append to select.
+      column.data().unique().sort().each(function (d, j) {
+        select.append('<option value="' + d + '">' + d + '</option>')
+      });
+    }
+  });
+}
+ -->

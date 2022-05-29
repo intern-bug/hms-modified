@@ -1,0 +1,87 @@
+{% extends 'officials/base_officials.html' %}
+
+{% block title %}Student Attendance{% endblock title %}
+
+{% block content %}
+
+<h1 class="text-center">Student Attendance</h1>
+<hr>
+<form method="post">
+  <div class="row justify-content-between">
+    <div class="col-12 col-md-3 mt-3 text-center">Block: <strong>{{ official.block }}</strong></div>
+    <div class="col-12 col-md-3 mt-3 text-center">
+      Floor: 
+      <select id="floor_select" class="form-control d-inline w-50">
+        <option value="">Select Floor</option>
+        <option value="G-">Ground</option>
+        <option value="F-">First</option>
+        <option value="S-">Second</option>
+      </select>
+    </div>
+    <div class="col-12 col-md-3 mt-3 text-center">Date: <input type="date" name="date" id="date" class="ml-3" onchange="fetchDate(event)" value="{{ date }}" required /></div>
+  </div>
+  <div class="overflow-auto p-3">
+    <table class="table table-hover table-muted table-striped">
+      <thead>
+        <tr>
+          <th>Regd No.</th>
+          <th>Name</th>
+          <th>Room</th>
+          <th>Attendance</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for attendance in attendance_list %}
+          <tr>
+            <td>{{ attendance.student.regd_no }}</td>
+            <td>{{ attendance.student.name }}</td>
+            <td>{{ attendance.student.roomdetail.room }}</td>
+            <td>
+              <select name="{{ attendance.id }}" class="form-control {% if attendance.present_on_date  %} is-valid {% endif %} {% if attendance.absent_on_date %} is-invalid {% endif %}" style="width: 130px;">
+                <option value="present" {% if attendance.present_on_date  %} selected {% endif %} >Present</option>
+                <option value="absent" {% if attendance.absent_on_date %} selected {% endif %}>Absent</option>
+              </select>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div class="row mt-4">
+      <div class="col-12 text-center">
+        <input type="submit" class="btn btn-primary" name="submit" value="Submit" />
+      </div>
+    </div>
+  </div>
+</form>
+
+<form method="GET" id="fetch_date_form">
+  <input type="hidden" name="for_date" id="for_date">
+</form>
+{% endblock content %}
+
+{% block script_links %}
+<script>
+  function fetchDate(event) {
+    document.querySelector('#for_date').value = event.target.value
+    document.querySelector('#fetch_date_form').submit();
+  }
+</script>
+<script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js"></script>
+<script>
+  $(document).ready(function () {
+    $('.table').DataTable({
+      "lengthMenu": [[10, 25, 50, 100, 250, -1], [10, 25, 50, 100, 250, "All"]],
+      "info": false,
+      "dom": '<"row"<"col-md"l><"col-md"f><"col-md"p>>t',
+      "initComplete": function ()  {
+        var column = this.api().columns(2);
+        $('#floor_select').on('change', function () {
+          var val = $.fn.dataTable.util.escapeRegex($(this).val());
+          column.search(val ? '^' + val : '', true, false).draw();
+        });
+      }
+    });
+  });
+</script>
+{% endblock script_links %}

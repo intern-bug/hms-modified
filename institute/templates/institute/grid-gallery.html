@@ -1,0 +1,75 @@
+{% extends 'institute/base_public_pages.html' %}
+
+{% block title %}Gallery{% endblock title %}
+
+
+{% block style_links %}
+{% load static %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.css" />
+<link rel="stylesheet" href="{% static 'institute/grid-gallery.css' %}">
+{% endblock style_links %}
+
+
+{% block content %}
+<section class="gallery-block grid-gallery my-5 pt-5">
+  <div class="container">
+    <div class="heading">
+      <h2 class="mb-4">NIT AP Hostels Gallery</h2>
+    </div>
+    <div class="row">
+      <div class="col-md-6 col-lg-4 item d-flex justify-content-center">
+        <a class="lightbox" href="{% static 'institute/img1.jpg' %}">
+          <img class="img-fluid image scale-on-hover" src="{% static 'institute/img1.jpg' %}">
+        </a>
+      </div>
+      <div class="col-md-6 col-lg-4 item d-flex justify-content-center">
+        <a class="lightbox" href="{% static 'institute/img2.jpg' %}">
+          <img class="img-fluid image scale-on-hover" src="{% static 'institute/img2.jpg' %}">
+        </a>
+      </div>
+      <div class="col-md-6 col-lg-4 item d-flex justify-content-center">
+        <a class="lightbox" href="{% static 'institute/img6.jpg' %}">
+          <img class="img-fluid image scale-on-hover" src="{% static 'institute/img6.jpg' %}">
+        </a>
+      </div>
+      <div class="col-md-6 col-lg-4 item d-flex justify-content-center">
+        <a class="lightbox" href="{% static 'institute/img4.jpg' %}">
+          <img class="img-fluid image scale-on-hover" src="{% static 'institute/img4.jpg' %}">
+        </a>
+      </div>
+      <div class="col-md-6 col-lg-4 item d-flex justify-content-center">
+        <a class="lightbox" href="{% static 'institute/img5.jpg' %}">
+          <img class="img-fluid image scale-on-hover" src="{% static 'institute/img5.jpg' %}">
+        </a>
+      </div>
+      <div class="col-md-6 col-lg-4 item d-flex justify-content-center">
+        <a class="lightbox" href="{% static 'institute/img3.jpg' %}">
+          <img class="img-fluid image scale-on-hover" src="{% static 'institute/img3.jpg' %}">
+        </a>
+      </div>
+      <div class="col-md-6 col-lg-4 item d-flex justify-content-center">
+        <a class="lightbox" href="{% static 'institute/img7.jpg' %}">
+          <img class="img-fluid image scale-on-hover" src="{% static 'institute/img7.jpg' %}">
+        </a>
+      </div>
+      <div class="col-md-6 col-lg-4 item d-flex justify-content-center">
+        <a class="lightbox" href=".{% static 'institute/img10.jpg' %}">
+          <img class="img-fluid image scale-on-hover" src="{% static 'institute/img10.jpg' %}">
+        </a>
+      </div>
+      <div class="col-md-6 col-lg-4 item d-flex justify-content-center">
+        <a class="lightbox" href="{% static 'institute/img9.jpg' %}">
+          <img class="img-fluid image scale-on-hover" src="{% static 'institute/img9.jpg' %}">
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock content %}
+
+{% block script_links %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.js"></script>
+<script>
+  baguetteBox.run('.grid-gallery', { animation: 'slideIn' });
+</script>
+{% endblock script_links %}

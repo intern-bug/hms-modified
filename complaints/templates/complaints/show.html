@@ -1,0 +1,117 @@
+{% extends 'officials/base_officials.html' %}
+{% block title %}{{object.model_name}}{% endblock title %}
+
+{% block content %} 
+<h2 class="text-center">{{ object.type }} {{ object.model_name }}</h2>
+<hr>
+<div class="row my-3 justify-content-center">
+  <div class="col-md-5 border py-3 mr-md-4">
+    <h4 class="text-center border-bottom border-secondary pb-3">{{object_name}} Details</h4>
+    <table class="table table-borderless">
+      <tbody>
+        <tr>
+          <th>ID</th>
+          <td>{{ object.id }}</td>
+        </tr>
+        {% if object.type %}          
+        <tr>
+          <th>Type</th>
+          <td>{{ object.type }}</td>
+        </tr>
+        {% endif %}
+        {% if object.complainee %}
+        <tr>
+          <th>Complainee</th>
+          <td>{{ object.complainee.regd_no }} - {{ object.complainee.name }}</td>
+        </tr>
+        {% endif %}
+        <tr>
+          <th>Summary</th>
+          <td>{{ object.summary }}</td>
+        </tr>
+        <tr>
+          <th>Details</th>
+          <td>{{ object.detailed }}</td>
+        </tr>
+        <tr>
+          <th>Status</th>
+          <td>{{ object.status }}</td>
+        </tr>
+        <tr>
+          <th>Remarks</th>
+          <td>{{ object.remark }}</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="text-center">
+      {% if object.model_name == 'Complaint' %}
+        <form action="{% url 'complaints:complaint_delete' object.id %}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete {{object.model_name}} {{object.id}}?');">{% csrf_token %}
+      {% else %}
+        <form action="{% url 'complaints:medicalissue_delete' object.id %}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete {{object.model_name}} {{object.id}}?');">{% csrf_token %}
+      {% endif %}
+        <input type="submit" class="btn btn-danger ml-3" value="Delete" />
+      </form>
+    </div>
+  </div>
+  <div class="col-md-6 border py-3">
+    <h4 class="text-center border-bottom border-secondary pb-3">Registrant Details</h4>
+    <table class="table table-borderless">
+      <tbody>
+        <tr>
+          <th>Registration No./Employee ID/ Staff ID</th>
+          <td>{{ object.entity }}</td>
+        </tr>
+        <tr>
+          <th>Name</th>
+          <td>{{ object.entity.name }}</td>
+        </tr>
+        <tr>
+          <th>Block</th>
+          <td>
+            {% if object.user.entity_type == 'Student' %}
+              {{object.entity.roomdetail.block.short_name}} {{object.entity.roomdetail.room}}
+            {% endif %}
+            {% if object.user.entity_type == 'Official' %}
+              {{object.entity.block}}
+            {% endif %}
+          </td>
+        </tr>
+        <tr>
+          <th>Phone</th>
+          <td>{{ object.entity.phone }}</td>
+        </tr>
+        <tr>
+          <th>eMail</th>
+          <td>{{ object.entity.email }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  
+  {% if can_edit %}    
+    <div class="col-11 mt-4 border p-3">
+      {% if object.model_name == 'Complaint' %}
+        <form action="{% url 'complaints:complaint_edit' object.id %}" method="post">
+      {% else %}
+        <form action="{% url 'complaints:medicalissue_edit' object.id %}" method="post">
+      {% endif %}
+        {% csrf_token %}
+        {% load crispy_forms_tags %}
+        {{form|as_crispy_errors}}
+        <div class="row">
+          <div class="col-md-10">
+            {{form.status|as_crispy_field}}
+          </div>
+          <div class="col-12 order-2 order-md-3">
+            {{form.remark|as_crispy_field}}
+          </div>
+          <div class="col-md-2 d-flex align-items-end py-3 order-3 order-md-2 justify-content-center">
+            <input type="submit" value="Update" class="btn btn-primary">
+          </div>
+        </div>
+      </form>
+    </div>
+  {% endif %}
+</div>
+{% endblock content %}

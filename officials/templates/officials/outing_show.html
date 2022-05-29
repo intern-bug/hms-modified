@@ -1,0 +1,192 @@
+{% extends 'officials/base_officials.html' %}
+{% block title %}Outing{% endblock title %}
+
+{% block content %} 
+<h2 class="text-center">Outing - {{ outing.student.regd_no }}</h2>
+<hr>
+<div class="row my-3 justify-content-center">
+  <div class="col-md-5 border py-3 mr-md-4">
+    <h4 class="text-center border-bottom border-secondary pb-3">Outing Details</h4>
+    <table class="table table-borderless">
+      <tbody>
+        <tr>
+          <th>From</th>
+          <td>{{ outing.fromDate }}</td>
+        </tr>
+        <tr>
+          <th>To</th>
+          <td>{{ outing.toDate }}</td>
+        </tr>
+        <tr>
+          <th>Purpose of Visit</th>
+          <td>{{ outing.purpose }}</td>
+        </tr>
+        <tr>
+          <th>Permission</th>
+          <td>{{ outing.permission }}</td>
+        </tr>
+        {% if official == 'Caretaker' and type == 'Non-Local' %}
+        <tr>
+          <form method="POST" class="d-inline">{% csrf_token %}
+          <th>Parent Response</th>
+          <td>
+            <input type="radio" name="parent_consent" id="accept" value="Accepted" required onclick="EnableDisableButton()">
+            <label for="accept">Accepted</label>
+            <input type="radio" name="parent_consent" id="deny" value="Denied" onclick="EnableDisableButton()">
+            <label for="deny">Denied</label>
+
+          </td>
+        </tr>     
+        {% endif %}
+        {% if official == 'Warden' %}
+        <tr>
+          <th>Remark by Caretaker</th>
+          <td>{{ outing.remark_by_caretaker }}</td>
+        </tr>
+        <tr>
+        {% endif %}
+          <th>Remarks</th>
+          <td>
+              <input type="text" name="textarea">
+          </td>
+        </tr>    
+   
+      </tbody>
+    </table>
+    
+    <div class="my-3 text-center">
+        <button name="permission" type="submit" value="Granted" id="grant" onclick="return confirm('Are you sure you want to grant outing to {{outing.student.name}}?')" class="btn btn-success ml-3">Grant</button>
+        <button name="permission" value="Rejected" type="submit" class="btn btn-danger ml-3" onclick="return confirm('Are you sure you want to reject outing to {{outing.student.name}}?');">Reject</button>
+      </form>
+    </div>
+
+    <h4 class="text-center border-bottom border-secondary pb-3">Student Details</h4>
+    <table class="table table-borderless">
+      <tbody>
+        <tr>
+          <th>Registration No.</th>
+          <td>{{ outing.student.regd_no }}</td>
+        </tr>
+        <tr>
+          <th>Name</th>
+          <td>{{ outing.student.name }}</td>
+        </tr>
+        <tr>
+          <th>Year</th>
+          <td>{{ outing.student.year }}</td>
+        </tr>
+        <tr>
+          <th>Branch</th>
+          <td>{{ outing.student.branch }}</td>
+        </tr>
+        <tr>
+          <th>Gender</th>
+          <td>{{ outing.student.gender }}</td>
+        </tr>
+        <tr>
+          <th>Phone</th>
+          <td>{{ outing.student.phone }}</td>
+        </tr>
+        <tr>
+          <th>Parent's Phone</th>
+          <td>{{ outing.student.parents_phone }}</td>
+        </tr>
+        <tr>
+          <th>Block</th>
+          <td>
+            {{ outing.student.roomdetail.block.name }}
+          </td>
+        </tr>
+        <tr>
+          <th>Room No.</th>
+          <td>{{ outing.student.roomdetail.room }}</td>
+        </tr>
+        <tr>
+          <th>Person with Disablity</th>
+          <td>{% if outing.student.pwd %}Yes{% else %}No{% endif %}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="col-md-6 border py-3">
+    <h4 class="text-center border-bottom border-secondary pb-3">Outing History</h4>
+    <div class="overflow-auto p-3">
+      <table class="table table-muted">
+        <thead>
+          <tr>
+            <th>From</th>
+            <th>To</th>
+            <th>Purpose</th>
+            <th>Permission</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in outing.student.outing_set.all %}
+            <tr {% if outing == item %}class="text-primary"{% endif %}>
+              <td>{{ item.fromDate|date:"d-m-Y" }}</td>
+              <td>{{ item.toDate|date:"d-m-Y" }}</td>
+              <td>{{ item.purpose }}</td>
+              <td>{{ item.permission }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script>
+  // console.log("Herre")
+  // console.log($('#deny').checked);
+  // document.getElementById("deny").addEventListener('change',  function (){
+  //   console.log(document.getElementById("deny").checked);
+  //   if (document.getElementById("deny").checked == true){
+  //     console.log(document.getElementById("deny").checked);
+  //     document.getElementById("grant").setAttribute('disabled',true);
+  //   }
+  //   else{
+  //     document.getElementById("grant").setAttribute('disabled',false);
+  //   }
+  //   console.log("Here");
+  // });
+  // document.getElementById("accept").addEventListener('change',  function (){
+  //   console.log(document.getElementById("accept").checked);
+  //   if (document.getElementById("accept").checked == true){
+
+  //     console.log(document.getElementById("accept").checked);
+  //     document.getElementById("grant").ariaDisabled=false;
+  //   }
+  //   console.log("Here");
+  // });
+
+  
+</script>
+
+<script type="text/javascript">
+  function EnableDisableButton() {
+      var accept = document.getElementById("accept");
+      var deny = document.getElementById("deny");
+      var grant = document.getElementById("grant");
+      grant.disabled = deny.checked ? true : false;
+      if (!grant.disabled) {
+         grant.enabled=true;
+      }
+  }
+</script>
+{% endblock content %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+

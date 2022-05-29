@@ -1,0 +1,35 @@
+{% extends 'officials/base_public_forms.html' %}
+{% block title %}{{ form_title }}{% endblock title %}
+
+{% block content %}
+{% load crispy_forms_tags %}
+<form method="post">
+	<div class="card-body">
+		{% csrf_token %}
+		
+		{{ form|crispy }}
+		<div class="row justify-content-center">
+			<button type="submit" class="btn btn-warning px-4 py-2">Log in</button>
+		</div>
+	</div>
+</form>
+<div class="card-footer">
+	{% csrf_token %}
+	<div class="row mt-2 d-flex justify-content-center">
+		<a href="{% url 'django_auth:signup' %}">Sign Up</a>
+	</div>
+	<div class="row d-flex justify-content-center">
+		<a href="{% url 'django_auth:password_reset' %}">Forgot Password?</a>
+	</div>
+	<div class="row d-flex justify-content-center">
+		<a href="{% url 'institute:index' %}">Home</a>
+	</div>
+</div>
+{% endblock content %}
+
+
+
+
+
+
+

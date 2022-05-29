@@ -1,0 +1,55 @@
+{% block style_links %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@4.6.9/dist/flatpickr.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@4.6.9/dist/plugins/monthSelect/style.css">
+{% endblock style_links %}
+
+<div class="text-center">
+  <div class="form-group">
+    Select Month: 
+    <input type="text" id="select_month" class="form-control d-inline w-25 ml-3" />
+  </div>
+</div>
+<div class="row justify-content-center">
+  <div class="col-12 col-md-5 border border-success mx-4 p-3 mt-3">
+    <h4 class="text-center">Present Dates</h4>
+    <div class="row mx-3" id="present_dates_container"></div>
+  </div>
+  <div class="col-12 col-md-5 border border-danger mx-4 p-3 mt-3">
+    <h4 class="text-center">Absent Dates</h4>
+    <div class="row mx-3" id="absent_dates_container"></div>
+  </div>
+</div>
+
+{% block script_links %}
+<script>
+  var present_dates = [];
+  var absent_dates = [];
+
+  {% for date in present_dates %}
+    present_dates.push(new Date('{{ date }}'));
+  {% endfor %}
+
+  {% for date in absent_dates %}
+    absent_dates.push(new Date('{{ date }}'));
+  {% endfor %}
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.9/dist/flatpickr.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.9/dist/plugins/monthSelect/index.js"></script>
+{% load static %}
+<script src="{% static 'students/attendance_history.js' %}"></script>
+
+<script>
+  flatpickr('#select_month', {
+    altInput: true,
+    onChange: selectMonth,
+    plugins: [
+      new monthSelectPlugin({
+        shorthand: true, //defaults to false
+        altFormat: "F Y", //defaults to "F Y"
+        dateFormat: "m-Y", //defaults to "F Y"
+      })
+    ]
+  });
+</script>
+{% endblock script_links %}

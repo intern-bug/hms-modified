@@ -1,0 +1,14 @@
+.vscode
+
+*.pyc
+db.sqlite3
+myvenv/*
+__pycache__/*
+
+.env
+requirements_dev.txt
+data/*
+!data/.keep
+media/*
+!media/.keep
+mysqlclient-1.4.6-cp38-cp38-win32.whl
