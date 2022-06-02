@@ -30,6 +30,7 @@ class OutingForm(forms.ModelForm):
 
     def clean_fromDate(self):
         from_date = self.cleaned_data.get('fromDate')
+        to_date = self.cleaned_data.get('toDate')
         type = self.cleaned_data.get('type')
         user = User.objects.get(email=self.request.user)
         userId = user.id
@@ -39,12 +40,12 @@ class OutingForm(forms.ModelForm):
         for out in outing:
             out_from_date = out.fromDate.date()
             out_to_date = out.toDate.date()
-            if out_from_date <= from_date.date() <= out_to_date:
+            if out_from_date <= from_date.date() <= out_to_date and (from_date > out.fromDate or to_date > out.toDate):
                 raise forms.ValidationError("You already have an outing request in process for the same time period")
         if from_date <= timezone.now():
             raise forms.ValidationError("From Date should be later than the moment!")
         from_time = (from_date.hour*100)+from_date.minute
-        if from_date.date() == timezone.now().date() and timezone.now().hour >= 16:
+        if type != 'Emergency' and from_date.date() == timezone.now().date() and timezone.now().hour >= 16:
             raise forms.ValidationError("Can't apply for outing for a day after 16:00 hrs")
         if type == 'Local' and from_time < 700:
             raise forms.ValidationError("Local Outing is allowed only after 06:30 hrs")

@@ -99,9 +99,10 @@ class Outing(models.Model):
         ('Pending','Pending'),
         ('Processing','Processing'),
         ('Granted', 'Granted'),
-        ('Rejected', 'Rejected')
+        ('Rejected', 'Rejected'),
+        ('Revoked', 'Revoked')
     )
-    OUTING_OPTIONS = (('Local','Local'),('Non-Local', 'Non-Local'))
+    OUTING_OPTIONS = (('Local','Local'),('Non-Local', 'Non-Local'),('Emergency', 'Emergency'))
     PARENT_CONSENT= (('Accepted','Accepted'),('Denied','Denied'))
 
     student = models.ForeignKey('institute.Student', on_delete=models.CASCADE, null=False)
