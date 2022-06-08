@@ -58,11 +58,11 @@ class UserAdmin(BaseUserAdmin):
     form = UpdateUserForm
     add_form = AddUserForm
 
-    list_display = ('email', 'is_student', 'is_official', 'is_worker')
-    list_filter = ('is_student', 'is_official', 'is_worker')
+    list_display = ('email', 'is_student', 'is_official', 'is_worker', 'is_security')
+    list_filter = ('is_student', 'is_official', 'is_worker', 'is_security')
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
-        ('Permissions', {'fields': ('is_active', 'is_student', 'is_official', 'is_worker', 'email_confirmed',)}),
+        ('Permissions', {'fields': ('is_active', 'is_student', 'is_official', 'is_worker', 'is_security', 'email_confirmed',)}),
     )
     add_fieldsets = (
         (

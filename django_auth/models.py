@@ -24,6 +24,8 @@ class UserManager(BaseUserManager):
             user.is_official = True
         elif type_flag == 'worker':
             user.is_worker = True
+        elif type_flag == 'security':
+            user.is_security = True
         else:
             raise ValueError('User type should be one of the following:\n student, official, worker')
 
@@ -52,6 +54,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_student = models.BooleanField(default=False)
     is_official = models.BooleanField(default=False)
     is_worker = models.BooleanField(default=False)
+    is_security = models.BooleanField(default=False)
 
     email_confirmed = models.BooleanField(default=True)
 
@@ -68,25 +71,31 @@ class User(AbstractBaseUser, PermissionsMixin):
     def entity(self):
         return (self.is_student and self.student) or \
             (self.is_official and self.official) or \
-            (self.is_worker and self.worker)
+            (self.is_worker and self.worker) or \
+            (self.is_security and self.security)
     
     def entity_id(self):
         return (self.is_student and self.student.regd_no) or \
             (self.is_official and self.official.emp_id) or \
-            (self.is_worker and self.worker.staff_id)
+            (self.is_worker and self.worker.staff_id) or \
+            (self.is_security and self.security.security_id)
 
     def entity_type(self):
         return (self.is_student and 'Student') or \
             (self.is_official and 'Official') or \
-            (self.is_worker and 'Worker')
+            (self.is_worker and 'Worker') or \
+            (self.is_security and 'Security')
 
     def home_url(self):
+        print(self.is_security)
         if self.is_student:
             return reverse('students:home')
         elif self.is_official:
             return reverse('officials:home')
         elif self.is_worker:
             return reverse('workers:home')
+        elif self.is_security:
+            return reverse('security:home')
 
     def send_activation_email(self, request, from_email=None, **kwargs):
         current_site = get_current_site(request)

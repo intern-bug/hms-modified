@@ -1,5 +1,5 @@
-from django.shortcuts import render
-from django.http import Http404
+from django.shortcuts import render, reverse, redirect
+from django.http import Http404, HttpResponse
 from institute.models import Student
 from students.models import Outing
 from complaints.models import Complaint
@@ -90,3 +90,12 @@ def attendance_history(request):
     absent_dates = (student.attendance.absent_dates and student.attendance.absent_dates.split(',')) or None
 
     return render(request, 'students/attendance_history.html', {'student': student, 'present_dates': present_dates, 'absent_dates': absent_dates})
+
+@user_passes_test(student_check)
+def cancel_outing(request, pk):
+    if request.method == 'POST':
+        print("in cancel",pk)
+        Outing.objects.filter(id=pk).delete()
+        return redirect('students:outing_list')
+    else:
+        return HttpResponse("not post")

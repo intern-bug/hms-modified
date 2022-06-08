@@ -16,10 +16,11 @@
         <th>From</th>
         <th>To</th>
         <th>Purpose of Visit</th>
-        <th>Permission</th>
         <th>Remark by Caretaker</th>
         <th>Remark by Warden</th>
+        <th>Permission</th>
         <th>Action</th>
+        <th>Cancel</th>
       </tr>
     </thead>
     <tbody>
@@ -49,6 +50,12 @@
               {% if outing.is_editable %}
                 <a href="{% url 'students:outing_edit' outing.id %}" target="_blank" class="btn btn-primary">Edit</a>
               {% endif %}
+            </td>
+            <td>
+              <form action="{% url 'students:outing_cancel' outing.id %}" method="post" onsubmit="return confirm('Are you sure you want to cancel outing ?');">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Cancel</button>
+              </form>
             </td>
           </tr>
         {% endif %}

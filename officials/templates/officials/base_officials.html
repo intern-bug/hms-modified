@@ -43,7 +43,9 @@
         {% if request.user.is_worker %}
         <a href="{% url 'workers:home' %}"><i class="fa fa-user-circle-o nav-icon"></i></a>
         {% endif %}
-          
+        {% if request.user.is_security %}
+        <a href="{% url 'security:home' %}"><i class="fa fa-user-circle-o nav-icon"></i></a>
+        {% endif %}
       </div>
     </div>
   </nav>
@@ -52,7 +54,7 @@
   <div id="mySidenav" class="sidenav">
     <a style="cursor: pointer;" class="closebtn" onclick="closeNav()">&times;</a>
     {% with url_name=request.resolver_match.url_name %}
-    
+    {% if not request.user.is_security %}
     {% if request.user.is_official and request.user.official.is_chief %}
       <a href="{% url 'officials:home' %}" class="{% if url_name == 'home' %}active{% endif %}"><span class="mr-3"><i class="fa fa-tachometer"></i></span>Dashboard</a>
       <a href="{% url 'officials:blockSearch' %}" class="{% if url_name == 'blockSearch' %}active{% endif %}"><span class="mr-3"><i class="fa fa-building"></i></span> Block Layout</a>
@@ -83,6 +85,9 @@
 
     <a href="{% url 'complaints:registerMedical' %}"><span class="mr-3"><i class="fa fa-medkit"></i></span> Medical Issue</a>
     <a href="{% url 'complaints:registerComplaint' %}"><span class="mr-3"><i class="fa fa-commenting"></i></span>Register Complaint</a>
+    {% else %}
+    <a href="{% url 'security:home' %}" class="{% if url_name == 'home' %}active{% endif %}"><span span class="mr-3"><i class="fa fa-tachometer"></i></span> Dashboard</a>
+    {% endif %}
     <a href="{% url 'django_auth:logout' %}"><span class="mr-3"><i class="fa fa-sign-out"></i></span>Log Out</a>
   </div>
   {% endwith %}

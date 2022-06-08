@@ -10,6 +10,7 @@ from .models import User
 from .forms import SignUpForm, LoginForm, ActivationEmailForm
 from institute.models import Student, Official
 from workers.models import Worker
+from security.models import Security
 from django.contrib.auth import login, get_user_model
 from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_decode
@@ -24,6 +25,7 @@ class LoginView(SuccessMessageMixin, auth_views.LoginView):
     form_class = LoginForm
 
     def get_success_url(self):
+        print(self.request.user.home_url())
         return self.request.user.home_url()
 
     def get_context_data(self, **kwargs):
@@ -51,6 +53,7 @@ class SignUpView(CreateView):
         is_student = form.cleaned_data.get('is_student')
         is_official = form.cleaned_data.get('is_official')
         is_worker = form.cleaned_data.get('is_worker')
+        is_security = form.cleaned_data.get('is_security')
         email = form.cleaned_data.get('email')
 
         if is_student:
@@ -59,6 +62,8 @@ class SignUpView(CreateView):
             Official.objects.filter(account_email = email).update(user = user)
         elif is_worker:
             Worker.objects.filter(account_email = email).update(user = user)
+        elif is_security:
+            Security.objects.filter(account_email = email).update(user = user)
         return response
     
     def get_context_data(self, **kwargs):

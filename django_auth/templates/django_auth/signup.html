@@ -14,6 +14,7 @@
                <div class="col-12 col-md-3">{{form.is_student|as_crispy_field}} </div>
                <div class="col-12 col-md-3">{{form.is_official|as_crispy_field}} </div>
                <div class="col-12 col-md-3">{{form.is_worker|as_crispy_field}} </div>
+               <div class="col-12 col-md-3">{{form.is_security|as_crispy_field}} </div>
           </div>
           <div class="row justify-content-center">
                <button type="submit" class="btn btn-warning px-4 py-2">Sign Up</button>
@@ -36,17 +37,27 @@
      var s = document.getElementById('id_is_student');
      var o = document.getElementById('id_is_official');
      var w = document.getElementById('id_is_worker');
+     var sec = document.getElementById('id_is_security');
+
 
      s.onclick =  () => {
           o.checked = false;
           w.checked = false;
+          sec.checked = false;
      }
      w.onclick = () => {
           s.checked = false;
+          sec.checked = false;
           o.checked = false;
      }
      o.onclick = () => {
           s.checked = false;
+          sec.checked = false;
+          w.checked = false;
+     }
+     sec.onclick = () => {
+          s.checked = false;
+          o.checked = false;
           w.checked = false;
      }
 

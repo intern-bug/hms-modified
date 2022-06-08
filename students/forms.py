@@ -7,7 +7,9 @@ from django.db.models import Q
 
 class OutingForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        self.request = kwargs.pop('request')
+        if 'request' in kwargs.keys():
+            print(kwargs)
+            self.request = kwargs.pop('request')
         super(OutingForm, self).__init__(*args, **kwargs)
     class Meta:
         model = Outing
@@ -46,7 +48,7 @@ class OutingForm(forms.ModelForm):
             raise forms.ValidationError("From Date should be later than the moment!")
         from_time = (from_date.hour*100)+from_date.minute
         if type != 'Emergency' and from_date.date() == timezone.now().date() and timezone.now().hour >= 16:
-            raise forms.ValidationError("Can't apply for outing for a day after 16:00 hrs")
+            raise forms.ValidationError("Can't apply for outing for the current day after 16:00 hrs")
         if type == 'Local' and from_time < 700:
             raise forms.ValidationError("Local Outing is allowed only after 06:30 hrs")
         return from_date

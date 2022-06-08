@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'students',
     'complaints',
     'workers',
+    'security',
     'django_auth',
 ]
 
