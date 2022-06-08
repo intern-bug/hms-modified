@@ -25,7 +25,6 @@ class LoginView(SuccessMessageMixin, auth_views.LoginView):
     form_class = LoginForm
 
     def get_success_url(self):
-        print(self.request.user.home_url())
         return self.request.user.home_url()
 
     def get_context_data(self, **kwargs):
