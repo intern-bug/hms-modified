@@ -10,5 +10,11 @@ def home(request):
     user = request.user
     security = user.security
 
-    
     return render(request, 'security/home.html',{'security':security})
+
+@user_passes_test(security_check)
+def scan(request):
+    user = request.user
+    security = user.security
+
+    return render(request, 'security/scan3.html')
