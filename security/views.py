@@ -9,4 +9,6 @@ def security_check(user):
 def home(request):
     user = request.user
     security = user.security
+
+    
     return render(request, 'security/home.html',{'security':security})
