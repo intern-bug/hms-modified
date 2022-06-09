@@ -94,8 +94,19 @@ def attendance_history(request):
 @user_passes_test(student_check)
 def cancel_outing(request, pk):
     if request.method == 'POST':
-        print("in cancel",pk)
-        Outing.objects.filter(id=pk).delete()
+        # print("in cancel",pk)
+        outing = Outing.objects.get(id=pk)
+        if outing.permission == 'Pending':
+            Outing.objects.get(id=pk).delete()
+        else:
+            outing.permission = 'Revoked'
+            outing.save()
         return redirect('students:outing_list')
     else:
         return HttpResponse("not post")
+
+@user_passes_test(student_check)
+def outing_QRCode(request, pk):
+    outing_obj = Outing.objects.get(id=pk)
+    return render(request, 'students/render_qr_code.html', {'outing':outing_obj})
+

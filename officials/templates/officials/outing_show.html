@@ -25,9 +25,9 @@
           <th>Permission</th>
           <td>{{ outing.permission }}</td>
         </tr>
+        <form method="POST" class="d-inline">{% csrf_token %}
         {% if official == 'Caretaker' and type == 'Non-Local' %}
         <tr>
-          <form method="POST" class="d-inline">{% csrf_token %}
           <th>Parent Response</th>
           <td>
             <input type="radio" name="parent_consent" id="accept" value="Accepted" required onclick="EnableDisableButton()">
@@ -135,34 +135,6 @@
   </div>
 </div>
 
-
-<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-<script>
-  // console.log("Herre")
-  // console.log($('#deny').checked);
-  // document.getElementById("deny").addEventListener('change',  function (){
-  //   console.log(document.getElementById("deny").checked);
-  //   if (document.getElementById("deny").checked == true){
-  //     console.log(document.getElementById("deny").checked);
-  //     document.getElementById("grant").setAttribute('disabled',true);
-  //   }
-  //   else{
-  //     document.getElementById("grant").setAttribute('disabled',false);
-  //   }
-  //   console.log("Here");
-  // });
-  // document.getElementById("accept").addEventListener('change',  function (){
-  //   console.log(document.getElementById("accept").checked);
-  //   if (document.getElementById("accept").checked == true){
-
-  //     console.log(document.getElementById("accept").checked);
-  //     document.getElementById("grant").ariaDisabled=false;
-  //   }
-  //   console.log("Here");
-  // });
-
-  
-</script>
 
 <script type="text/javascript">
   function EnableDisableButton() {

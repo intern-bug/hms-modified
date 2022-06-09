@@ -9,6 +9,7 @@ from django.contrib import messages
 from django.http.response import Http404, HttpResponseForbidden
 from complaints.models import Complaint
 from workers.models import Worker, Attendance as AttendanceWorker
+import uuid
 
 def official_check(user):
     return user.is_authenticated and user.is_official
@@ -186,6 +187,9 @@ def outing_detail(request, pk):
                 outing.remark_by_warden = request.POST.get('textarea')
             if request.POST.get('permission'):
                 outing.permission = request.POST.get('permission')
+                if request.POST.get('permission') == 'Granted':
+                    uid = uuid.uuid4()
+                    outing.uuid = uid
         elif(user.official.is_caretaker()):
             if(request.POST.get('textarea')):
                 outing.remark_by_caretaker = request.POST.get('textarea')
@@ -193,8 +197,11 @@ def outing_detail(request, pk):
                 outing.parent_consent = request.POST.get('parent_consent')
             if request.POST.get('permission'):
                 outing.permission = request.POST.get('permission')
-                if outing.type == 'Non-Local' and request.POST.get('permission')=='Granted':
+                if outing.type == 'Non-Local' and request.POST.get('permission') == 'Granted':
                     outing.permission = 'Processing'
+                if outing.type == 'Local' and request.POST.get('permission') == 'Granted':
+                    uid = uuid.uuid4()
+                    outing.uuid = uid
         outing.save()
         messages.success(request, f'Outing successfully {outing.permission.lower()} to {outing.student.name}')
         return redirect('officials:grant_outing')

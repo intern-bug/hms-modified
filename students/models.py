@@ -115,6 +115,7 @@ class Outing(models.Model):
     type = models.CharField(max_length=9, choices=OUTING_OPTIONS, null=False)
     parent_consent = models.CharField(max_length=8, choices=PARENT_CONSENT, default='NA', null=False)
     place_of_visit = models.CharField(max_length=255,null=False)
+    uuid = models.UUIDField(unique=True, null=True)
 
 
     def is_upcoming(self):

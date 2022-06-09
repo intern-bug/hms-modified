@@ -180,24 +180,25 @@
   </table>
 </div>
 
+<div class="container-fluid collapse" id="outing_table">
 <h2 style="text-align: center;">Outing Requests</h2>
 <div class="overflow-auto p-4">
-  <table class="table table-hover table-muted table-striped " id="outing_table">
+  <table class="table table-hover table-muted table-striped " >
     <thead>
       <tr class="text-center">
-          <th>Regd No.</th>
-          <th>Student Name</th>
-          <th>Year</th>
-          <th>Branch</th>
-          <th>Phone</th>
-          <th>Mode</th>
-          <th>From</th>
-          <th>To</th>
+          <th class="overflow-hidden">Regd No.</th>
+          <th class="overflow-hidden">Student Name</th>
+          <th class="overflow-hidden">Year</th>
+          <th class="overflow-hidden">Branch</th>
+          <th class="overflow-hidden">Phone</th>
+          <th class="overflow-hidden">Mode</th>
+          <th class="overflow-hidden">From</th>
+          <th class="overflow-hidden">To</th>
       </tr>
     </thead>
     <tbody>
-      {% for item in outings %}
-      <tr class="text-center" data-row-href="{% url 'officials:outing_detail' item.pk %}">
+      {% for outing in outings %}
+      <tr class="text-center" data-row-href="{% url 'officials:outing_detail' outing.pk %}">
         <td>{{outing.student.regd_no}}</td>
         <td>{{outing.student.name}}</td>
         <td>{{outing.student.year}}</td>
@@ -210,6 +211,7 @@
       {% endfor %}
     </tbody>
   </table>
+</div>
 </div>
 
 {% endblock content %}

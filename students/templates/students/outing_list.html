@@ -2,7 +2,7 @@
 
 {% block title %}Outing History{% endblock title %}
 
-
+{% load qr_code %}
 {% block content %}
 <h2 class="text-center">Outing History</h2>
 <hr />
@@ -26,7 +26,11 @@
     <tbody>
       {% for outing in outing_list %}
         {% if outing.is_upcoming %}
-          <tr>
+          <tr
+            {% if outing.permission == 'Granted' %}
+            data-row-href="{% url 'students:outing_QRCode' outing.pk %}"
+            {% endif %}
+          >
             <td>{{ outing.id }}</td>
             <td nowrap>{{ outing.fromDate }}</td>
             <td nowrap>{{ outing.toDate }}</td>

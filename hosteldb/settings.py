@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 import os
 import environ
 
+from qr_code.qrcode import constants
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 env = environ.Env()
@@ -48,6 +50,7 @@ INSTALLED_APPS = [
     'workers',
     'security',
     'django_auth',
+    'qr_code'
 ]
 
 MIDDLEWARE = [
@@ -170,3 +173,25 @@ if env("ENVIRONMENT") == "development":
 
     AUTH_PASSWORD_VALIDATORS = []
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Caches.
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+    },
+    'qr-code': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'qr-code-cache',
+        'TIMEOUT': 3600
+    }
+}
+
+# Django QR Code specific options.
+QR_CODE_CACHE_ALIAS = 'qr-code'
+QR_CODE_URL_PROTECTION = {
+    constants.TOKEN_LENGTH: 30,  # Optional random token length for URL protection. Defaults to 20.
+    constants.SIGNING_KEY: 'my-secret-signing-key',  # Optional signing key for URL token. Uses SECRET_KEY if not defined.
+    constants.SIGNING_SALT: 'my-signing-salt',  # Optional signing salt for URL token.
+    constants.ALLOWS_EXTERNAL_REQUESTS_FOR_REGISTERED_USER: lambda u: True  # Tells whether a registered user can request the QR code URLs from outside a site that uses this app. It can be a boolean value used for any user, or a callable that takes a user as parameter. Defaults to False (nobody can access the URL without the security token).
+}
+SERVE_QR_CODE_IMAGE_PATH = 'qr-code-image/'

@@ -26,7 +26,8 @@ urlpatterns = [
     path('', include('complaints.urls')),
     path('staff/', include('workers.urls')),
     path('security/', include('security.urls')),
-    path('auth/', include('django_auth.urls'))
+    path('auth/', include('django_auth.urls')),
+    path('', include('qr_code.urls', namespace='qr_code')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
