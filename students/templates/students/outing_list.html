@@ -86,7 +86,11 @@
     <tbody>
       {% for outing in outing_list %}
         {% if not outing.is_upcoming %}
-          <tr>
+          <tr
+          {% if outing.permission == 'Granted' %}
+          data-row-href="{% url 'students:outing_QRCode' outing.pk %}"
+          {% endif %}
+          >
             <td>{{ outing.id }}</td>
             <td nowrap>{{ outing.fromDate }}</td>
             <td nowrap>{{ outing.toDate }}</td>

@@ -1,41 +1,17 @@
 {% extends 'officials/base_officials.html' %}
-
-<!-- <style>
-    .result {
-        background-color: green;
-        color: #fff;
-        padding: 20px;
-    }
-
-    .row {
-        display: flex;
-    }
-</style> -->
 {% block title %}Security Scan{% endblock title %}
 {% block content %}
 
 {% load static %}
-<script src="{% static 'security/html5-qrcode.min.js' %}"></script>
-<h2 class="text-center">Hello {{security.designation}}!</h2>
-<div class="row justify-content-center p-3">
-    <div class="col-12 col-md-4 border p-3 mr-md-3">
-        <div class="text-center">
-            <a href="#"><button class="btn btn-primary">Reached</button></a>
-        </div>
-        <br><br>
-        <div class="text-center">
-            <a href="{% url 'django_auth:change_password' %}"><button class="btn btn-primary">Change
-                    Password</button></a>
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col">
-        <div style="width:500px;" id="reader"></div>
-    </div>
-    <div class="col" style="padding:30px;">
-        <h4>SCAN RESULT</h4>
-        <div id="result">Result Here</div>
+<script src="{% static 'security/html5-qrcode.js' %}"></script>
+
+<div class="row justify-content-center p-3"">
+    <div style="width:500px;" class="col-12 col-md-4 border p-3 mr-md-3" id="reader"></div>
+    <div class="hidden">
+        <form method="POST" enctype="multipart/form-data" id="post-form">
+            {% csrf_token %}
+            <input type="hidden" name="qrcode" value="" id="post-data">
+        </form>
     </div>
 </div>
 {% endblock content %}
@@ -45,7 +21,10 @@
 
 <script>
     function onScanSuccess(qrCodeMessage) {
-        document.getElementById('result').innerHTML = '<span class="result">' + qrCodeMessage + '</span>';
+        // document.getElementById('result').innerHTML = '<span class="result">' + qrCodeMessage + '</span>';
+        document.getElementById('post-data').value = qrCodeMessage;
+        console.log(document.getElementById('post-data').value);
+        document.getElementById('post-form').submit();
     }
 
     function onScanError(errorMessage) {
@@ -55,9 +34,6 @@
     var html5QrcodeScanner = new Html5QrcodeScanner(
         "reader", { fps: 10, qrbox: 250 });
     html5QrcodeScanner.render(onScanSuccess, onScanError);
-    console.log("hello")
 </script>
 
 {% endblock script_links %}
-
-<!-- <script src="html5-qrcode.min.js"></script> -->

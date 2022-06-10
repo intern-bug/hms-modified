@@ -1,0 +1,47 @@
+{% extends 'officials/base_officials.html' %}
+{% block title %}Outing Detail{% endblock title %}
+{% block content %}
+<div class="row my-3 justify-content-center">
+    <div class="col-md-5 border py-3 mr-md-4">
+      <h4 class="text-center border-bottom border-secondary pb-3">Outing Details</h4>
+      <table class="table table-borderless">
+        <tbody>
+            <tr>
+                <th>Registration No.</th>
+                <td>{{ outing.student.regd_no }}</td>
+              </tr>
+              <tr>
+                <th>Name</th>
+                <td>{{ outing.student.name }}</td>
+              </tr>
+              <tr>
+                <th>Year</th>
+                <td>{{ outing.student.year }}</td>
+              </tr>
+              <tr>
+                <th>Branch</th>
+                <td>{{ outing.student.branch }}</td>
+              </tr>
+          <tr>
+            <th>From</th>
+            <td>{{ outing.fromDate }}</td>
+          </tr>
+          <tr>
+            <th>To</th>
+            <td>{{ outing.toDate }}</td>
+          </tr>
+          <tr>
+            <th>Type</th>
+            <td>{{ outing.type }}</td>
+          </tr>
+          <tr>
+            <td>
+              <button name="action" type="submit" value="Allow" id="grant" onclick="return confirm('Are you sure you want to allow outing to {{outing.student.name}}?')" class="btn btn-success ml-3">Allow</button>
+              <button name="action" value="Rejected" type="submit" class="btn btn-danger ml-3" onclick="return confirm('Are you sure you want to reject outing to {{outing.student.name}}?');">Disallow</button>
+            </td>
+          </tr>
+        </tbody>
+        </table>
+    </div>
+    </div>
+    {% endblock content %}

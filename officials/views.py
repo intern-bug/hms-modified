@@ -22,6 +22,8 @@ def chief_warden_check(user):
 def home(request):
     user = request.user
     official = user.official
+    outing_requests = ''
+
     if official.is_chief():
         present_students = Attendance.objects.filter(status='Present')
         absent_students = Attendance.objects.filter(status='Absent')
@@ -37,7 +39,6 @@ def home(request):
         present_students = Attendance.objects.filter(student__in=students, status='Present')
         absent_students = Attendance.objects.filter(student__in=students, status='Absent')
         complaints = official.related_complaints()
-        outing_requests = ''
         if official.is_warden():
             outing_requests = Outing.objects.filter(permission='Processing')
         elif official.is_caretaker():
@@ -163,13 +164,11 @@ def generate_attendance_sheet(request):
 def grant_outing(request):
     user = request.user
     official = user.official
-    print(official.designation)
+    outings = ''
     if(official.is_warden()):
         outings = Outing.objects.filter(student__in=official.block.roomdetail_set.all().values_list('student', flat=True), permission="Processing")
     elif(official.is_caretaker()):
-        print("Here")
         outings = Outing.objects.filter(student__in=official.block.roomdetail_set.all().values_list('student', flat=True), permission="Pending")
-        print(outings)
     return render(request, 'officials/grant_outing.html', {'official': official, 'outings': outings})
 
 
