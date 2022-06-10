@@ -34,12 +34,29 @@
             <th>Type</th>
             <td>{{ outing.type }}</td>
           </tr>
+          {% if outingInOutTimes %}
+          <tr>
+            <th>Out Time</th>
+            <td>{{ outingInOutTimes.outTime }}</td>
+          </tr>
+          <tr>
+            <form action="{% url 'security:outing_action' outing.id %}" method="POST" enctype="multipart/form-data">{% csrf_token %}
+              <button name="action" type="submit" value="Outing Closed" onclick="return confirm('Are you sure you want to close outing to {{outing.student.name}}?')" class="btn btn-success ml-3">Close Outing</button>
+              <a href="{% url 'security:home' %}">
+                <button type="button" class="btn btn-primary">Back</button>
+              </a>
+            </form>
+          </tr>
+          {% else %}
           <tr>
             <td>
-              <button name="action" type="submit" value="Allow" id="grant" onclick="return confirm('Are you sure you want to allow outing to {{outing.student.name}}?')" class="btn btn-success ml-3">Allow</button>
-              <button name="action" value="Rejected" type="submit" class="btn btn-danger ml-3" onclick="return confirm('Are you sure you want to reject outing to {{outing.student.name}}?');">Disallow</button>
+              <form action="{% url 'security:outing_action' outing.id %}" method="POST" enctype="multipart/form-data">{% csrf_token %}
+                <button name="action" type="submit" value="Allowed" id="grant" onclick="return confirm('Are you sure you want to allow outing to {{outing.student.name}}?')" class="btn btn-success ml-3">Allow</button>
+                <button name="action" value="Disallowed" type="submit" class="btn btn-danger ml-3" onclick="return confirm('Are you sure you want to reject outing to {{outing.student.name}}?');">Disallow</button>
+              </form>
             </td>
           </tr>
+          {% endif %}
         </tbody>
         </table>
     </div>
