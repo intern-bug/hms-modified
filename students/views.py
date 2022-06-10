@@ -94,7 +94,6 @@ def attendance_history(request):
 @user_passes_test(student_check)
 def cancel_outing(request, pk):
     if request.method == 'POST':
-        # print("in cancel",pk)
         outing = Outing.objects.get(id=pk)
         if outing.permission == 'Pending':
             Outing.objects.get(id=pk).delete()

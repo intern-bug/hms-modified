@@ -87,7 +87,6 @@ class User(AbstractBaseUser, PermissionsMixin):
             (self.is_security and 'Security')
 
     def home_url(self):
-        print(self.is_security)
         if self.is_student:
             return reverse('students:home')
         elif self.is_official:

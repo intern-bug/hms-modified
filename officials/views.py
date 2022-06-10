@@ -180,7 +180,6 @@ def outing_detail(request, pk):
     type = outing.type
     if(request.method=='POST'):
         user = request.user
-        print(user.official.is_warden())
         if(user.official.is_warden()):
             if(request.POST.get('textarea')):
                 outing.remark_by_warden = request.POST.get('textarea')

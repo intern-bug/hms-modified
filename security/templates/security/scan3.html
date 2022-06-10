@@ -6,13 +6,13 @@
 <script src="{% static 'security/html5-qrcode.js' %}"></script>
 
 <div class="row justify-content-center p-3"">
-    <div style="width:500px;" class="col-12 col-md-4 border p-3 mr-md-3" id="reader"></div>
-    <div class="hidden">
-        <form method="POST" enctype="multipart/form-data" id="post-form">
-            {% csrf_token %}
-            <input type="hidden" name="qrcode" value="" id="post-data">
-        </form>
-    </div>
+    <div style=" width:500px;" class="col-12 col-md-4 border p-3 mr-md-3" id="reader"></div>
+<div class="hidden">
+    <form method="POST" enctype="multipart/form-data" id="post-form">
+        {% csrf_token %}
+        <input type="hidden" name="qrcode" value="" id="post-data">
+    </form>
+</div>
 </div>
 {% endblock content %}
 
@@ -21,9 +21,7 @@
 
 <script>
     function onScanSuccess(qrCodeMessage) {
-        // document.getElementById('result').innerHTML = '<span class="result">' + qrCodeMessage + '</span>';
         document.getElementById('post-data').value = qrCodeMessage;
-        console.log(document.getElementById('post-data').value);
         document.getElementById('post-form').submit();
     }
 
@@ -32,7 +30,10 @@
     }
 
     var html5QrcodeScanner = new Html5QrcodeScanner(
-        "reader", { fps: 10, qrbox: 250 });
+        "reader", {
+            fps: 10,
+            qrbox: 250
+        });
     html5QrcodeScanner.render(onScanSuccess, onScanError);
 </script>
 
