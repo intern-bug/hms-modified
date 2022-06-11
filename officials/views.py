@@ -160,7 +160,6 @@ def generate_attendance_sheet(request):
 def grant_outing(request):
     user = request.user
     official = user.official
-    outings = ''
     outings = official.related_outings()
     return render(request, 'officials/grant_outing.html', {'official': official, 'outings': outings})
 

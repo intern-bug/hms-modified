@@ -7,6 +7,11 @@
     <table class="table table-borderless">
       <tbody>
         <tr>
+          <td colspan="2" class="text-center">
+            <img src="{% if outing.student.photo %} {{outing.student.photo.url}} {% endif %}" style="width: 160px; height: auto;" class="mb-3">
+          </td>
+        </tr>
+        <tr>
           <th>Registration No.</th>
           <td>{{ outing.student.regd_no }}</td>
         </tr>

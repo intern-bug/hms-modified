@@ -97,11 +97,7 @@
     <tbody>
       {% for outing in outing_list %}
         {% if not outing.is_upcoming %}
-          <tr
-          {% if outing.permission == 'Granted' %}
-          data-row-href="{% url 'students:outing_QRCode' outing.pk %}"
-          {% endif %}
-          >
+          <tr>
             <td>{{ outing.id }}</td>
             <td nowrap>{{ outing.fromDate }}</td>
             <td nowrap>{{ outing.toDate }}</td>
@@ -110,15 +106,15 @@
             <td>{{ outing.remark_by_caretaker }}</td>
             <td>{{ outing.remark_by_warden }}</td>
             <td
-              {% if outing.permission == 'Pending' or outing.permission == 'Processing' %}
-                class="text-primary"
-              {% endif %}
-              {% if outing.permission == 'Granted' %}
-                class="text-success"
-              {% endif %}
-              {% if outing.permission == 'Rejected' %}
-                class="text-danger"
-              {% endif %}
+            {% if outing.permission == 'Pending' or outing.permission == 'Processing' or outing.permission == 'Pending Extension' or outing.permission == 'Processing Extension' %}
+              class="text-primary"
+            {% endif %}
+            {% if outing.permission == 'Granted' or outing.permission == 'In Outing' %}
+              class="text-success"
+            {% endif %}
+            {% if outing.permission == 'Rejected' or outing.permission == 'Revoked' or outing.permission == 'Closed' %}
+              class="text-danger"
+            {% endif %}
             >
               {{ outing.permission }}
             </td>
@@ -128,12 +124,6 @@
               {% endif %}
             </td>
             <td>
-              <!-- {% if outing.permission == 'Granted' or outing.permission == 'Processing' or outing.permission == 'Pending' %}
-              <form action="{% url 'students:outing_cancel' outing.id %}" method="post" onsubmit="return confirm('Are you sure you want to cancel outing ?');">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-danger">Cancel</button>
-              </form>
-              {% endif %} -->
             </td>
           </tr>
         {% endif %}

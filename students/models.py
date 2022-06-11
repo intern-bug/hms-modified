@@ -124,7 +124,9 @@ class Outing(models.Model):
 
     def is_upcoming(self):
         return self.permission=='In Outing' or (self.toDate > timezone.now() and self.permission != 'Closed' and \
-            self.permission != 'Revoked' and self.permission != 'Rejected')
+            self.permission != 'Revoked' and self.permission != 'Rejected', self.permission!='Rejected' and self.permission!='Revoked' and \
+                (self.fromDate.date()>timezone.now().date() or\
+            (self.fromDate.date()==timezone.now().date() and (timezone.now().hour*100+timezone.now().minute) <= 1930))) [self.type!='Local']
 
     def is_editable(self):
         return self.is_upcoming() and self.permission == 'Pending'
