@@ -39,11 +39,7 @@ def home(request):
         present_students = Attendance.objects.filter(student__in=students, status='Present')
         absent_students = Attendance.objects.filter(student__in=students, status='Absent')
         complaints = official.related_complaints()
-        if official.is_warden():
-            outing_requests = Outing.objects.filter(permission='Processing')
-        elif official.is_caretaker():
-            outing_requests = Outing.objects.filter(permission='Pending')
-
+        outing_requests = official.related_outings()
 
     return render(request, 'officials/home.html', {'user_details': official, 'present':present_students, \
         'absent':absent_students, 'complaints':complaints, 'outings':outing_requests})
@@ -165,10 +161,7 @@ def grant_outing(request):
     user = request.user
     official = user.official
     outings = ''
-    if(official.is_warden()):
-        outings = Outing.objects.filter(student__in=official.block.roomdetail_set.all().values_list('student', flat=True), permission="Processing")
-    elif(official.is_caretaker()):
-        outings = Outing.objects.filter(student__in=official.block.roomdetail_set.all().values_list('student', flat=True), permission="Pending")
+    outings = official.related_outings()
     return render(request, 'officials/grant_outing.html', {'official': official, 'outings': outings})
 
 

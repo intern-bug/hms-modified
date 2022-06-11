@@ -5,6 +5,7 @@ from django.conf import settings
 from django.core.validators import MinLengthValidator
 from institute.validators import numeric_only, date_no_future
 from institute.constants import FLOOR_OPTIONS
+from students.models import Outing
 
 # Create your models here.
 class Student(models.Model):
@@ -88,6 +89,14 @@ class Official(models.Model):
     def clean(self):
         if self.is_chief() and self.block != None:
             raise ValidationError('Chief Warden and Deputy Chief Warden cannot be assigned a block.')
+    
+    def related_outings(self):
+        if self.is_warden():
+            return Outing.objects.filter(student__in=self.block.students(), permission__in=['Processing', 'Processing Extension'])
+        elif self.is_caretaker():
+            return Outing.objects.filter(student__in=self.block.students(), permission__in=['Pending', 'Pending Extension'])
+        else:
+            raise ValidationError('You are not authorized to view outings.')
 
     def related_complaints(self, pending=True):
         if self.is_chief():

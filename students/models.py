@@ -100,7 +100,11 @@ class Outing(models.Model):
         ('Processing','Processing'),
         ('Granted', 'Granted'),
         ('Rejected', 'Rejected'),
-        ('Revoked', 'Revoked')
+        ('Revoked', 'Revoked'),
+        ('In Outing', 'In Outing'),
+        ('Closed', 'Closed'),
+        ('Pending Extension', 'Pending Extension'),
+        ('Processing Extension', 'Processing Extension')
     )
     OUTING_OPTIONS = (('Local','Local'),('Non-Local', 'Non-Local'),('Emergency', 'Emergency'))
     PARENT_CONSENT= (('Accepted','Accepted'),('Denied','Denied'))
@@ -119,10 +123,17 @@ class Outing(models.Model):
 
 
     def is_upcoming(self):
-        return self.fromDate > timezone.now()
+        return self.permission=='In Outing' or (self.toDate > timezone.now() and self.permission != 'Closed' and \
+            self.permission != 'Revoked' and self.permission != 'Rejected')
 
     def is_editable(self):
         return self.is_upcoming() and self.permission == 'Pending'
+
+    def is_extendable(self):
+        return self.type != 'Local' and self.permission!='Pending' and self.is_upcoming()
+
+    def can_cancel(self):
+        return self.permission!='In Outing' and self.permission!='Closed'
 
     class Meta:
         ordering = ['-fromDate']

@@ -10,6 +10,10 @@ class OutingForm(forms.ModelForm):
         if 'request' in kwargs.keys():
             self.request = kwargs.pop('request')
         super(OutingForm, self).__init__(*args, **kwargs)
+        if self.instance != None and self.instance.is_extendable():
+            self.fields['type'].disabled = True
+            if self.instance.permission == 'In Outing':
+                self.fields['fromDate'].disabled = True
     class Meta:
         model = Outing
         fields = ['type', 'fromDate', 'toDate', 'place_of_visit', 'purpose']
@@ -33,10 +37,9 @@ class OutingForm(forms.ModelForm):
         if type == 'Local' and from_date and to_date and from_date.date() != to_date.date():
             raise forms.ValidationError("From date and To date should be same for local outing")
         for out in outings:
-            out_from_date = out.fromDate.date()
-            out_to_date = out.toDate.date()
-            if from_date and to_date and out_from_date <= from_date.date() <= out_to_date and (from_date > out.fromDate or to_date > out.toDate):
-                raise forms.ValidationError("You already have an outing request in process for the same time period")
+            if self.instance != None and self.instance.id != out.id:
+                if from_date and to_date and out.fromDate <= from_date <= out.toDate:
+                    raise forms.ValidationError("You already have an outing request in process for the same time period")
         return cleaned_data
 
     def clean_fromDate(self):

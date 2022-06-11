@@ -36,6 +36,8 @@ def outing_action(request, pk):
             outing_obj = get_object_or_404(Outing, id=pk)
             outingInOutObj = OutingInOutTimes(outing = outing_obj)
             outingInOutObj.save()
+            outing_obj.permission = 'In Outing'
+            outing_obj.save()
             messages.success(request, 'Outing Allowed successfully')
         elif action == 'Disallowed':
             messages.success(request, 'Outing Rejected successfully')
@@ -43,6 +45,9 @@ def outing_action(request, pk):
             outingInOutObj = get_object_or_404(OutingInOutTimes, outing=pk)
             outingInOutObj.inTime = timezone.now()
             outingInOutObj.save()
+            outing_obj = get_object_or_404(Outing, id=pk)
+            outing_obj.permission = 'Closed'
+            outing_obj.save()
             messages.success(request, 'Outing closed successfully')
         return redirect('security:home')
     else:

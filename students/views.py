@@ -1,4 +1,4 @@
-from django.shortcuts import render, reverse, redirect
+from django.shortcuts import get_object_or_404, render, reverse, redirect
 from django.http import Http404, HttpResponse
 from institute.models import Student
 from students.models import Outing
@@ -69,17 +69,27 @@ class OutingUpdateView(StudentTestMixin, SuccessMessageMixin, UpdateView):
 
     def get(self, request, *args, **kwargs):
         response =  super().get(request, *args, **kwargs)
-        if not (self.object.student == self.request.user.student and self.object.is_editable()): 
+        if not (self.object.student == self.request.user.student and (self.object.is_editable() or self.object.is_extendable())): 
             raise Http404('Cannot edit the outing application.')
         return response
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['form_title'] = 'Edit Outing Application'
+        if self.object.is_editable():
+            context['form_title'] = 'Edit Outing Application'
+        elif self.object.is_extendable():
+            context['form_title'] = 'Extend Outing Application'
         return context
+    
+    def get_form_kwargs(self):
+        kwargs = super(OutingUpdateView, self).get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
 
     def form_valid(self, form):
         form.instance.student = self.request.user.student
+        if self.object.is_extendable():
+            form.instance.permission = 'Pending Extension'
         return super().form_valid(form)
 
 
@@ -94,7 +104,7 @@ def attendance_history(request):
 @user_passes_test(student_check)
 def cancel_outing(request, pk):
     if request.method == 'POST':
-        outing = Outing.objects.get(id=pk)
+        outing = get_object_or_404(Outing, id=pk)
         if outing.permission == 'Pending':
             Outing.objects.get(id=pk).delete()
         else:
@@ -106,6 +116,6 @@ def cancel_outing(request, pk):
 
 @user_passes_test(student_check)
 def outing_QRCode(request, pk):
-    outing_obj = Outing.objects.get(id=pk)
+    outing_obj = get_object_or_404(Outing, id=pk)
     return render(request, 'students/render_qr_code.html', {'outing':outing_obj})
 
