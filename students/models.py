@@ -3,6 +3,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import MinLengthValidator
 from django.utils import timezone
 from institute.constants import FLOOR_OPTIONS
+from security.models import OutingInOutTimes
 
 # Create your models here.
 class RoomDetail(models.Model):
@@ -123,10 +124,24 @@ class Outing(models.Model):
 
 
     def is_upcoming(self):
-        return self.permission=='In Outing' or (self.toDate > timezone.now() and self.permission != 'Closed' and \
-            self.permission != 'Revoked' and self.permission != 'Rejected', self.permission!='Rejected' and self.permission!='Revoked' and \
-                (self.fromDate.date()>timezone.now().date() or\
-            (self.fromDate.date()==timezone.now().date() and (timezone.now().hour*100+timezone.now().minute) <= 1930))) [self.type!='Local']
+        if self.permission == 'In Outing':
+            return True
+        elif self.permission != 'Rejected' and self.permission != 'Closed' and self.permission != 'Revoked':
+            if self.type == 'Local':
+                if self.fromDate > timezone.now():
+                    return True
+                elif self.fromDate.date() == timezone.now().date() and self.toDate > timezone.now() and \
+                    (timezone.now().hour*100+timezone.now().minute) <= 1400:
+                    return True
+                else:
+                    return False
+            elif self.type != 'Local':
+                if self.toDate > timezone.now():
+                    return True
+                else:
+                    return False
+        else:
+            return False
 
     def is_editable(self):
         return self.is_upcoming() and self.permission == 'Pending'
@@ -136,6 +151,21 @@ class Outing(models.Model):
 
     def can_cancel(self):
         return self.permission!='In Outing' and self.permission!='Closed'
+    
+    def in_outing(self):
+        return OutingInOutTimes.objects.filter(outing=self).exists() and OutingInOutTimes.objects.get(outing=self).inTime != None
+
+    def is_qr_viewable(self):
+        not_viewable = ['Pending', 'Processing', 'Rejected', 'Revoked', 'Closed']
+        viewable = ['Granted', 'Pending Extension', 'Processing Extension']
+        if self.in_outing():
+            return True
+        elif self.permission in viewable and self.fromDate.date() == timezone.now().date():
+            return True
+        elif self.permission in not_viewable:
+            return False
+        else:
+            return False
 
     class Meta:
         ordering = ['-fromDate']

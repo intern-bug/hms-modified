@@ -17,6 +17,7 @@
         <th>To</th>
         <th>Type</th>
         <th>Purpose of Visit</th>
+        <th>Parent Consent</th>
         <th>Remark by Caretaker</th>
         <th>Remark by Warden</th>
         <th>Permission</th>
@@ -28,7 +29,7 @@
       {% for outing in outing_list %}
         {% if outing.is_upcoming %}
           <tr
-            {% if outing.permission == 'Granted' %}
+            {% if outing.is_qr_viewable %}
             data-row-href="{% url 'students:outing_QRCode' outing.pk %}"
             {% endif %}
           >
@@ -37,6 +38,7 @@
             <td nowrap>{{ outing.toDate }}</td>
             <td>{{ outing.type }}</td>
             <td>{{ outing.purpose }}</td>
+            <td>{{ outing.parent_consent }}</td>
             <td>{{ outing.remark_by_caretaker }}</td>
             <td>{{ outing.remark_by_warden }}</td>
             <td
@@ -87,6 +89,7 @@
         <th>To</th>
         <th>Type</th>
         <th>Purpose of Visit</th>
+        <th>Parent Consent</th>
         <th>Remark by Caretaker</th>
         <th>Remark by Warden</th>
         <th>Permission</th>
@@ -103,6 +106,7 @@
             <td nowrap>{{ outing.toDate }}</td>
             <td>{{ outing.type }}</td>
             <td>{{ outing.purpose }}</td>
+            <td>{{ outing.parent_consent }}</td>
             <td>{{ outing.remark_by_caretaker }}</td>
             <td>{{ outing.remark_by_warden }}</td>
             <td
