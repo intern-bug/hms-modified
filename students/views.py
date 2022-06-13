@@ -1,14 +1,14 @@
 from django.shortcuts import get_object_or_404, render, reverse, redirect
 from django.http import Http404, HttpResponse
 from institute.models import Student
-from students.models import Outing
+from students.models import ExtendOuting, Outing
 from complaints.models import Complaint
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth.decorators import user_passes_test
 from django.views.generic import CreateView, UpdateView, ListView
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.urls import reverse_lazy
-from .forms import OutingForm
+from .forms import OutingExtendForm, OutingForm
 
 
 class StudentTestMixin(UserPassesTestMixin):
@@ -69,7 +69,7 @@ class OutingUpdateView(StudentTestMixin, SuccessMessageMixin, UpdateView):
 
     def get(self, request, *args, **kwargs):
         response =  super().get(request, *args, **kwargs)
-        if not (self.object.student == self.request.user.student and (self.object.is_editable() or self.object.is_extendable())): 
+        if not (self.object.student == self.request.user.student and self.object.is_extendable()): 
             raise Http404('Cannot edit the outing application.')
         return response
 
@@ -77,8 +77,6 @@ class OutingUpdateView(StudentTestMixin, SuccessMessageMixin, UpdateView):
         context = super().get_context_data(**kwargs)
         if self.object.is_editable():
             context['form_title'] = 'Edit Outing Application'
-        elif self.object.is_extendable():
-            context['form_title'] = 'Extend Outing Application'
         return context
     
     def get_form_kwargs(self):
@@ -88,8 +86,6 @@ class OutingUpdateView(StudentTestMixin, SuccessMessageMixin, UpdateView):
 
     def form_valid(self, form):
         form.instance.student = self.request.user.student
-        if self.object.is_extendable():
-            form.instance.permission = 'Pending Extension'
         return super().form_valid(form)
 
 
@@ -118,4 +114,30 @@ def cancel_outing(request, pk):
 def outing_QRCode(request, pk):
     outing_obj = get_object_or_404(Outing, id=pk)
     return render(request, 'students/render_qr_code.html', {'outing':outing_obj})
+
+class OutingExtendView(StudentTestMixin, SuccessMessageMixin, CreateView):
+    model = ExtendOuting
+    form_class = OutingExtendForm
+    template_name = 'students/outing_form.html'
+    success_url = reverse_lazy('students:outing_list')
+    success_message = 'Outing application successfully extended!'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form_title'] = 'Extend Outing Application'
+        return context
+    def get_form_kwargs(self):
+        kwargs = super(OutingExtendView, self).get_form_kwargs()
+        outing = get_object_or_404(Outing, id=self.kwargs['pk'])
+        kwargs['object'] = outing
+        kwargs['request'] = self.request
+        return kwargs
+    def form_valid(self, form):
+        outing = get_object_or_404(Outing, id=self.kwargs['pk'])
+        outing.permission = 'Pending Extension'
+        outing.save()
+        form.instance.outing = outing
+        return super().form_valid(form)
+
+
 

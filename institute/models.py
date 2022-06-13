@@ -6,6 +6,8 @@ from django.core.validators import MinLengthValidator
 from institute.validators import numeric_only, date_no_future
 from institute.constants import FLOOR_OPTIONS
 from students.models import Outing
+from django.utils import timezone
+
 
 # Create your models here.
 class Student(models.Model):
@@ -92,9 +94,11 @@ class Official(models.Model):
     
     def related_outings(self):
         if self.is_warden():
-            return Outing.objects.filter(student__in=self.block.students(), permission__in=['Processing', 'Processing Extension'])
+            return Outing.objects.filter(student__in=self.block.students(), permission__in=['Processing', 'Processing Extension']).\
+                filter(toDate__date__gt=timezone.now().date()).exclude(status='Closed')
         elif self.is_caretaker():
-            return Outing.objects.filter(student__in=self.block.students(), permission__in=['Pending', 'Pending Extension'])
+            return Outing.objects.filter(student__in=self.block.students(), permission__in=['Pending', 'Pending Extension']).\
+                filter(toDate__date__gt=timezone.now().date()).exclude(status='Closed')
         else:
             raise ValidationError('You are not authorized to view outings.')
 

@@ -18,12 +18,26 @@
           <td>{{ outing.toDate }}</td>
         </tr>
         <tr>
-          <th>Purpose of Visit</th>
-          <td>{{ outing.purpose }}</td>
+          <th>Permission</th>
+          <td style="color: #F94C66; font-weight:bold">{{ outing.permission }}</td>
         </tr>
         <tr>
-          <th>Permission</th>
-          <td>{{ outing.permission }}</td>
+          <th>Status</th>
+          <td>{{ outing.status }}</td>
+        </tr>
+        {% if extendOuting %}
+        <tr>
+          <th>Extension From Date</th>
+          <td>{{ extendOuting.fromDate }}</td>
+        </tr>
+        <tr>
+          <th>Extension To Date</th>
+          <td>{{ extendOuting.toDate }}</td>
+        </tr>
+        {% endif %}
+        <tr>
+          <th>Purpose of Visit</th>
+          <td>{{ outing.purpose }}</td>
         </tr>
         <form method="POST" class="d-inline">{% csrf_token %}
         {% if official == 'Caretaker' and type == 'Non-Local' %}

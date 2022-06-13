@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import user_passes_test
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.detail import DetailView
 from institute.models import Block, Student, Official
-from students.models import Attendance, RoomDetail, Outing
+from students.models import Attendance, RoomDetail, Outing, ExtendOuting
 from django.contrib import messages
 from django.http.response import Http404, HttpResponseForbidden
 from complaints.models import Complaint
@@ -170,6 +170,10 @@ def outing_detail(request, pk):
     user = request.user
     official = user.official
     type = outing.type
+    extend_outing_obj = None
+    if outing.permission=='Pending Extension' or outing.permission=='Processing Extension':
+        extend_outing_obj = ExtendOuting.objects.filter(outing=outing).order_by('-id')
+        extend_outing_obj = extend_outing_obj[0]
     if(request.method=='POST'):
         user = request.user
         if(user.official.is_warden()):
@@ -178,24 +182,34 @@ def outing_detail(request, pk):
             if request.POST.get('permission'):
                 outing.permission = request.POST.get('permission')
                 if request.POST.get('permission') == 'Granted':
-                    uid = uuid.uuid4()
-                    outing.uuid = uid
+                    if outing.status != 'In Outing':
+                        uid = uuid.uuid4()
+                        outing.uuid = uid
         elif(user.official.is_caretaker()):
             if(request.POST.get('textarea')):
                 outing.remark_by_caretaker = request.POST.get('textarea')
             if(request.POST.get('parent_consent')):
                 outing.parent_consent = request.POST.get('parent_consent')
             if request.POST.get('permission'):
-                outing.permission = request.POST.get('permission')
-                if outing.type == 'Non-Local' and request.POST.get('permission') == 'Granted':
-                    outing.permission = 'Processing'
+                if outing.type != 'Local' and request.POST.get('permission') == 'Granted':
+                    if outing.permission == 'Pending':
+                        outing.permission = 'Processing'
+                    elif outing.permission == 'Pending Extension':
+                        outing.permission = 'Processing Extension'
+                elif outing.type != 'Local' and request.POST.get('permission') == 'Rejected':
+                    if outing.permission == 'Pending':
+                        outing.permission = 'Rejected'
+                    elif outing.permission == 'Pending Extension':
+                        outing.permission = 'Rejected Extension'
                 if outing.type == 'Local' and request.POST.get('permission') == 'Granted':
                     uid = uuid.uuid4()
                     outing.uuid = uid
+                elif outing.type == 'Local' and request.POST.get('permission') == 'Rejected':
+                    outing.permission = 'Rejected'
         outing.save()
         messages.success(request, f'Outing successfully {outing.permission.lower()} to {outing.student.name}')
         return redirect('officials:grant_outing')
-    return render(request, 'officials/outing_show.html', {'type':type, 'official':official.designation,'outing': outing})
+    return render(request, 'officials/outing_show.html', {'type':type, 'official':official.designation,'outing': outing, 'extendOuting':extend_outing_obj})
 
 
 @user_passes_test(chief_warden_check)

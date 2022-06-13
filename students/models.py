@@ -102,11 +102,10 @@ class Outing(models.Model):
         ('Granted', 'Granted'),
         ('Rejected', 'Rejected'),
         ('Revoked', 'Revoked'),
-        ('In Outing', 'In Outing'),
-        ('Closed', 'Closed'),
         ('Pending Extension', 'Pending Extension'),
         ('Processing Extension', 'Processing Extension')
     )
+    STATUS_OPTIONS=(('In Outing', 'In Outing'),('Closed', 'Closed'))
     OUTING_OPTIONS = (('Local','Local'),('Non-Local', 'Non-Local'),('Emergency', 'Emergency'))
     PARENT_CONSENT= (('Accepted','Accepted'),('Denied','Denied'))
 
@@ -120,13 +119,14 @@ class Outing(models.Model):
     type = models.CharField(max_length=9, choices=OUTING_OPTIONS, null=False)
     parent_consent = models.CharField(max_length=8, choices=PARENT_CONSENT, default='NA', null=False)
     place_of_visit = models.CharField(max_length=255,null=False)
+    status = models.CharField(max_length=9, choices=STATUS_OPTIONS, default='NA', null=False)
     uuid = models.UUIDField(unique=True, null=True)
 
 
     def is_upcoming(self):
-        if self.permission == 'In Outing':
+        if self.in_outing():
             return True
-        elif self.permission != 'Rejected' and self.permission != 'Closed' and self.permission != 'Revoked':
+        elif self.permission != 'Rejected' and self.status != 'Closed' and self.permission != 'Revoked':
             if self.type == 'Local':
                 if self.fromDate > timezone.now():
                     return True
@@ -147,19 +147,21 @@ class Outing(models.Model):
         return self.is_upcoming() and self.permission == 'Pending'
 
     def is_extendable(self):
-        return self.type != 'Local' and self.permission!='Pending' and self.is_upcoming()
+        return self.type != 'Local' and self.permission == 'Granted' and self.is_upcoming()
 
     def can_cancel(self):
-        return self.permission!='In Outing' and self.permission!='Closed'
+        return self.is_upcoming() and not self.in_outing()
     
     def in_outing(self):
-        return OutingInOutTimes.objects.filter(outing=self).exists() and OutingInOutTimes.objects.get(outing=self).inTime != None
+        return self.status == 'In Outing'
 
     def is_qr_viewable(self):
-        not_viewable = ['Pending', 'Processing', 'Rejected', 'Revoked', 'Closed']
+        not_viewable = ['Pending', 'Processing', 'Rejected', 'Revoked']
         viewable = ['Granted', 'Pending Extension', 'Processing Extension']
         if self.in_outing():
             return True
+        elif self.status == 'Closed':
+            return False
         elif self.permission in viewable and self.fromDate.date() == timezone.now().date():
             return True
         elif self.permission in not_viewable:
@@ -170,6 +172,14 @@ class Outing(models.Model):
     class Meta:
         ordering = ['-fromDate']
         managed = True
+
+class ExtendOuting(models.Model):
+    outing = models.ForeignKey('students.Outing', on_delete=models.CASCADE, null=False)
+    fromDate = models.DateTimeField(null=False)
+    toDate = models.DateTimeField(null=False)
+
+    class Meta:
+        managed = True 
 
 class Document(models.Model):
     student = models.OneToOneField('institute.Student', on_delete=models.CASCADE, null=False)

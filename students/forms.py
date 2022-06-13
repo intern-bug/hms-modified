@@ -1,6 +1,7 @@
+from random import choices
 from django import forms
 from django.utils import timezone
-from .models import Outing
+from .models import ExtendOuting, Outing
 from django_auth.models import User
 from institute.models import Student
 from django.db.models import Q
@@ -10,10 +11,6 @@ class OutingForm(forms.ModelForm):
         if 'request' in kwargs.keys():
             self.request = kwargs.pop('request')
         super(OutingForm, self).__init__(*args, **kwargs)
-        if self.instance != None and self.instance.is_extendable():
-            self.fields['type'].disabled = True
-            if self.instance.permission == 'In Outing':
-                self.fields['fromDate'].disabled = True
     class Meta:
         model = Outing
         fields = ['type', 'fromDate', 'toDate', 'place_of_visit', 'purpose']
@@ -37,9 +34,8 @@ class OutingForm(forms.ModelForm):
         if type == 'Local' and from_date and to_date and from_date.date() != to_date.date():
             raise forms.ValidationError("From date and To date should be same for local outing")
         for out in outings:
-            if self.instance != None and self.instance.id != out.id:
-                if from_date and to_date and out.fromDate <= from_date <= out.toDate:
-                    raise forms.ValidationError("You already have an outing request in process for the same time period")
+            if from_date and to_date and out.fromDate <= from_date <= out.toDate:
+                raise forms.ValidationError("You already have an outing request in process for the same time period")    
         return cleaned_data
 
     def clean_fromDate(self):
@@ -67,5 +63,58 @@ class OutingForm(forms.ModelForm):
             elif gender == 'Female' and to_time > 2030:
                 raise forms.ValidationError("Local Outing is allowed only until 20:30 hrs")
         return to_date
+
+
+class OutingExtendForm(forms.ModelForm):
+    def __init__(self, initial=None, *args, **kwargs):
+        if 'request' in kwargs.keys():
+            self.request = kwargs.pop('request')
+            self.outing = kwargs.pop('object')
+        super(OutingExtendForm, self).__init__(*args, **kwargs)
+        self.fields['type'] = forms.CharField(label='Mode of Outing', widget=forms.Select(choices=Outing.OUTING_OPTIONS))
+        self.fields['type'].initial = self.outing.type
+        self.fields['type'].disabled = True
+        self.fields['fromDate'].initial = self.outing.fromDate
+        if self.outing.status == 'In Outing':
+            self.fields['fromDate'].disabled = True
+        self.fields['toDate'].initial = self.outing.toDate
+        self.fields['place_of_visit'] = forms.CharField(label='Place of Visit', initial=self.outing.place_of_visit, disabled=True)
+        self.fields['purpose'] = forms.CharField(label='Purpose', initial=self.outing.purpose, disabled=True)
+        fields_keyOrder = ['type', 'fromDate', 'toDate', 'place_of_visit', 'purpose']
+        self.fields = {key:self.fields[key] for key in fields_keyOrder}
+    
+    class Meta:
+        model = ExtendOuting
+        fields = ['fromDate', 'toDate']
+
+    def clean(self):
+        cleaned_data = super().clean()
+        from_date = cleaned_data.get('fromDate')
+        to_date = cleaned_data.get('toDate')
+        user = User.objects.get(email=self.request.user)
+        student = Student.objects.get(user_id=user.id)
+        outings = Outing.objects.filter(~Q(permission='Revoked'),student_id=student.id)
+        if from_date and to_date and (from_date >= to_date):
+            raise forms.ValidationError("To Date and Time should be later than From Date and Time")
+        for out in outings:
+            if self.outing != None and self.outing.id != out.id:
+                if from_date and to_date and out.fromDate <= from_date <= out.toDate:
+                    raise forms.ValidationError("You already have an outing request in process for the same time period")
+        return cleaned_data
+
+    def clean_fromDate(self):
+        from_date = self.cleaned_data.get('fromDate')
+        type = self.cleaned_data.get('type')
+        if from_date <= timezone.now():
+            if from_date != self.outing.fromDate:
+                raise forms.ValidationError("From Date should be later than the moment!")
+        if type != 'Emergency' and from_date.date() == timezone.now().date() and (timezone.now().hour*100 + timezone.now().minute) >= 1030:
+            raise forms.ValidationError("Can't apply for outing for the current day after 16:00 hrs")
+        return from_date
+    
+    def clean_toDate(self):
+        to_date = self.cleaned_data.get('toDate')
+        return to_date
+
     
     
