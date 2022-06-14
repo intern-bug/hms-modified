@@ -95,10 +95,10 @@ class Official(models.Model):
     def related_outings(self):
         if self.is_warden():
             return Outing.objects.filter(student__in=self.block.students(), permission__in=['Processing', 'Processing Extension']).\
-                filter(toDate__date__gt=timezone.now().date()).exclude(status='Closed')
+                filter(toDate__gt=timezone.now()).exclude(status='Closed')
         elif self.is_caretaker():
             return Outing.objects.filter(student__in=self.block.students(), permission__in=['Pending', 'Pending Extension']).\
-                filter(toDate__date__gt=timezone.now().date()).exclude(status='Closed')
+                filter(toDate__gt=timezone.now()).exclude(status='Closed')
         else:
             raise ValidationError('You are not authorized to view outings.')
 
