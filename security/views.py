@@ -6,6 +6,7 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib import messages
 from django.utils import timezone
+import math
 
 
 
@@ -25,7 +26,15 @@ def scan(request):
     if request.method == 'POST':
         uid = request.POST['qrcode']
         outing_obj = get_object_or_404(Outing, uuid=uid)
-        return redirect('security:outing_action', pk=outing_obj.id)
+        if outing_obj.is_upcoming() and outing_obj.fromDate <= timezone.now():
+            return redirect('security:outing_action', pk=outing_obj.id)
+        elif not outing_obj.is_upcoming():
+            messages.error(request, 'Outing is outdated.')
+            return redirect('security:home')
+        elif outing_obj.fromDate > timezone.now():
+            msg = "Outing activates in " + str(math.ceil((outing_obj.fromDate-timezone.now()).total_seconds()/60)) + " minutes."
+            messages.error(request, msg)
+            return redirect('security:home')
     return render(request, 'security/scan3.html')
 
 @user_passes_test(security_check)
@@ -59,3 +68,21 @@ def outing_action(request, pk):
                 messages.error(request, 'Outing is already closed for that QR code')
                 return redirect('security:home')
         return render(request, 'security/outing_detail.html', {'outing':outing_obj, 'outingInOutTimes':outingInOutTimes_obj})
+
+@user_passes_test(security_check)
+def get_outing_sheet(request):
+    from .utils import OutingBookGenerator
+    from django.utils import timezone
+    from django.http import HttpResponse
+    
+    year_month_day = request.GET.get("year_month_day")
+    block_id = request.GET.get("block_id")
+
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',)
+    response['Content-Disposition'] = 'attachment; filename=Outing({date}).xlsx'.format(date=timezone.now().strftime('%d-%m-%Y'),)
+    
+    BookGenerator = OutingBookGenerator(block_id, year_month_day)
+    workbook = BookGenerator.generate_workbook()
+    workbook.save(response)
+
+    return response

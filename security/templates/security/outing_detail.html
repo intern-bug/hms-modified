@@ -28,6 +28,18 @@
           <td>{{ outing.student.branch }}</td>
         </tr>
         <tr>
+          <th>Block</th>
+          <td>{{ outing.student.block.name }}, {{ outing.student.roomdetail.room }}</td>
+        </tr>
+        <tr>
+          <th>Phone</th>
+          <td>{{ outing.student.phone }}</td>
+        </tr>
+        <tr>
+          <th>Mode of Outing</th>
+          <td>{{ outing.type }}</td>
+        </tr>
+        <tr>
           <th>From</th>
           <td>{{ outing.fromDate }}</td>
         </tr>
@@ -36,13 +48,21 @@
           <td>{{ outing.toDate }}</td>
         </tr>
         <tr>
-          <th>Type</th>
-          <td>{{ outing.type }}</td>
+          <th>Status</th>
+          <td>{{ outing.status }}</td>
         </tr>
         {% if outingInOutTimes %}
         <tr>
           <th>Out Time</th>
           <td>{{ outingInOutTimes.outTime }}</td>
+        </tr>
+        <tr>
+          <th>Remark by caretaker</th>
+          <td>{{ outingInOutTimes.outing.remark_by_caretaker }}</td>
+        </tr>
+        <tr>
+          <th>Remark by warden</th>
+          <td>{{ outingInOutTimes.outing.remark_by_warden }}</td>
         </tr>
       </tbody>
     </table>
