@@ -18,6 +18,10 @@
           <td>{{ outing.toDate }}</td>
         </tr>
         <tr>
+          <th>Mode of outing</th>
+          <td>{{outing.type}}</td>
+        </tr>
+        <tr>
           <th>Permission</th>
           <td style="color: #F94C66; font-weight:bold">{{ outing.permission }}</td>
         </tr>
@@ -34,11 +38,24 @@
           <th>Extension To Date</th>
           <td>{{ extendOuting.toDate }}</td>
         </tr>
-        {% endif %}
+        <tr>
+          <th>Purpose of Visit</th>
+          <td>{{ extendOuting.purpose }}</td>
+        </tr>
+        <tr>
+          <th>Place of Visit</th>
+          <td>{{ extendOuting.place_of_visit }}</td>
+        </tr>
+        {% else %}
         <tr>
           <th>Purpose of Visit</th>
           <td>{{ outing.purpose }}</td>
         </tr>
+        <tr>
+          <th>Place of Visit</th>
+          <td>{{ outing.place_of_visit }}</td>
+        </tr>
+        {% endif %}
         <form method="POST" class="d-inline">{% csrf_token %}
         {% if official == 'Caretaker' and type == 'Non-Local' %}
         <tr>
@@ -48,15 +65,30 @@
             <label for="accept">Accepted</label>
             <input type="radio" name="parent_consent" id="deny" value="Denied" onclick="EnableDisableButton()">
             <label for="deny">Denied</label>
-
           </td>
         </tr>     
         {% endif %}
         {% if official == 'Warden' %}
         <tr>
+          {% if outing.permission == 'Processing' %}
           <th>Remark by Caretaker</th>
           <td>{{ outing.remark_by_caretaker }}</td>
+          {% else %}
+          <th>Remark by Caretaker</th>
+          <td>{{ extendOuting.remark_by_caretaker }}</td>
+          {% endif %}
         </tr>
+        {% if outing.type == 'Non-Local' %}
+        <tr>
+          <th>Mess Rebate</th>
+          <td>
+            <input type="radio" name="mess_rebate" id="accept" value="Enabled" required>
+            <label for="accept">Enable</label>
+            <input type="radio" name="mess_rebate" id="deny" value="Disabled">
+            <label for="deny">Disable</label>
+          </td>
+        </tr>
+        {% endif %}
         <tr>
         {% endif %}
           <th>Remarks</th>

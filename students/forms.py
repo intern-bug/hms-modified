@@ -28,13 +28,13 @@ class OutingForm(forms.ModelForm):
         type = cleaned_data.get('type')
         user = User.objects.get(email=self.request.user)
         student = Student.objects.get(user_id=user.id)
-        outings = Outing.objects.filter(~Q(permission='Revoked'),student_id=student.id)
+        outings = Outing.objects.filter(~Q(permission__in=['Revoked', 'Rejected']),student_id=student.id).exclude(status='Closed')
         if from_date and to_date and (from_date >= to_date):
             raise forms.ValidationError("To Date and Time should be later than From Date and Time")
         if type == 'Local' and from_date and to_date and from_date.date() != to_date.date():
             raise forms.ValidationError("From date and To date should be same for local outing")
         for out in outings:
-            if from_date and to_date and out.fromDate <= from_date <= out.toDate:
+            if self.instance!=None and out.id != self.instance.id and from_date and to_date and out.fromDate <= from_date <= out.toDate:
                 raise forms.ValidationError("You already have an outing request in process for the same time period")    
         return cleaned_data
 
@@ -78,24 +78,29 @@ class OutingExtendForm(forms.ModelForm):
         if self.outing.status == 'In Outing':
             self.fields['fromDate'].disabled = True
         self.fields['toDate'].initial = self.outing.toDate
-        self.fields['place_of_visit'] = forms.CharField(label='Place of Visit', initial=self.outing.place_of_visit, disabled=True)
-        self.fields['purpose'] = forms.CharField(label='Purpose', initial=self.outing.purpose, disabled=True)
+        self.fields['place_of_visit'] = forms.CharField(label='Place of Visit', initial=self.outing.place_of_visit)
+        self.fields['purpose'] = forms.CharField(label='Purpose', initial=self.outing.purpose)
         fields_keyOrder = ['type', 'fromDate', 'toDate', 'place_of_visit', 'purpose']
         self.fields = {key:self.fields[key] for key in fields_keyOrder}
     
     class Meta:
         model = ExtendOuting
-        fields = ['fromDate', 'toDate']
+        fields = ['fromDate', 'toDate', 'place_of_visit', 'purpose']
 
     def clean(self):
         cleaned_data = super().clean()
         from_date = cleaned_data.get('fromDate')
         to_date = cleaned_data.get('toDate')
+        place_of_visit = cleaned_data.get('place_of_visit')
+        purpose = cleaned_data.get('purpose')
         user = User.objects.get(email=self.request.user)
         student = Student.objects.get(user_id=user.id)
-        outings = Outing.objects.filter(~Q(permission='Revoked'),student_id=student.id)
+        outings = Outing.objects.filter(~Q(permission__in=['Revoked', 'Rejected']),student_id=student.id).exclude(status='Closed')
+
         if from_date and to_date and (from_date >= to_date):
             raise forms.ValidationError("To Date and Time should be later than From Date and Time")
+        if from_date == self.outing.fromDate and to_date == self.outing.toDate and place_of_visit==self.outing.place_of_visit and purpose==self.outing.purpose:
+            raise forms.ValidationError("There should be a change in timings to apply for outing extension.") 
         for out in outings:
             if self.outing != None and self.outing.id != out.id:
                 if from_date and to_date and out.fromDate <= from_date <= out.toDate:

@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import user_passes_test
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.detail import DetailView
 from institute.models import Block, Student, Official
+from security.models import OutingInOutTimes
 from students.models import Attendance, RoomDetail, Outing, ExtendOuting
 from django.contrib import messages
 from django.http.response import Http404, HttpResponseForbidden
@@ -170,38 +171,82 @@ def outing_detail(request, pk):
     user = request.user
     official = user.official
     type = outing.type
-    extend_outing_obj = None
+    outingExtendObj = None
     if outing.permission=='Pending Extension' or outing.permission=='Processing Extension':
-        extend_outing_obj = ExtendOuting.objects.filter(outing=outing).order_by('-id')
-        extend_outing_obj = extend_outing_obj[0]
+        outingExtendObj = ExtendOuting.objects.filter(outing=outing).order_by('-id')
+        outingExtendObj = outingExtendObj[0]
+    # mess_rebate = 0
+    # if ((outing.toDate-outing.fromDate).days) >= 5 or (outingExtendObj and (((outingExtendObj.toDate-outingExtendObj.fromDate).days) >= 5)):
+    #     mess_rebate = 1
     if(request.method=='POST'):
         user = request.user
         if(user.official.is_warden()):
             if(request.POST.get('textarea')):
-                outing.remark_by_warden = request.POST.get('textarea')
+                if outing.permission == 'Processing':
+                    outing.remark_by_warden = request.POST.get('textarea')
+                elif outing.permission == 'Processing Extension':
+                    outingExtendObj.remark_by_warden = request.POST.get('textarea')
+                    outingExtendObj.save()
+
             if request.POST.get('permission'):
-                outing.permission = request.POST.get('permission')
                 if request.POST.get('permission') == 'Granted':
+                    if outing.type != 'Local' and request.POST.get('permission') == 'Granted':
+                        if outing.permission == 'Processing':
+                            outing.permission = 'Granted'
+                        elif outing.permission == 'Processing Extension':
+                            outing.permission = 'Extension Granted'
+                            outing.fromDate = outingExtendObj.fromDate
+                            outing.toDate = outingExtendObj.toDate
+                            outing.place_of_visit = outingExtendObj.place_of_visit
+                            outing.purpose = outingExtendObj.purpose
+                            outing.remark_by_caretaker = outingExtendObj.remark_by_caretaker
+                            outing.remark_by_warden = outingExtendObj.remark_by_warden
+                            outingExtendObj.permission = 'Extension Granted'
+                            outingExtendObj.save()
                     if outing.status != 'In Outing':
                         uid = uuid.uuid4()
                         outing.uuid = uid
+                elif request.POST.get('permission') == 'Rejected':
+                    if outing.type != 'Local' and request.POST.get('permission') == 'Rejected':
+                        if outing.permission == 'Processing':
+                            outing.permission = 'Rejected'
+                        elif outing.permission == 'Processing Extension':
+                            outingExtendObj.permission = 'Extension Rejected'
+                            outingExtendObj.save()
+                            outing.permission = 'Extension Rejected'
+            
+            if request.POST.get('mess_rebate'):
+                outing.mess_rebate = request.POST.get('mess_rebate')
         elif(user.official.is_caretaker()):
             if(request.POST.get('textarea')):
-                outing.remark_by_caretaker = request.POST.get('textarea')
+                if outing.permission == 'Pending':
+                    outing.remark_by_caretaker = request.POST.get('textarea')
+                elif outing.permission == 'Pending Extension':
+                    outingExtendObj.remark_by_caretaker = request.POST.get('textarea')
+                    outingExtendObj.save()
             if(request.POST.get('parent_consent')):
-                outing.parent_consent = request.POST.get('parent_consent')
+                if outing.permission == 'Pending':
+                    outing.parent_consent = request.POST.get('parent_consent')
+                elif outing.permission == 'Pending Extension':
+                    outingExtendObj.parent_consent = request.POST.get('parent_consent')
+                    outingExtendObj.save()
             if request.POST.get('permission'):
                 if outing.type != 'Local' and request.POST.get('permission') == 'Granted':
                     if outing.permission == 'Pending':
                         outing.permission = 'Processing'
                     elif outing.permission == 'Pending Extension':
+                        outingExtendObj.permission = 'Processing Extension'
+                        outingExtendObj.save()
                         outing.permission = 'Processing Extension'
                 elif outing.type != 'Local' and request.POST.get('permission') == 'Rejected':
                     if outing.permission == 'Pending':
                         outing.permission = 'Rejected'
                     elif outing.permission == 'Pending Extension':
-                        outing.permission = 'Rejected Extension'
+                        outingExtendObj.permission = 'Extension Rejected'
+                        outingExtendObj.save()
+                        outing.permission = 'Extension Rejected'
                 if outing.type == 'Local' and request.POST.get('permission') == 'Granted':
+                    outing.permission = 'Granted'
                     uid = uuid.uuid4()
                     outing.uuid = uid
                 elif outing.type == 'Local' and request.POST.get('permission') == 'Rejected':
@@ -209,7 +254,8 @@ def outing_detail(request, pk):
         outing.save()
         messages.success(request, f'Outing successfully {outing.permission.lower()} to {outing.student.name}')
         return redirect('officials:grant_outing')
-    return render(request, 'officials/outing_show.html', {'type':type, 'official':official.designation,'outing': outing, 'extendOuting':extend_outing_obj})
+    return render(request, 'officials/outing_show.html', {'type':type, 'official':official.designation, \
+        'outing': outing, 'extendOuting':outingExtendObj})
 
 
 @user_passes_test(chief_warden_check)

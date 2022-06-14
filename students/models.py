@@ -103,11 +103,14 @@ class Outing(models.Model):
         ('Rejected', 'Rejected'),
         ('Revoked', 'Revoked'),
         ('Pending Extension', 'Pending Extension'),
-        ('Processing Extension', 'Processing Extension')
+        ('Processing Extension', 'Processing Extension'),
+        ('Extension Granted', 'Extension Granted'),
+        ('Extension Rejected', 'Extension Rejected')
     )
     STATUS_OPTIONS=(('In Outing', 'In Outing'),('Closed', 'Closed'))
     OUTING_OPTIONS = (('Local','Local'),('Non-Local', 'Non-Local'),('Emergency', 'Emergency'))
     PARENT_CONSENT= (('Accepted','Accepted'),('Denied','Denied'))
+    MESS_REBATE_OPTIONS = (('Enabled', 'Enabled'), ('Disabled', 'Disabled'))
 
     student = models.ForeignKey('institute.Student', on_delete=models.CASCADE, null=False)
     fromDate = models.DateTimeField(null=False)
@@ -120,6 +123,7 @@ class Outing(models.Model):
     parent_consent = models.CharField(max_length=8, choices=PARENT_CONSENT, default='NA', null=False)
     place_of_visit = models.CharField(max_length=255,null=False)
     status = models.CharField(max_length=9, choices=STATUS_OPTIONS, default='NA', null=False)
+    mess_rebate = models.CharField(max_length=9, choices=MESS_REBATE_OPTIONS, default='Disabled', null=False)
     uuid = models.UUIDField(unique=True, null=True)
 
 
@@ -143,11 +147,11 @@ class Outing(models.Model):
         else:
             return False
 
-    def is_editable(self):
-        return self.is_upcoming() and self.permission == 'Pending'
+    # def is_editable(self):
+    #     return self.is_upcoming() and self.permission == 'Pending'
 
     def is_extendable(self):
-        return self.type != 'Local' and self.permission == 'Granted' and self.is_upcoming()
+        return self.type != 'Local' and (self.permission == 'Granted' or self.permission=='Extension Granted' or self.permission=='Extension Rejected') and self.is_upcoming()
 
     def can_cancel(self):
         return self.is_upcoming() and not self.in_outing()
@@ -157,12 +161,12 @@ class Outing(models.Model):
 
     def is_qr_viewable(self):
         not_viewable = ['Pending', 'Processing', 'Rejected', 'Revoked']
-        viewable = ['Granted', 'Pending Extension', 'Processing Extension']
+        viewable = ['Granted', 'Pending Extension', 'Processing Extension', 'Extension Granted']
         if self.in_outing():
             return True
         elif self.status == 'Closed':
             return False
-        elif self.permission in viewable and self.fromDate.date() == timezone.now().date():
+        elif self.permission in viewable and ((self.fromDate - timezone.now()).total_seconds()/3600) < 24.0:
             return True
         elif self.permission in not_viewable:
             return False
@@ -174,10 +178,22 @@ class Outing(models.Model):
         managed = True
 
 class ExtendOuting(models.Model):
+    PERMIT_OPTIONS = (
+        ('Pending Extension', 'Pending Extension'),
+        ('Processing Extension', 'Processing Extension'),
+        ('Extension Granted', 'Extension Granted'),
+        ('Extension Rejected', 'Extension Rejected')
+    )
+    PARENT_CONSENT= (('Accepted','Accepted'),('Denied','Denied'))
     outing = models.ForeignKey('students.Outing', on_delete=models.CASCADE, null=False)
     fromDate = models.DateTimeField(null=False)
     toDate = models.DateTimeField(null=False)
-
+    remark_by_caretaker = models.CharField(max_length=255, null=True)
+    remark_by_warden = models.CharField(max_length=255, null=True)
+    purpose = models.CharField(max_length=255, null=False)
+    parent_consent = models.CharField(max_length=8, choices=PARENT_CONSENT, default='NA', null=False)
+    permission = models.CharField(max_length=20, choices=PERMIT_OPTIONS, default='Pending Extension', null=False)
+    place_of_visit = models.CharField(max_length=255,null=False)
     class Meta:
         managed = True 
 
