@@ -9,6 +9,7 @@ from django.views.generic import CreateView, UpdateView, ListView
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.urls import reverse_lazy
 from .forms import OutingExtendForm, OutingForm
+from django.db.models import F
 
 
 class StudentTestMixin(UserPassesTestMixin):
@@ -38,7 +39,9 @@ class OutingListView(StudentTestMixin, ListView):
     context_object_name = 'outing_list'
 
     def get_queryset(self):
-        return self.request.user.student.outing_set.all()
+        outing_set = Outing.objects.filter(student=self.request.user.student).annotate(outTime=F('outinginouttimes__outTime'), \
+            inTime=F('outinginouttimes__inTime'))
+        return outing_set
 
 
 class OutingCreateView(StudentTestMixin, SuccessMessageMixin, CreateView):
@@ -60,33 +63,33 @@ class OutingCreateView(StudentTestMixin, SuccessMessageMixin, CreateView):
         form.instance.student = self.request.user.student
         return super().form_valid(form)
 
-class OutingUpdateView(StudentTestMixin, SuccessMessageMixin, UpdateView):
-    model = Outing
-    form_class = OutingForm
-    template_name = 'students/outing_form.html'
-    success_url = reverse_lazy('students:outing_list')
-    success_message = 'Outing application successfully updated!'
+# class OutingUpdateView(StudentTestMixin, SuccessMessageMixin, UpdateView):
+#     model = Outing
+#     form_class = OutingForm
+#     template_name = 'students/outing_form.html'
+#     success_url = reverse_lazy('students:outing_list')
+#     success_message = 'Outing application successfully updated!'
 
-    def get(self, request, *args, **kwargs):
-        response =  super().get(request, *args, **kwargs)
-        if not (self.object.student == self.request.user.student and self.object.is_extendable()): 
-            raise Http404('Cannot edit the outing application.')
-        return response
+#     def get(self, request, *args, **kwargs):
+#         response =  super().get(request, *args, **kwargs)
+#         if not (self.object.student == self.request.user.student and self.object.is_editable()): 
+#             raise Http404('Cannot edit the outing application.')
+#         return response
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        if self.object.is_editable():
-            context['form_title'] = 'Edit Outing Application'
-        return context
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         if self.object.is_editable():
+#             context['form_title'] = 'Edit Outing Application'
+#         return context
     
-    def get_form_kwargs(self):
-        kwargs = super(OutingUpdateView, self).get_form_kwargs()
-        kwargs['request'] = self.request
-        return kwargs
+#     def get_form_kwargs(self):
+#         kwargs = super(OutingUpdateView, self).get_form_kwargs()
+#         kwargs['request'] = self.request
+#         return kwargs
 
-    def form_valid(self, form):
-        form.instance.student = self.request.user.student
-        return super().form_valid(form)
+#     def form_valid(self, form):
+#         form.instance.student = self.request.user.student
+#         return super().form_valid(form)
 
 
 @user_passes_test(student_check)
