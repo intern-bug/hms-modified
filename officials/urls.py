@@ -34,7 +34,10 @@ urlpatterns = [
     path('delete-staff/<int:pk>', views.WorkerDeleteView.as_view(), name='delete_worker'),
 
     path('complaint-list/', views.ComplaintListView.as_view(), name="complaint_list"),
-    path('medical-issue-list/', views.MedicalIssueListView.as_view(), name="medical_issue_list")
+    path('medical-issue-list/', views.MedicalIssueListView.as_view(), name="medical_issue_list"),
+    path('outing-log', views.outing_log, name='outing-log'),
+    path('generate-outing-sheet/', views.get_outing_sheet, name='generate_outing_sheet'),
+
 
     # path('water-cans/', views.watercan, name='watercan'),
 ]

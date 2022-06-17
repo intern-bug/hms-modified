@@ -1,0 +1,176 @@
+{% extends 'officials/base_officials.html' %}
+
+{% block title %}Outing Log{% endblock title %}
+
+{% block content %}
+<h1 class="text-center">OutingLog</h1>
+<hr>
+<form method="GET">
+  <div class="row justify-content-center mt-4">
+    <div class="col-md-4 d-flex justify-content-center">
+      <div class="form-group">
+        <label for="by_date" class="">By Date:</label>
+      <input type="date" name="by_date" id="by_date" value="{{ date }}">
+      </div>
+    </div>
+    <div class="col-md-4 d-flex justify-content-center">
+       <div class="form-group">
+        <label for="by_month" class="">By Month:</label>
+      <input type="month" name="by_month" id="by_month" value="{{ month }}" >
+      </div>
+    </div>
+    <div class="col-md-4 d-flex justify-content-center">
+        <div class="form-group">
+         <label for="by_year" class="">By Year:</label>
+       <input type="number" min="2015" max="" step="1" name="by_year" id="by_year" value="{{ year }}">
+       </div>
+    </div>
+
+    <div class="col-md-4 d-flex justify-content-center">
+      <div class="form-group">
+        <label for="by_regd_no" class="">By Regd. No:</label>
+        {% if regno %} 
+        <input type="text" name="by_regd_no" id="by_regd_no" value="{{ regno }}">
+        {% else %}
+        <input type="text" name="by_regd_no" id="by_regd_no" value="">
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  <div class="row justify-content-center mb-5">
+    <div class="col-12 col-md-4 text-center">
+      <input type="submit" class="btn btn-primary" />
+      <a data-toggle="collapse" href="#downloadCollapse" class="btn btn-primary">Download Outing Log</a>
+    </div>
+  </div>
+</form>
+
+<div class="col-12 collapse" id="downloadCollapse">
+  <div class="row justify-content-center justify-content-md-around">
+    <div class="col-12 col-md-3 mt-3 text-center">
+      <h5 class="text-center">Download Outing Log</h5>
+    </div>
+    <div class="col-12 col-md-6 mt-3 text-center">
+      <form action="{% url 'security:generate_outing_sheet' %}" method="GET">
+        <div class="col-md-4 d-flex justify-content-center">
+          <div class="form-group">
+            <label for="dwnld_by_date" class="">By Date:</label>
+            <input type="date" name="dwnld_by_date" id="dwnld_by_date">
+          </div>
+        </div>
+        <div class="col-md-4 d-flex justify-content-center">
+          <div class="form-group">
+           <label for="dwnld_by_month" class="">By Month:</label>
+         <input type="month" name="dwnld_by_month" id="dwnld_by_month" >
+         </div>
+       </div>
+       <div class="col-md-4 d-flex justify-content-center">
+          <div class="form-group">
+            <label for="dwnld_by_year" class="">By Year:</label>
+            <br>
+            <input type="number" min="2015" max="" step="1" name="dwnld_by_year" id="dwnld_by_year">
+            <br>
+            <br>
+            <button type="submit" class="btn btn-primary">Download</button>
+          </div>
+       </div>
+      <!-- </form> -->
+    </div>
+    <div class="col-12 col-md-2 mt-3 text-center">
+      <!-- <form action="{% url 'security:generate_outing_sheet' %}" method="GET"> -->
+        <input type="hidden" name="dwnld_by_all" value="all">
+        <input type="hidden" name="block_id" value="all">
+        <button type="submit" id="dwnld_by_all" class="btn btn-primary">All Months</a>
+      </form>
+    </div>
+  </div> 
+</div>
+<hr>
+<div class="row">
+  {% if student %}
+  <div class="col-12">
+    <h3 class="text-center">{{ student.name }}'s Record</h3>
+    <!-- {% include 'students/dates_partial.html' %} -->
+  {% endif %}
+    
+  {% if outing_list %}
+  <div class="col-md">
+    <h3 class="text-center">Outing log</h3>
+    <span class="ml-4">Date: {{ date }}</span>
+    <div class="overflow-auto p-3">
+      <table class="table table-hover table-muted table-striped attendance-table">
+        <thead>
+          <tr>
+            <th>Roll No.</th>
+            <th>Name</th>
+            <th>Block</th>
+            <th>Room</th>
+            <th>Out Time</th>
+            <th>In Time</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for outing in outing_list %}
+          <tr>
+            <td>{{ outing.outing.student.regd_no }}</td>
+            <td>{{ outing.outing.student.name }}</td>
+            <td>{{ outing.outing.student.roomdetail.block.short_name }}</td>
+            <td>{{ outing.outing.student.roomdetail.room }}</td>
+            <td>{{ outing.outTime }}</td>
+            <td>{{ outing.inTime }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock content %}
+{% block script_links %}
+
+<script>
+    var year = new Date().getFullYear();
+    document.getElementById("by_year").max = year;
+    function updateCalendars(){
+      if (this.id === 'by_date'){
+        document.getElementById('by_month').value = '';
+        document.getElementById('by_year').value = '';
+      }
+      else if (this.id === 'by_month'){
+        document.getElementById('by_date').value = '';
+        document.getElementById('by_year').value = '';
+      }
+      else if (this.id === 'by_year'){
+        document.getElementById('by_date').value = '';
+        document.getElementById('by_month').value = '';
+      }
+    }
+    document.getElementById('by_date').addEventListener('click', updateCalendars);
+    document.getElementById('by_month').addEventListener('click', updateCalendars);
+    document.getElementById('by_year').addEventListener('click', updateCalendars);
+    document.getElementById("dwnld_by_year").max = year;
+    function updateDownloadCalendars(){
+      if (this.id === 'dwnld_by_date'){
+        document.getElementById('dwnld_by_month').value = '';
+        document.getElementById('dwnld_by_year').value = '';
+      }
+      else if (this.id === 'dwnld_by_month'){
+        document.getElementById('dwnld_by_date').value = '';
+        document.getElementById('dwnld_by_year').value = '';
+      }
+      else if (this.id === 'dwnld_by_year'){
+        document.getElementById('dwnld_by_date').value = '';
+        document.getElementById('dwnld_by_month').value = '';
+      }
+    }
+    document.getElementById('dwnld_by_date').addEventListener('click', updateDownloadCalendars);
+    document.getElementById('dwnld_by_month').addEventListener('click', updateDownloadCalendars);
+    document.getElementById('dwnld_by_year').addEventListener('click', updateDownloadCalendars);
+    document.getElementById('dwnls_by_all').addEventListener('click', function(){
+        document.getElementById('dwnld_by_date').value = '';
+        document.getElementById('dwnld_by_month').value = '';
+        document.getElementById('dwnld_by_year').value = '';
+    });
+</script>
+{% endblock script_links %}

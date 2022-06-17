@@ -60,7 +60,7 @@ def attendance(request):
     user = request.user
     official = user.official
     block = official.block
-    attendance_list  = Attendance.objects.filter(student__in=block.roomdetail_set.all().values_list('student', flat=True))
+    attendance_list  = Attendance.objects.filter(student__in=block.students())
     date = None
 
     if request.method == 'POST' and request.POST.get('submit'):
@@ -103,7 +103,8 @@ def attendance_workers(request):
             if item.present_dates and  date in set(item.present_dates.split(',')): item.present_on_date = True
             if item.absent_dates and date in set(item.absent_dates.split(',')): item.absent_on_date = True
 
-    return render(request, 'officials/attendance_workers.html', {'official': official, 'attendance_list': attendance_list, 'date': date})
+    return render(request, 'officials/attendance_workers.html', {'official': official, 'attendance_list': attendance_list, \
+        'date': date})
 
 
 @user_passes_test(official_check)
@@ -119,7 +120,7 @@ def attendance_log(request):
     if official.is_chief():
         attendance_list = Attendance.objects.all()
     else:
-        attendance_list = Attendance.objects.filter(student__in = official.block.roomdetail_set.all().values_list('student', flat=True))
+        attendance_list = Attendance.objects.filter(student__in = official.block.students())
 
     if request.GET.get('by_regd_no'):
         try:
@@ -136,7 +137,9 @@ def attendance_log(request):
         if present_attendance.count() == 0 and absent_attendance.count() == 0:
             messages.error(request, "No Attendance Records Found!")
 
-    return render(request, 'officials/attendance_log.html', {'official':official, 'student': student, 'date': request.GET.get('by_date'),'present_attendance': present_attendance, 'absent_attendance': absent_attendance, 'present_dates': present_dates, 'absent_dates': absent_dates})
+    return render(request, 'officials/attendance_log.html', {'official':official, 'student': student, 'date': request.GET.get('by_date'),\
+        'present_attendance': present_attendance, 'absent_attendance': absent_attendance, \
+            'present_dates': present_dates, 'absent_dates': absent_dates})
 
 
 @user_passes_test(official_check)
@@ -309,6 +312,94 @@ def blockSearch(request):
         return render(request, 'officials/block_layout.html',{'blocks':blocks, 'current_block': block, 'current_block_json': block_json})
 
     return render(request, 'officials/block_layout.html',{'blocks':blocks})
+
+@user_passes_test(official_check)
+def outing_log(request):
+    user = request.user
+    official = user.official
+    student = None
+    outing_list=None
+    if official.is_chief():
+        valid_outing_list = OutingInOutTimes.objects.all()
+    else:
+        valid_outing_list = OutingInOutTimes.objects.filter(outing__student__in = official.block.students())
+    if request.method == 'GET':
+        student_outing_list = None
+        if request.GET.get('by_regd_no'):
+            try:
+                if not official.is_chief():
+                    student = official.block.students()
+                else:
+                    student = Student.objects.all()
+                student = student.get(regd_no=request.GET.get('by_regd_no'))
+                student_outing_list = valid_outing_list.filter(outing__student=student)
+            except Student.DoesNotExist:
+                messages.error(request, "Invalid Student Registration No.")
+                return redirect('officials:outing-log')
+            
+        
+        calendar_outing_list = None
+        if request.GET.get('by_date'):
+            outDate_outing_list = valid_outing_list.filter(outTime__date=request.GET.get('by_date'))
+            inDate_outing_list = valid_outing_list.filter(inTime__date=request.GET.get('by_date'))
+            calendar_outing_list = (outDate_outing_list|inDate_outing_list)
+        elif request.GET.get('by_month'):
+            year, month = request.GET.get('by_month').split('-')
+            outDate_outing_list = valid_outing_list.filter(outTime__year=year).filter(outTime__month=month)
+            inDate_outing_list = valid_outing_list.filter(inTime__year=year).filter(inTime__month=month)
+            calendar_outing_list = (outDate_outing_list|inDate_outing_list)
+        elif request.GET.get('by_year'):
+            outDate_outing_list = valid_outing_list.filter(outTime__year=request.GET.get('by_year'))
+            inDate_outing_list = valid_outing_list.filter(inTime__year=request.GET.get('by_year'))
+            calendar_outing_list = (outDate_outing_list|inDate_outing_list)
+        
+        if request.GET.get('by_regd_no') and (request.GET.get('by_date') or request.GET.get('by_month') or request.GET.get('by_year')):
+            outing_list = student_outing_list & calendar_outing_list
+        elif request.GET.get('by_regd_no'):
+            outing_list = student_outing_list
+        elif (request.GET.get('by_date') or request.GET.get('by_month') or request.GET.get('by_year')):
+            outing_list = calendar_outing_list
+
+            
+        if outing_list!=None and len(outing_list) == 0:
+            messages.error(request, 'No Outing records found.')
+            return redirect('officials:outing-log')
+
+
+    
+    return render(request, 'officials/outing_log.html', {'outing_list':outing_list, 'date':request.GET.get('by_date'), \
+        'month':request.GET.get('by_month'), 'year':request.GET.get('by_year'), 'regno':request.GET.get('by_regd_no')})
+
+@user_passes_test(official_check)
+def get_outing_sheet(request):
+    from .utils import OutingBookGenerator
+    from django.utils import timezone
+    from django.http import HttpResponse
+    user = request.user
+    official = user.official
+    if request.GET.get('dwnld_by_date'):
+        year_month_day = request.GET.get("dwnld_by_date")
+    elif request.GET.get('dwnld_by_month'):
+        year_month_day = request.GET.get("dwnld_by_month") + '-0'
+    elif request.GET.get('dwnld_by_year'):
+        year_month_day = request.GET.get('dwnld_by_year') + '-0-0'
+    elif request.GET.get('dwnld_by_all'):
+        year_month_day = 'all'
+    if official.is_chief():
+        block_id = 'all'
+    else:
+        block_id = official.block.id
+    print(year_month_day)
+
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',)
+    response['Content-Disposition'] = 'attachment; filename=Outing({date}).xlsx'.format(date=year_month_day+" "+str(timezone.now().strftime('%d-%m-%Y')),)
+    
+    BookGenerator = OutingBookGenerator(block_id, year_month_day)
+    workbook = BookGenerator.generate_workbook()
+    workbook.save(response)
+
+    return response
+
 
 # @user_passes_test(chief_warden_check)
 # @csrf_exempt

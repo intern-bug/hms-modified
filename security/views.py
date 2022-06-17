@@ -2,6 +2,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
 from students.models import Outing
 from .models import OutingInOutTimes 
+from institute.models import Student
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib import messages
@@ -52,6 +53,9 @@ def outing_action(request, pk):
             messages.success(request, 'Outing Rejected successfully')
         elif action == 'Outing Closed':
             outingInOutObj = get_object_or_404(OutingInOutTimes, outing=pk)
+            student = get_object_or_404(Student, id=outingInOutObj.outing.student.id)
+            student.rating = student.calculate_rating(outingInOutObj=outingInOutObj)
+            student.save()
             outingInOutObj.inTime = timezone.now()
             outingInOutObj.save()
             outing_obj = get_object_or_404(Outing, id=pk)
@@ -70,16 +74,76 @@ def outing_action(request, pk):
         return render(request, 'security/outing_detail.html', {'outing':outing_obj, 'outingInOutTimes':outingInOutTimes_obj})
 
 @user_passes_test(security_check)
+def outing_log(request):
+    user = request.user
+    # official = user.official
+    student = None
+    outing_list=None
+    # if official.is_chief():
+    #     outing_list = OutingInOutTimes.objects.all()
+    # else:
+    #     outing_list = OutingInOutTimes.objects.filter(outing__student__in = official.block.students())
+    if request.method == 'GET':
+        student_outing_list = None
+        if request.GET.get('by_regd_no'):
+            try:
+                student = Student.objects.get(regd_no=request.GET.get('by_regd_no'))
+            except Student.DoesNotExist:
+                messages.error(request, "Invalid Student Registration No.")
+            student_outing_list = OutingInOutTimes.objects.filter(outing__student=student)
+            
+        
+        calendar_outing_list = None
+        if request.GET.get('by_date'):
+            outDate_outing_list = OutingInOutTimes.objects.filter(outTime__date=request.GET.get('by_date'))
+            inDate_outing_list = OutingInOutTimes.objects.filter(inTime__date=request.GET.get('by_date'))
+            calendar_outing_list = (outDate_outing_list|inDate_outing_list)
+        elif request.GET.get('by_month'):
+            year, month = request.GET.get('by_month').split('-')
+            outDate_outing_list = OutingInOutTimes.objects.filter(outTime__year=year).filter(outTime__month=month)
+            inDate_outing_list = OutingInOutTimes.objects.filter(inTime__year=year).filter(inTime__month=month)
+            calendar_outing_list = (outDate_outing_list|inDate_outing_list)
+        elif request.GET.get('by_year'):
+            outDate_outing_list = OutingInOutTimes.objects.filter(outTime__year=request.GET.get('by_year'))
+            inDate_outing_list = OutingInOutTimes.objects.filter(inTime__year=request.GET.get('by_year'))
+            calendar_outing_list = (outDate_outing_list|inDate_outing_list)
+        
+        if request.GET.get('by_regd_no') and (request.GET.get('by_date') or request.GET.get('by_month') or request.GET.get('by_year')):
+            print(student_outing_list, calendar_outing_list)
+            outing_list = student_outing_list & calendar_outing_list
+        elif request.GET.get('by_regd_no'):
+            outing_list = student_outing_list
+        elif (request.GET.get('by_date') or request.GET.get('by_month') or request.GET.get('by_year')):
+            outing_list = calendar_outing_list
+
+            
+        if outing_list!=None and len(outing_list) == 0:
+            messages.error(request, 'No Outing records found.')
+            return redirect('security:outing-log')
+
+
+    
+    return render(request, 'security/outing_log.html', {'outing_list':outing_list, 'date':request.GET.get('by_date'), \
+        'month':request.GET.get('by_month'), 'year':request.GET.get('by_year'), 'regno':request.GET.get('by_regd_no')})
+
+@user_passes_test(security_check)
 def get_outing_sheet(request):
     from .utils import OutingBookGenerator
     from django.utils import timezone
     from django.http import HttpResponse
     
-    year_month_day = request.GET.get("year_month_day")
+    if request.GET.get('dwnld_by_date'):
+        year_month_day = request.GET.get("dwnld_by_date")
+    elif request.GET.get('dwnld_by_month'):
+        year_month_day = request.GET.get("dwnld_by_month") + '-0'
+    elif request.GET.get('dwnld_by_year'):
+        year_month_day = request.GET.get('dwnld_by_year') + '-0-0'
+    elif request.GET.get('dwnld_by_all'):
+        year_month_day = 'all'
     block_id = request.GET.get("block_id")
 
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',)
-    response['Content-Disposition'] = 'attachment; filename=Outing({date}).xlsx'.format(date=timezone.now().strftime('%d-%m-%Y'),)
+    response['Content-Disposition'] = 'attachment; filename=Outing({date}).xlsx'.format(date=year_month_day+" "+str(timezone.now().strftime('%d-%m-%Y')),)
     
     BookGenerator = OutingBookGenerator(block_id, year_month_day)
     workbook = BookGenerator.generate_workbook()
