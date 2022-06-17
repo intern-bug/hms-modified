@@ -13,4 +13,5 @@ urlpatterns = [
     path('outing/<int:pk>/cancel', views.cancel_outing, name='outing_cancel'),
     path('attendance_history', views.attendance_history, name='attendance_history'),
     path('outingQRCode/<int:pk>', views.outing_QRCode, name="outing_QRCode"),
+    path('outingDetails/<int:pk>', views.outing_details, name="outing_details"),
 ]

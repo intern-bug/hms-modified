@@ -121,6 +121,10 @@ def outing_QRCode(request, pk):
     outing_obj = get_object_or_404(Outing, id=pk)
     return render(request, 'students/render_qr_code.html', {'outing':outing_obj})
 
+@user_passes_test(student_check)
+def outing_details(request, pk):
+    outing_obj = get_object_or_404(Outing, id=pk)
+    return render(request, 'students/outing_specific.html', {'outing':outing_obj})
 class OutingExtendView(StudentTestMixin, SuccessMessageMixin, CreateView):
     model = ExtendOuting
     form_class = OutingExtendForm
