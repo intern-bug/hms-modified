@@ -1,6 +1,9 @@
 {% extends 'officials/base_officials.html' %}
 {% block title %}Outing{% endblock title %}
-
+{% block style_links %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'officials/outing_show.css' %}">
+{% endblock style_links %}
 {% block content %} 
 <h2 class="text-center">Outing - {{ outing.student.regd_no }}</h2>
 <hr>
@@ -20,6 +23,16 @@
         <tr>
           <th>Mode of outing</th>
           <td>{{outing.type}}</td>
+        </tr>
+        <tr>
+          <th>Rating</th>
+          <td>
+            <div id="rating" class="Stars" style="--rating: {{ outing.student.rating }};" aria-label="Rating of this product is {{ outing.student.rating }} out of 5.">
+              <div id="rating-text">
+                {{outing.student.rating}}   
+              </div>
+            </div>
+          </td>
         </tr>
         <tr>
           <th>Permission</th>

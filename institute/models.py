@@ -6,6 +6,7 @@ from django.core.validators import MinLengthValidator
 from institute.validators import numeric_only, date_no_future
 from institute.constants import FLOOR_OPTIONS
 from students.models import Outing
+from security.models import OutingInOutTimes
 from django.utils import timezone
 
 
@@ -49,6 +50,7 @@ class Student(models.Model):
     address = models.TextField(null=False)
     photo = models.ImageField(null=True, blank=True, upload_to=photo_storage_path)
     is_hosteller = models.BooleanField(null=False, default=True)
+    rating = models.DecimalField(null=False, default=5.0, max_digits=3, decimal_places=2)
 
     def __str__(self):
         return str(self.regd_no)
@@ -60,6 +62,41 @@ class Student(models.Model):
 
     def block(self):
         return self.roomdetail.block
+
+    def calculate_rating(self, outingInOutObj):
+        outingInOutObjs = OutingInOutTimes.objects.filter(outing__student=self).filter(inTime__isnull=False)
+        invalid = int((5-self.rating)*len(outingInOutObjs))
+        if outingInOutObj.outing.type == 'Local':
+            if outingInOutObj.student.gender == 'Male' and outingInOutObj.inTime != None:
+                if (outingInOutObj.inTime.hour*100 + outingInOutObj.inTime.minute) > 2115 :
+                    invalid+=1.5
+                elif ((outingInOutObj.inTime - outingInOutObj.outing.toTime).total_seconds()/60) > 60.0:
+                    invalid+=1
+                elif ((outingInOutObj.inTime - outingInOutObj.outing.toTime).total_seconds()/60) > 15.0:
+                    invalid+=0.5
+            elif outingInOutObj.student.gender == 'Female' and outingInOutObj.inTime != None:
+                if (outingInOutObj.inTime.hour*100 + outingInOutObj.inTime.minute) > 2045 :
+                    invalid+=1.5
+                elif ((outingInOutObj.inTime - outingInOutObj.outing.toTime).total_seconds()/60) > 60.0:
+                    invalid+=1
+                elif ((outingInOutObj.inTime - outingInOutObj.outing.toTime).total_seconds()/60) > 15.0:
+                    invalid+=0.5
+        else:
+            if outingInOutObj.inTime != None and ((outingInOutObj.inTime - outingInOutObj.outing.toDate).total_seconds()/3600) > 24:
+                invalid+=2
+            elif outingInOutObj.inTime != None and ((outingInOutObj.inTime - outingInOutObj.outing.toDate).total_seconds()/3600) > 12:
+                invalid+=1.5
+            elif outingInOutObj.inTime != None and ((outingInOutObj.inTime - outingInOutObj.outing.toDate).total_seconds()/3600) > 6:
+                invalid+=1
+            elif outingInOutObj.inTime != None and ((outingInOutObj.inTime - outingInOutObj.outing.toDate).total_seconds()/3600) > 1.5:
+                invalid+=0.5    
+        if len(outingInOutObjs)!=0:
+            rating = 5-(invalid/(len(outingInOutObjs)+1))
+        elif (len(outingInOutObjs)-invalid) < 0:
+            rating = 0
+        else:
+            rating = 5
+        return rating
 
 
 class Official(models.Model):

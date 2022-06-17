@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404, render, reverse, redirect
 from django.http import Http404, HttpResponse
 from institute.models import Student
+from security.models import OutingInOutTimes
 from students.models import ExtendOuting, Outing
 from complaints.models import Complaint
 from django.contrib.messages.views import SuccessMessageMixin
@@ -28,9 +29,11 @@ def home(request):
     present_dates_count = (student.attendance.present_dates and len(student.attendance.present_dates.split(','))) or 0
     absent_dates_count = (student.attendance.absent_dates and len(student.attendance.absent_dates.split(','))) or 0
     outing_count = len(student.outing_set.all())
+    rating = student.rating
     complaints = Complaint.objects.filter(user = user, status="Registered") | Complaint.objects.filter(user = user, status="Processing")
 
-    return render(request, 'students/home.html', {'student': student, 'present_dates_count':present_dates_count, 'absent_dates_count':absent_dates_count, 'outing_count': outing_count, 'complaints':complaints})
+    return render(request, 'students/home.html', {'student': student, 'present_dates_count':present_dates_count, \
+        'absent_dates_count':absent_dates_count, 'outing_count': outing_count, 'complaints':complaints, 'rating':rating})
 
 
 class OutingListView(StudentTestMixin, ListView):

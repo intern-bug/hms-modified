@@ -4,12 +4,22 @@
 
 {% block style_links %}
 {% load static %}
-<link rel="stylesheet" href="{% static 'officials/home.css' %}">
+<link rel="stylesheet" href="{% static 'students/home.css' %}">
 {% endblock style_links %}
 
 {% block content %}
-<h2 class="text-center">Hello {{student.name}}!</h2>
-
+<div >
+  <h2 class="text-center">Hello {{student.name}}!
+    <div id="rating" class="Stars" style="--rating: {{ rating }};" aria-label="Rating of this product is {{ rating }} out of 5.">   
+      <div id="rating-text">
+        {{ rating }}
+      </div>
+    </div>
+  </h2>
+</div>
+<!-- <h2 class="text-center">Hello {{student.name}}!</h2> -->
+<!-- <div class="Stars" style="--rating: {{ rating }};" aria-label="Rating of this product is {{ rating }} out of 5."></div> -->
+<!-- Rating: <div class="Stars" style="--rating: {{ rating }};" aria-label="Rating of this product is {{ rating }} out of 5."></div> -->
 <div class="row mt-4">
   <div class="col-md">
     <div class="card" id="present">
@@ -50,7 +60,21 @@
       </div>
     </div>
   </div>
+  <!-- <div class="col-md">
+    <div class="card" id="comps">
+      <div class="row">
+        <div class="col-8">
+          <span class="row atttext">Rating</span>
+          <span class="row attnum">{{ rating }}</span>
+        </div>
+        <div class="col-4">
+          <span class="atticon"><i class="fa fa-solid fa-star"></i></span>
+        </div>
+      </div>
+    </div>
+  </div> -->
 </div>
+
 <div class="row mx-md-4 mt-4 justify-content-center">
   <div class="col-md-4 border p-3">
     <h3 class="text-center border-bottom border-secondary pb-3">Your Details</h3>
