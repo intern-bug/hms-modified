@@ -1,3 +1,4 @@
+from django.utils import timezone
 from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.decorators import user_passes_test
@@ -188,10 +189,11 @@ def outing_detail(request, pk):
         if(user.official.is_warden()):
             if(request.POST.get('textarea')):
                 if outing.permission == 'Processing':
-                    outing.remark_by_warden = request.POST.get('textarea')
-                elif outing.permission == 'Processing Extension':
-                    outingExtendObj.remark_by_warden = request.POST.get('textarea')
-                    outingExtendObj.save()
+                    outing.remark_by_warden =request.POST.get('textarea')+" : "+str(timezone.now().strftime('%d-%m-%Y'))
+                elif outing.permission =='Processing Extension':
+                    outing.remark_by_warden = request.POST.get('textarea')+" : "+str(timezone.now().strftime('%d-%m-%Y'))
+                    # outingExtendObj.remark_by_warden = request.POST.get('textarea')
+                    # outingExtendObj.save()
 
             if request.POST.get('permission'):
                 if request.POST.get('permission') == 'Granted':
@@ -204,8 +206,8 @@ def outing_detail(request, pk):
                             outing.toDate = outingExtendObj.toDate
                             outing.place_of_visit = outingExtendObj.place_of_visit
                             outing.purpose = outingExtendObj.purpose
-                            outing.remark_by_caretaker = outingExtendObj.remark_by_caretaker
-                            outing.remark_by_warden = outingExtendObj.remark_by_warden
+                            # outing.remark_by_caretaker = outingExtendObj.remark_by_caretaker
+                            # outing.remark_by_warden = outingExtendObj.remark_by_warden
                             outingExtendObj.permission = 'Extension Granted'
                             outingExtendObj.save()
                     if outing.status != 'In Outing':
@@ -225,9 +227,10 @@ def outing_detail(request, pk):
         elif(user.official.is_caretaker()):
             if(request.POST.get('textarea')):
                 if outing.permission == 'Pending':
-                    outing.remark_by_caretaker = request.POST.get('textarea')
+                    outing.remark_by_caretaker = request.POST.get('textarea')+" : "+str(timezone.now().strftime('%d-%m-%Y'))
                 elif outing.permission == 'Pending Extension':
-                    outingExtendObj.remark_by_caretaker = request.POST.get('textarea')
+                    outing.remark_by_caretaker =request.POST.get('textarea')+" : "+str(timezone.now().strftime('%d-%m-%Y'))
+                    # outingExtendObj.remark_by_caretaker = request.POST.get('textarea')
                     outingExtendObj.save()
             if(request.POST.get('parent_consent')):
                 if outing.permission == 'Pending':

@@ -1,0 +1,44 @@
+{% extends 'officials/base_officials.html' %}
+
+{% block title %}Outing Details{% endblock title %}
+
+{% block content %}
+<h2 class="text-center">Outing Details</h2>
+<hr />
+
+<div class="row mx-md-4 mt-4 justify-content-center">
+  <div class="col-md-6 p-3">
+    <table class="table table-borderless">
+      <tbody>
+        <tr><th>ID</th><td>{{ outing.id }}</td></tr>
+        <tr><th>From</th> <td nowrap>{{ outing.fromDate }}</td></tr>
+        <tr><th>To</th><td nowrap>{{ outing.toDate }}</td></tr>
+        <tr><th>Out Time</th><td nowrap>{{ outing.outTime }}</td></tr>
+        <tr><th>In Time</th><td nowrap>{{ outing.inTime }}</td></tr>
+        <tr><th>Type</th><td>{{ outing.type }}</td></tr>
+        <tr><th>Purpose of Visit</th><td>{{ outing.purpose }}</td></tr>
+        <tr><th>Parent Consent</th><td>{{ outing.parent_consent }}</td></tr>
+        <tr><th>Remark by Caretaker</th><td>{{ outing.remark_by_caretaker }}</td></tr>
+        <tr><th>Remark by Warden</th><td>{{ outing.remark_by_warden }}</td></tr>
+        <tr><th>Permission</th>
+          <td
+          {% if outing.permission == 'Pending' or outing.permission == 'Processing' or outing.permission == 'Pending Extension' or outing.permission == 'Processing Extension' %}
+          class="text-primary" {% endif %} {% if outing.permission == 'Granted' or outing.permission == 'Extension Granted' %} class="text-success" {% endif %}
+          {% if outing.permission == 'Rejected' or outing.permission == 'Revoked' or outing.permission == 'Extension Rejected' %} class="text-danger" {% endif %}>
+          {{ outing.permission }}
+        </td>
+        </tr>
+        <tr><th>Status</th>
+          <td
+          {% if outing.status == 'In Outing' %} class="text-success" {% endif %}
+          {% if outing.status == 'Closed' %} class="text-danger" {% endif %}
+        >
+        {{ outing.status }}</td>
+        <td nowrap>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock content %}

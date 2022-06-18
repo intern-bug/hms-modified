@@ -15,13 +15,7 @@
         <th>ID</th>
         <th>From</th>
         <th>To</th>
-        <th>Out Time</th>
-        <th>In Time</th>
         <th>Type</th>
-        <th>Purpose of Visit</th>
-        <th>Parent Consent</th>
-        <th>Remark by Caretaker</th>
-        <th>Remark by Warden</th>
         <th>Permission</th>
         <th>Status</th>
         <th>Action</th>
@@ -35,13 +29,8 @@
         <td>{{ outing.id }}</td>
         <td nowrap>{{ outing.fromDate }}</td>
         <td nowrap>{{ outing.toDate }}</td>
-        <td nowrap>{{ outing.outTime }}</td>
-        <td nowrap>{{ outing.inTime }}</td>
         <td>{{ outing.type }}</td>
-        <td>{{ outing.purpose }}</td>
-        <td>{{ outing.parent_consent }}</td>
-        <td>{{ outing.remark_by_caretaker }}</td>
-        <td>{{ outing.remark_by_warden }}</td>
+
         <td
           {% if outing.permission == 'Pending' or outing.permission == 'Processing' or outing.permission == 'Pending Extension' or outing.permission == 'Processing Extension' %}
           class="text-primary" {% endif %} {% if outing.permission == 'Granted' or outing.permission == 'Extension Granted' %} class="text-success" {% endif %}
@@ -72,8 +61,13 @@
           </form>
           {% endif %}
         </td>
+        <td>
+          <form action="{% url 'students:outing_details' outing.pk %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-secondary">More</button>{% endif %}
+          </form>
+        </td>
       </tr>
-      {% endif %}
       {% endfor %}
     </tbody>
   </table>
@@ -87,17 +81,9 @@
         <th>ID</th>
         <th>From</th>
         <th>To</th>
-        <th>Out Time</th>
-        <th>In Time</th>
         <th>Type</th>
-        <th>Purpose of Visit</th>
-        <th>Parent Consent</th>
-        <th>Remark by Caretaker</th>
-        <th>Remark by Warden</th>
         <th>Permission</th>
         <th>Status</th>
-        <th>Action</th>
-        <th>Cancel</th>
       </tr>
     </thead>
     <tbody>
@@ -107,13 +93,7 @@
         <td>{{ outing.id }}</td>
         <td nowrap>{{ outing.fromDate }}</td>
         <td nowrap>{{ outing.toDate }}</td>
-        <td nowrap>{{ outing.outTime }}</td>
-        <td nowrap>{{ outing.inTime }}</td>
         <td>{{ outing.type }}</td>
-        <td>{{ outing.purpose }}</td>
-        <td>{{ outing.parent_consent }}</td>
-        <td>{{ outing.remark_by_caretaker }}</td>
-        <td>{{ outing.remark_by_warden }}</td>
         <td
         {% if outing.permission == 'Pending' or outing.permission == 'Processing' or outing.permission == 'Pending Extension' or outing.permission == 'Processing Extension' %}
         class="text-primary" {% endif %} {% if outing.permission == 'Granted' or outing.permission == 'Extension Granted' %} class="text-success" {% endif %}
@@ -126,12 +106,12 @@
         >
         {{ outing.status }}
       </td>
-        <td nowrap>
-          {% if outing.is_editable %}
-          <a href="{% url 'students:outing_edit' outing.id %}" target="_blank" class="btn btn-primary">Edit</a>
-          {% endif %}
-        </td>
+
         <td>
+          <form action="{% url 'students:outing_details' outing.pk %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-secondary">More</button>
+          </form>
         </td>
       </tr>
       {% endif %}

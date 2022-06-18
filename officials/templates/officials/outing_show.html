@@ -88,7 +88,7 @@
           <td>{{ outing.remark_by_caretaker }}</td>
           {% else %}
           <th>Remark by Caretaker</th>
-          <td>{{ extendOuting.remark_by_caretaker }}</td>
+          <td>{{ outing.remark_by_caretaker }}</td>
           {% endif %}
         </tr>
         {% if outing.type == 'Non-Local' %}
@@ -104,10 +104,20 @@
         {% endif %}
         <tr>
         {% endif %}
+
+
+        {% if official == 'Warden' %}
           <th>Remarks</th>
           <td>
-              <input type="text" name="textarea">
+              <textarea class="form-control" name="textarea"rows="5" cols="20">{% if outing.remark_by_warden %} {{ outing.remark_by_warden }}{% else %}Warden Kosam{% endif %}</textarea>
           </td>
+          {% else %}
+          <th>Remarks</th>
+          <td>
+              <textarea class="form-control" name="textarea"rows="5" cols="20">{% if outing.remark_by_caretaker %} {{ outing.remark_by_caretaker }}{% else %}Care Taker kosam{% endif %}</textarea>
+          </td>
+          {% endif %}
+
         </tr>    
    
       </tbody>
