@@ -25,7 +25,7 @@
     <tbody>
       {% for outing in outing_list %}
       {% if outing.is_upcoming %}
-      <tr {% if outing.is_qr_viewable %} data-row-href="{% url 'students:outing_QRCode' outing.pk %}" {% endif %}>
+      <tr >
         <td>{{ outing.id }}</td>
         <td nowrap>{{ outing.fromDate }}</td>
         <td nowrap>{{ outing.toDate }}</td>

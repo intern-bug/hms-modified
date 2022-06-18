@@ -187,9 +187,9 @@ def outing_detail(request, pk):
         if(user.official.is_warden()):
             if(request.POST.get('textarea')):
                 if outing.permission == 'Processing':
-                    outing.remark_by_warden =request.POST.get('textarea')+" : "+str(timezone.now().strftime('%d-%m-%Y'))
+                    outing.remark_by_warden =request.POST.get('textarea')+" : "+str(timezone.localtime().strftime('%d-%m-%Y -  %H:%M:%S'))
                 elif outing.permission =='Processing Extension':
-                    outing.remark_by_warden = request.POST.get('textarea')+" : "+str(timezone.now().strftime('%d-%m-%Y'))
+                    outing.remark_by_warden = request.POST.get('textarea')+" : "+str(timezone.localtime().strftime('%d-%m-%Y -  %H:%M:%S'))
                     # outingExtendObj.remark_by_warden = request.POST.get('textarea')
                     # outingExtendObj.save()
 
@@ -225,9 +225,9 @@ def outing_detail(request, pk):
         elif(user.official.is_caretaker()):
             if(request.POST.get('textarea')):
                 if outing.permission == 'Pending':
-                    outing.remark_by_caretaker = request.POST.get('textarea')+" : "+str(timezone.now().strftime('%d-%m-%Y'))
+                    outing.remark_by_caretaker = request.POST.get('textarea')+" : "+str(timezone.localtime().strftime('%d-%m-%Y -  %H:%M:%S'))
                 elif outing.permission == 'Pending Extension':
-                    outing.remark_by_caretaker =request.POST.get('textarea')+" : "+str(timezone.now().strftime('%d-%m-%Y'))
+                    outing.remark_by_caretaker =request.POST.get('textarea')+" : "+str(timezone.localtime().strftime('%d-%m-%Y -  %H:%M:%S'))
                     # outingExtendObj.remark_by_caretaker = request.POST.get('textarea')
                     outingExtendObj.save()
             if(request.POST.get('parent_consent')):

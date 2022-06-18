@@ -41,4 +41,21 @@
   </div>
 </div>
 
+{% if outing.is_qr_viewable %}
+<div class="text-center">
+  <a href="{% url 'students:outing_QRCode' outing.pk %}">
+      <button class="btn btn-danger" type="button">Show QR</button>
+  </a>
+</div>
+{% endif %}
+<hr />
+<div class="text-center">
+
+</div>
+<hr />
+<div class="text-center">
+  <a href="{% url 'students:outing_list' %}">
+      <button class="btn btn-primary" type="button">Back</button>
+  </a>
+</div>
 {% endblock content %}
