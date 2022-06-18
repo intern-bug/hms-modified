@@ -1,0 +1,63 @@
+{% extends 'officials/base_public_forms.html' %}
+{% block title %}Mess Feedback{% endblock title %}
+{% block style_links %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'mess_feedback/styles.css' %}">
+{% endblock style_links %}
+{% block content %}
+
+<form method="post">
+    {% csrf_token %}
+    <div class="card-body text-capitalize">
+      <div class="row">
+        <div class="col-12">
+            <div id="div_id_date" class="form-group"> 
+                <label for="id_date" class=" requiredField">Date<span class="asteriskField">*</span> </label> 
+                <div> 
+                    <input type="date" name="date" class="dateinput form-control" required id="id_date"> 
+                </div> 
+            </div> 
+            <div id="div_id_type" class="form-group"> 
+                <label for="id_type" class=" requiredField">Type<span class="asteriskField">*</span> </label> 
+                <div> 
+                    <select name="type" class="select form-control" required id="id_type"> 
+                        <option value="" selected>---------</option> 
+                        <option value="Breakfast">Breakfast</option> 
+                        <option value="Lunch">Lunch</option> 
+                        <option value="Snacks">Snacks</option> 
+                        <option value="Dinner">Dinner</option>
+                    </select> 
+                </div> 
+            </div>
+
+            <div id="div_id_rating" class="form-group">
+                <label for="id_rating" class=" requiredField">Rating<span class="asteriskField">*</span> </label> 
+                <div name="id_rating" class="star-rating">
+                    <input type="radio" id="5-stars" name="rating" value="5" />
+                    <label for="5-stars" class="star">&#9733;</label>
+                    <input type="radio" id="4-stars" name="rating" value="4" />
+                    <label for="4-stars" class="star">&#9733;</label>
+                    <input type="radio" id="3-stars" name="rating" value="3" />
+                    <label for="3-stars" class="star">&#9733;</label>
+                    <input type="radio" id="2-stars" name="rating" value="2" />
+                    <label for="2-stars" class="star">&#9733;</label>
+                    <input type="radio" id="1-star" name="rating" value="1" />
+                    <label for="1-star" class="star">&#9733;</label>
+                </div>
+            </div>
+            <div id="div_id_review" class="form-group"> 
+                <label for="id_review" class=" requiredField">Review </label> 
+                <div> 
+                    <textarea name="review" cols="40" rows="4" class="textarea form-control" id="id_review"></textarea> 
+                </div> 
+            </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-footer">
+      <div class="row justify-content-center">
+        <button type="submit" class="btn btn-warning px-4 py-2">Register</button>
+      </div>
+    </div>  
+  </form>
+  {% endblock content %}

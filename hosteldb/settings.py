@@ -50,7 +50,8 @@ INSTALLED_APPS = [
     'workers',
     'security',
     'django_auth',
-    'qr_code'
+    'qr_code',
+    'mess_feedback'
 ]
 
 MIDDLEWARE = [

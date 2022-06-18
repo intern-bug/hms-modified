@@ -3,12 +3,14 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.decorators import user_passes_test
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.detail import DetailView
+from django.db.models import Sum
 from institute.models import Block, Student, Official
 from security.models import OutingInOutTimes
 from students.models import Attendance, RoomDetail, Outing, ExtendOuting
 from django.contrib import messages
 from django.http.response import Http404, HttpResponseForbidden
 from complaints.models import Complaint
+from mess_feedback.models import MessFeedback
 from workers.models import Worker, Attendance as AttendanceWorker
 import uuid
 
@@ -66,7 +68,7 @@ def attendance(request):
     if request.method == 'POST' and request.POST.get('submit'):
         date = request.POST.get('date')
         for attendance in attendance_list:
-            if request.POST.get(str(attendance.id)): attendance.mark_attendance(date, request.POST.get(str(attendance.id)))
+            if request.POST.get(str(attendance.id)) and request.POST.get(str(attendance.id))!='not_marked': attendance.mark_attendance(date, request.POST.get(str(attendance.id)))
 
         messages.success(request, f'Attendance marked for date: {date}')
 
@@ -400,7 +402,63 @@ def get_outing_sheet(request):
 
     return response
 
+@user_passes_test(official_check)
+def mess_feedback_analysis(request):
+    calendar_feedback = None
+    type_feedback = None
+    if request.method == 'POST':
+        if request.POST.get('by_date'):
+            calendar_feedback = MessFeedback.objects.filter(date=request.POST.get('by_date'))
+        elif request.POST.get('by_month'):
+            year, month = request.POST.get('by_month').split('-')
+            calendar_feedback = MessFeedback.objects.filter(date__year=year, date__month=month)
+        elif request.POST.get('by_year'):
+            calendar_feedback = MessFeedback.objects.filter(date__year=request.POST.get('by_year'))
+        if calendar_feedback!=None and len(calendar_feedback)==0:
+            messages.error(request, 'No feedback found.')
+            return render(request, 'officials/mess_feedback_analysis.html')
+        
+        if request.POST.get('by_type'):
+            if request.POST.get('by_type') != 'all':
+                type_feedback = MessFeedback.objects.filter(type=request.POST.get('by_type'))
+            else:
+                type_feedback = MessFeedback.objects.all()
+            if len(type_feedback)==0:
+                messages.error(request, 'No feedback found.')
+                return render(request, 'officials/mess_feedback_analysis.html')
+        
+        if not calendar_feedback and not type_feedback:
+            messages.error(request, 'No feedback found.')
+            return render(request, 'officials/mess_feedback_analysis.html')
+        elif calendar_feedback and type_feedback:
+            feedback_obj = calendar_feedback & type_feedback
+        elif calendar_feedback:
+            feedback_obj = calendar_feedback
+        elif type_feedback:
+            feedback_obj = type_feedback
+        print(feedback_obj)
+        ratings_sum = feedback_obj.aggregate(Sum('rating'))['rating__sum']
+        rating = (ratings_sum/len(feedback_obj))
+        percent_5 = round(((feedback_obj.filter(rating=5).count())/len(feedback_obj))*100)
+        percent_4 = round(((feedback_obj.filter(rating=4).count())/len(feedback_obj))*100)
+        percent_3 = round(((feedback_obj.filter(rating=3).count())/len(feedback_obj))*100)
+        percent_2 = round(((feedback_obj.filter(rating=2).count())/len(feedback_obj))*100)
+        percent_1 = round(((feedback_obj.filter(rating=1).count())/len(feedback_obj))*100)
+        context = {'rating':rating, 
+                   'percent_5':percent_5, 
+                   'percent_4':percent_4,
+                   'percent_3':percent_3, 
+                   'percent_2':percent_2, 
+                   'percent_1':percent_1,
+                   'date': request.POST.get('by_date'),
+                   'month': request.POST.get('by_month'),
+                   'year': request.POST.get('by_year'),
+                   'type': request.POST.get('by_type'),
+                   'count': len(feedback_obj)
+        }
+        return render(request, 'officials/mess_feedback_analysis.html', context=context)
 
+    return render(request, 'officials/mess_feedback_analysis.html')
 # @user_passes_test(chief_warden_check)
 # @csrf_exempt
 # def watercan(request):

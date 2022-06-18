@@ -38,6 +38,7 @@ urlpatterns = [
     path('outing-log', views.outing_log, name='outing-log'),
     path('generate-outing-sheet/', views.get_outing_sheet, name='generate_outing_sheet'),
 
+    path('mess_feedback_analysis', views.mess_feedback_analysis, name='mess_feedback_analysis'),
 
     # path('water-cans/', views.watercan, name='watercan'),
 ]
