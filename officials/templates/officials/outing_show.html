@@ -70,7 +70,7 @@
         </tr>
         {% endif %}
         <form method="POST" class="d-inline">{% csrf_token %}
-        {% if official == 'Caretaker' and type == 'Non-Local' %}
+        {% if official == 'Caretaker' and type != 'Local' %}
         <tr>
           <th>Parent Response</th>
           <td>
