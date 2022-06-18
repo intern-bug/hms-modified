@@ -91,7 +91,7 @@
           <td>{{ outing.remark_by_caretaker }}</td>
           {% endif %}
         </tr>
-        {% if outing.type == 'Non-Local' %}
+        {% if outing.type != 'Local' %}
         <tr>
           <th>Mess Rebate</th>
           <td>

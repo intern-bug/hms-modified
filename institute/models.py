@@ -65,21 +65,21 @@ class Student(models.Model):
 
     def calculate_rating(self, outingInOutObj):
         outingInOutObjs = OutingInOutTimes.objects.filter(outing__student=self).filter(inTime__isnull=False)
-        invalid = int((5-self.rating)*len(outingInOutObjs))
+        invalid = round((5-self.rating)*len(outingInOutObjs))
         if outingInOutObj.outing.type == 'Local':
             if outingInOutObj.outing.student.gender == 'Male' and outingInOutObj.inTime != None:
-                if (outingInOutObj.inTime.hour*100 + outingInOutObj.inTime.minute) > 2115 :
+                if (outingInOutObj.inTime.date()!=outingInOutObj.outing.toDate.date()) or (outingInOutObj.inTime.hour*100 + outingInOutObj.inTime.minute) > 2115 :
                     invalid+=1.5
-                elif ((outingInOutObj.inTime - outingInOutObj.outing.toTime).total_seconds()/60) > 60.0:
+                elif ((outingInOutObj.inTime - outingInOutObj.outing.toDate).total_seconds()/60) > 60.0:
                     invalid+=1
-                elif ((outingInOutObj.inTime - outingInOutObj.outing.toTime).total_seconds()/60) > 15.0:
+                elif ((outingInOutObj.inTime - outingInOutObj.outing.toDate).total_seconds()/60) > 15.0:
                     invalid+=0.5
             elif outingInOutObj.outing.student.gender == 'Female' and outingInOutObj.inTime != None:
-                if (outingInOutObj.inTime.hour*100 + outingInOutObj.inTime.minute) > 2045 :
+                if (outingInOutObj.inTime.date()!=outingInOutObj.toDate.date()) or (outingInOutObj.inTime.hour*100 + outingInOutObj.inTime.minute) > 2045 :
                     invalid+=1.5
-                elif ((outingInOutObj.inTime - outingInOutObj.outing.toTime).total_seconds()/60) > 60.0:
+                elif ((outingInOutObj.inTime - outingInOutObj.outing.toDate).total_seconds()/60) > 60.0:
                     invalid+=1
-                elif ((outingInOutObj.inTime - outingInOutObj.outing.toTime).total_seconds()/60) > 15.0:
+                elif ((outingInOutObj.inTime - outingInOutObj.outing.toDate).total_seconds()/60) > 15.0:
                     invalid+=0.5
         else:
             if outingInOutObj.inTime != None and ((outingInOutObj.inTime - outingInOutObj.outing.toDate).total_seconds()/3600) > 24:

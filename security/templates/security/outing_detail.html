@@ -51,18 +51,18 @@
           <th>Status</th>
           <td>{{ outing.status }}</td>
         </tr>
+        <tr>
+          <th>Remark by caretaker</th>
+          <td>{{ outing.remark_by_caretaker }}</td>
+        </tr>
+        <tr>
+          <th>Remark by warden</th>
+          <td>{{ outing.remark_by_warden }}</td>
+        </tr>
         {% if outingInOutTimes %}
         <tr>
           <th>Out Time</th>
           <td>{{ outingInOutTimes.outTime }}</td>
-        </tr>
-        <tr>
-          <th>Remark by caretaker</th>
-          <td>{{ outingInOutTimes.outing.remark_by_caretaker }}</td>
-        </tr>
-        <tr>
-          <th>Remark by warden</th>
-          <td>{{ outingInOutTimes.outing.remark_by_warden }}</td>
         </tr>
       </tbody>
     </table>
