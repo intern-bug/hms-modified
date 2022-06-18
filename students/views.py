@@ -11,6 +11,8 @@ from django.contrib.auth.mixins import UserPassesTestMixin
 from django.urls import reverse_lazy
 from .forms import OutingExtendForm, OutingForm
 from django.db.models import F
+from django.contrib import messages
+
 
 
 class StudentTestMixin(UserPassesTestMixin):
@@ -119,12 +121,16 @@ def cancel_outing(request, pk):
 @user_passes_test(student_check)
 def outing_QRCode(request, pk):
     outing_obj = get_object_or_404(Outing, id=pk)
-    return render(request, 'students/render_qr_code.html', {'outing':outing_obj})
+    if outing_obj.is_qr_viewable():
+        return render(request, 'students/render_qr_code.html', {'outing':outing_obj})
+    messages.error(request, 'Qr is not viewable yet.')
+    return redirect('students:home')
+
 
 @user_passes_test(student_check)
 def outing_details(request, pk):
     outing_set = Outing.objects.filter(id=pk).annotate(outTime=F('outinginouttimes__outTime'), \
-            inTime=F('outinginouttimes__inTime'))
+            inTime=F('outinginouttimes__inTime'), remark_by_security=F('outinginouttimes__remark_by_security'))
     return render(request, 'students/outing_specific.html', {'outing':outing_set[0]})
 class OutingExtendView(StudentTestMixin, SuccessMessageMixin, CreateView):
     model = ExtendOuting

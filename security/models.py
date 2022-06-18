@@ -19,6 +19,7 @@ class OutingInOutTimes(models.Model):
     outing = models.ForeignKey('students.Outing', on_delete=models.CASCADE, null=False)
     outTime = models.DateTimeField(auto_now_add=True)
     inTime = models.DateTimeField(null=True, blank=True)
+    remark_by_security = models.TextField(null=True)
 
 
     class Meta:
