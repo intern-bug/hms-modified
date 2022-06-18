@@ -66,8 +66,13 @@
         </tr>
       </tbody>
     </table>
+    
     <div class="my-3 text-center">
       <form method="POST" enctype="multipart/form-data">{% csrf_token %}
+        <th>Remarks</th>
+    <td>
+        <textarea class="form-control" name="textarea"rows="5" cols="10">{{outingInOutTimes.remarks_by_security}}</textarea>
+    </td>
         <button name="action" type="submit" value="Outing Closed"
           onclick="return confirm('Are you sure you want to close outing to {{outing.student.name}}?')"
           class="btn btn-success ml-3">Close Outing</button>
@@ -77,11 +82,20 @@
       </form>
     </div>
     {% endif %}
+
+    
+    
+
     {% if not outingInOutTimes %}
       </tbody>
     </table>
     <div class="my-3 text-center">
       <form method="POST" enctype="multipart/form-data">{% csrf_token %}
+        <th>Remarks</th>
+        <td>
+            <textarea class="form-control" name="textarea"rows="5" cols="10">{{outingInOutTimes.remarks_by_security}}</textarea>
+        </td>
+      <br>
         <button name="action" type="submit" value="Allowed" id="grant"
           onclick="return confirm('Are you sure you want to allow outing to {{outing.student.name}}?')"
           class="btn btn-success ml-3">Allow</button>
