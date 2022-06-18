@@ -67,14 +67,14 @@ class Student(models.Model):
         outingInOutObjs = OutingInOutTimes.objects.filter(outing__student=self).filter(inTime__isnull=False)
         invalid = int((5-self.rating)*len(outingInOutObjs))
         if outingInOutObj.outing.type == 'Local':
-            if outingInOutObj.student.gender == 'Male' and outingInOutObj.inTime != None:
+            if outingInOutObj.outing.student.gender == 'Male' and outingInOutObj.inTime != None:
                 if (outingInOutObj.inTime.hour*100 + outingInOutObj.inTime.minute) > 2115 :
                     invalid+=1.5
                 elif ((outingInOutObj.inTime - outingInOutObj.outing.toTime).total_seconds()/60) > 60.0:
                     invalid+=1
                 elif ((outingInOutObj.inTime - outingInOutObj.outing.toTime).total_seconds()/60) > 15.0:
                     invalid+=0.5
-            elif outingInOutObj.student.gender == 'Female' and outingInOutObj.inTime != None:
+            elif outingInOutObj.outing.student.gender == 'Female' and outingInOutObj.inTime != None:
                 if (outingInOutObj.inTime.hour*100 + outingInOutObj.inTime.minute) > 2045 :
                     invalid+=1.5
                 elif ((outingInOutObj.inTime - outingInOutObj.outing.toTime).total_seconds()/60) > 60.0:
