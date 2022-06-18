@@ -1,0 +1,154 @@
+/*
+https://uidesigndaily.com/posts/figma-ratings-card-review-rating-day-1113
+*/
+
+
+@import url('https://fonts.googleapis.com/css2?family=Mulish:wght@200&display=swap');
+:root{
+    --martinique:#323357;
+    --mariner:#2A5BDA;
+    --bright-sun:#FCCC4D;
+    --zircon: #F5F8FF;
+    --black:#212529;
+    --white:#ffffff;
+    --mercury:#E5E5E5;
+    --comet: #595B71;
+    --star-size: 2rem;
+    --star-color: #fff;
+    --star-background: #fc0;
+}
+/* :before,*:after{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+} */
+
+
+.card{
+    font-size: 10px;
+    padding-top: 3rem;
+    /* background-color:var(--mercury); */
+    font-family: 'Mulish', sans-serif;
+    display: flex;
+    justify-content: center;
+    /* border-radius: 1rem; */
+    padding:4rem;
+    text-align: center;
+    /* filter: drop-shadow(0.1rem 1rem 0.2rem rgba(0, 0, 0, 0.3)); */
+}
+.card-title{
+    /* -webkit-text-stroke: 1px var(--black); */
+    /* -webkit-text-fill-color:  var(--martinique); */
+    font-size:1.5rem;
+    color: #212529;
+    /* font-weight: bold; */
+    /* filter: drop-shadow(0.1rem 0.25rem 0.1rem rgba(0, 0, 0, 0.5)); */
+}
+.card-rating{
+    margin: 2rem 0 1rem;
+    background-color: var(--mercury);
+    border-radius: 4rem;
+    padding: 0.2rem 0.1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.ratings{
+    display: flex;
+    align-items: center;
+    grid-gap: 1.2rem;
+}
+.ratings img{
+    width: 3.2rem;
+    height: 3.2rem;
+}
+.card-rating-text{
+    font-size: 1rem;
+    color:var(--martinique);
+    font-weight: 400;
+    margin-left: 0.5rem;
+}
+.rating-count{
+    font-size: 1rem;
+    font-weight: bold;
+    color:var(--comet);
+}
+.rating-percents{
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    grid-row-gap: 1.5rem;
+}
+.rating-percent{
+    display: flex;
+    justify-content: space-around;
+}
+.rating-no{
+    font-size: 1rem;
+    font-weight: bold;
+    color:var(--mariner);
+}
+.rating-progress{
+    margin:0 .8rem;
+    background-color: var(--zircon);
+    border-radius: 1.8rem;
+    width: 10rem;
+    height: 1.5rem;
+    position: relative;
+}
+.rating-progress::before{
+    position: absolute;
+    content: '';
+    top: 0;
+    left: 0;
+    height: 100%;
+    background-color: var(--bright-sun);
+    border-radius: 1.8rem;
+}
+
+.rating-percent:nth-child(1) .rating-progress::before{
+    width: 10%;
+}
+.rating-percent:nth-child(2) .rating-progress::before{
+    width:calc(2* 9%);
+}
+.rating-percent:nth-child(3) .rating-progress::before{
+    width: calc(2* 4%);
+}
+.rating-percent:nth-child(4) .rating-progress::before{
+    width:calc(2* 2%);
+}
+.rating-percent:nth-child(5) .rating-progress::before{
+    width: calc(2* 1%);
+}
+.rating-percent-no{
+    font-size: 1rem;
+    color:var(--martinique);
+    font-weight: bold;
+}
+.card-footer-text{
+    margin-top: 3rem;
+    font-size: 1.6rem;
+    color: var(--mariner);
+    font-weight: 400;
+}
+
+.Stars {
+    --percent: calc(var(--rating) / 5 * 100%);
+    display: inline-block;
+    font-size: var(--star-size);
+    font-family: Times;
+    line-height: 1;
+}
+.Stars::before {
+    content: '★★★★★';
+    letter-spacing: 0rem;
+    background: linear-gradient(90deg, var(--star-background) var(--percent), var(--star-color) var(--percent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+
+
+
+

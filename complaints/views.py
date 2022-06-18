@@ -50,7 +50,7 @@ class ComplaintCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         model_label = re.sub(r'((?<=[a-z])[A-Z]|(?<!\A)[A-Z](?=[a-z]))', r' \1', self.model.__name__) # CamelCase to Title Case
         context['form_title'] = 'Register {}'.format(model_label)
         context['object_name'] = model_label
-        print(context['object_name'])
+        # print(context['object_name'])
         return context
     
 class ComplaintUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
