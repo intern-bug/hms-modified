@@ -41,6 +41,10 @@
           <th>Remarks</th>
           <td>{{ object.remark }}</td>
         </tr>
+        <tr>
+          <th>Document</th>
+          <td>{% if object.file %}<a href="{{ object.file.url }}" target="_blank" class="btn btn-primary">View</a>{% else %}None{% endif %} </td>
+        </tr>
       </tbody>
     </table>
     <div class="text-center">

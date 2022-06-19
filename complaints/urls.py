@@ -2,6 +2,9 @@ from django.urls import path
 from . import views
 from .models import MedicalIssue, Complaint
 from .forms import ComplaintCreationForm, MedicalIssueUpdationForm, ComplaintUpdationForm
+from django.conf.urls.static import static
+from django.conf import settings
+
 
 app_name= 'complaints'
 
@@ -15,3 +18,5 @@ urlpatterns = [
     path('medical/<int:pk>/edit', views.ComplaintUpdateView.as_view(model = MedicalIssue, form_class = MedicalIssueUpdationForm), name='medicalissue_edit'),
     path('medical/<int:pk>/delete', views.ComplaintDeleteView.as_view(model = MedicalIssue), name='medicalissue_delete'),
 ]
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

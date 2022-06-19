@@ -1,6 +1,8 @@
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.utils import timezone
 from institute.models import Student
+from django.conf import settings
 
 User = get_user_model()
 
@@ -12,6 +14,11 @@ class Complaint(models.Model):
         ('Resolved','Resolved')
     )
 
+    def complaint_file_storage(instance, filename):
+        extension = filename.split('.')[-1]
+        name = str(instance.user_id)+'_'+str((instance.created_at.strftime("%d-%m-%Y_%H-%M-%S")))
+        return 'Complaints/Year-{}/{}.{}'.format(timezone.localtime().year, name, extension)
+        
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     type = models.CharField(max_length=40, null=False)
     complainee = models.ForeignKey(Student, on_delete=models.DO_NOTHING, null=True, blank=True)
@@ -21,6 +28,7 @@ class Complaint(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     remark = models.TextField(null=True, blank=True)
+    file = models.FileField(null=True, blank=True, upload_to=complaint_file_storage)
     
     def entity(self):
         return self.user.entity()

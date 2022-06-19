@@ -6,7 +6,7 @@ class ComplaintCreationForm(forms.ModelForm):
     complainee_id = forms.IntegerField(required=False, help_text='Only for Indisciplinary, Discrimination/Harassment or Damage to property complaints.')
     class Meta:
         model = Complaint
-        fields = ['type', 'complainee_id', 'summary', 'detailed']
+        fields = ['type', 'complainee_id', 'summary', 'detailed', 'file']
 
         TYPE = (
             ('General','General'),
@@ -21,7 +21,8 @@ class ComplaintCreationForm(forms.ModelForm):
         )
 
         labels = {
-            'detailed': 'Details'
+            'detailed': 'Details',
+            'file': 'Upload related document'
         }
         
         widgets = {
@@ -37,6 +38,7 @@ class ComplaintCreationForm(forms.ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
+        print(cleaned_data.keys(), cleaned_data.get('file'))
         type = cleaned_data.get('type')
         complainee_id = cleaned_data.get('complainee_id')
 
