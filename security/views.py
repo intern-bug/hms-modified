@@ -45,16 +45,21 @@ def outing_action(request, pk):
         if action == 'Allowed':
             outing_obj = get_object_or_404(Outing, id=pk)
             outingInOutObj = OutingInOutTimes(outing = outing_obj)
-            outingInOutObj.remarks_by_security=request.POST['textarea']+" : "+str(timezone.localtime().strftime('%d-%m-%Y -  %H:%M:%S'))
+            if outingInOutObj.outing.is_upcoming():
+                if request.POST['textarea']:
+                    outingInOutObj.remark_by_security=request.POST['textarea']+" @ "+str(timezone.localtime().strftime('%d-%m-%Y -  %H:%M:%S'))
+            else:
+                messages.error(request, 'Outing is outdated.')
+                return redirect('security:home')
             outingInOutObj.save()
             outing_obj.status = 'In Outing'
             outing_obj.save()
             messages.success(request, 'Outing Allowed successfully')
         elif action == 'Disallowed':
-            outing_obj = get_object_or_404(Outing, id=pk)
-            outingInOutObj = OutingInOutTimes(outing = outing_obj)
-            outingInOutObj.remarks_by_security=request.POST['textarea']+" : "+str(timezone.localtime().strftime('%d-%m-%Y -  %H:%M:%S'))
-            outingInOutObj.save()
+            # outing_obj = get_object_or_404(Outing, id=pk)
+            # outingInOutObj = OutingInOutTimes(outing = outing_obj)
+            # outingInOutObj.remark_by_security+=request.POST['textarea']+" @ "+str(timezone.localtime().strftime('%d-%m-%Y -  %H:%M:%S'))
+            # outingInOutObj.save()
             messages.success(request, 'Outing Rejected successfully')
         elif action == 'Outing Closed':
             outingInOutObj = get_object_or_404(OutingInOutTimes, outing=pk)
@@ -62,7 +67,11 @@ def outing_action(request, pk):
             student.rating = student.calculate_rating(outingInOutObj=outingInOutObj)
             student.save()
             outingInOutObj.inTime = timezone.now()
-            outingInOutObj.remarks_by_security=request.POST['textarea']+" : "+str(timezone.localtime().strftime('%d-%m-%Y -  %H:%M:%S'))
+            if request.POST['textarea']:
+                if outingInOutObj.remark_by_security!=None:
+                    outingInOutObj.remark_by_security+=" "+request.POST['textarea']+" @ "+str(timezone.localtime().strftime('%d-%m-%Y -  %H:%M:%S'))
+                else:
+                    outingInOutObj.remark_by_security=request.POST['textarea']+" @ "+str(timezone.localtime().strftime('%d-%m-%Y -  %H:%M:%S'))
             outingInOutObj.save()
             outing_obj = get_object_or_404(Outing, id=pk)
             outing_obj.status = 'Closed'

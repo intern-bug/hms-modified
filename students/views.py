@@ -109,9 +109,10 @@ def attendance_history(request):
 def cancel_outing(request, pk):
     if request.method == 'POST':
         outing = get_object_or_404(Outing, id=pk)
+        print(outing.status)
         if outing.permission == 'Pending':
             Outing.objects.get(id=pk).delete()
-        else:
+        elif outing.status!='In Outing':
             outing.permission = 'Revoked'
             outing.save()
         return redirect('students:outing_list')

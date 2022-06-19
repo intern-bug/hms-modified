@@ -166,7 +166,7 @@ class Outing(models.Model):
             return True
         elif self.status == 'Closed':
             return False
-        elif self.permission in viewable and ((self.fromDate - timezone.now()).total_seconds()/3600) < 24.0:
+        elif self.permission in viewable and self.fromDate <= timezone.now():
             return True
         elif self.permission in not_viewable:
             return False
