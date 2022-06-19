@@ -410,11 +410,13 @@ def mess_feedback_analysis(request):
     calendar_feedback = None
     type_feedback = None
     if request.method == 'POST':
-        if request.POST.get('by_date'):
-            calendar_feedback = MessFeedback.objects.filter(date=request.POST.get('by_date'))
-        elif request.POST.get('by_month'):
-            year, month = request.POST.get('by_month').split('-')
-            calendar_feedback = MessFeedback.objects.filter(date__year=year, date__month=month)
+        # if request.POST.get('by_date'):
+        #     calendar_feedback = MessFeedback.objects.filter(date=request.POST.get('by_date'))
+        # elif request.POST.get('by_month'):
+        #     year, month = request.POST.get('by_month').split('-')
+        #     calendar_feedback = MessFeedback.objects.filter(date__year=year, date__month=month)
+        if request.POST.get('by_range_from_date') and request.POST.get('by_range_to_date'):
+            calendar_feedback = MessFeedback.objects.filter(date__range=[request.POST.get('by_range_from_date'), request.POST.get('by_range_to_date')])
         elif request.POST.get('by_year'):
             calendar_feedback = MessFeedback.objects.filter(date__year=request.POST.get('by_year'))
         if calendar_feedback!=None and len(calendar_feedback)==0:
@@ -453,8 +455,9 @@ def mess_feedback_analysis(request):
                    'percent_3':percent_3, 
                    'percent_2':percent_2, 
                    'percent_1':percent_1,
-                   'date': request.POST.get('by_date'),
-                   'month': request.POST.get('by_month'),
+                   'from_date': request.POST.get('by_range_from_date'),
+                   'to_date': request.POST.get('by_range_to_date'),
+                #    'month': request.POST.get('by_month'),
                    'year': request.POST.get('by_year'),
                    'type': request.POST.get('by_type'),
                    'count': len(feedback_obj)

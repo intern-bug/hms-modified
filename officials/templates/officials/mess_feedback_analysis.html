@@ -10,16 +10,25 @@
     <div class="row justify-content-center mt-4">
         <div class="col-md-4 d-flex justify-content-center">
             <div class="form-group">
-                <label for="by_date" class="">By Date:</label>
-                <input type="date" name="by_date" id="by_date" value="{{ date }}">
+                <!-- <label for="by_range" class="">By Range:</label> -->
+                <label for="by_range_from_date" class="">From:</label>
+                <input type="date" name="by_range_from_date" id="by_from_date" value="{{ from_date }}">
             </div>
         </div>
         <div class="col-md-4 d-flex justify-content-center">
             <div class="form-group">
+                <!-- <label for="by_date" class="">By Date:</label>
+                <input type="date" name="by_date" id="by_date" value="{{ date }}"> -->
+                <label for="by_range_to_date" class="">To:</label>
+                <input type="date" name="by_range_to_date" id="by_to_date" value="{{ to_date }}">
+            </div>
+        </div>
+        <!-- <div class="col-md-4 d-flex justify-content-center">
+            <div class="form-group">
                 <label for="by_month" class="">By Month:</label>
                 <input type="month" name="by_month" id="by_month" value="{{ month }}" >
             </div>
-        </div>
+        </div> -->
         <div class="col-md-4 d-flex justify-content-center">
             <div class="form-group">
                 <label for="by_year" class="">By Year:</label>
@@ -128,34 +137,58 @@
     var year = new Date().getFullYear();
     document.getElementById("by_year").max = year;
     function updateCalendars(){
-      if (this.id === 'by_date'){
-        document.getElementById('by_month').value = '';
-        document.getElementById('by_year').value = '';
+    //   if (this.id === 'by_date'){
+    //     document.getElementById('by_month').value = '';
+    //     document.getElementById('by_year').value = '';
+    //   }
+    //   else if (this.id === 'by_month'){
+    //     document.getElementById('by_date').value = '';
+    //     document.getElementById('by_year').value = '';
+    //   }
+      if (this.id === 'by_year'){
+        document.getElementById('by_from_date').value = '';
+        document.getElementById('by_to_date').value = '';
+        document.getElementById('by_from_date').required = false;
+        document.getElementById('by_to_date').required = false;
       }
-      else if (this.id === 'by_month'){
-        document.getElementById('by_date').value = '';
-        document.getElementById('by_year').value = '';
-      }
-      else if (this.id === 'by_year'){
-        document.getElementById('by_date').value = '';
-        document.getElementById('by_month').value = '';
-      }
-    }
-    document.getElementById('by_date').addEventListener('click', updateCalendars);
-    document.getElementById('by_month').addEventListener('click', updateCalendars);
-    document.getElementById('by_year').addEventListener('click', updateCalendars);
-    if (document.getElementById('id_type').value == ""){
-        document.getElementById('view-btn').style.pointerEvents = 'None';
-    }
-    document.getElementById('id_type').addEventListener('change', function(){
-        console.log(document.getElementById('view-btn').style.pointerEvents)
-        console.log(document.getElementById('view-btn').style.display)
-        if (this.value == ""){
-            document.getElementById('view-btn').style.pointerEvents = 'None';
+      else if (this.id == 'by_from_date'){
+        if (this.value != ''){
+            document.getElementById('by_year').value = '';
+            document.getElementById('by_to_date').required = true;
         }
         else{
-            document.getElementById('view-btn').style.pointerEvents = '';
+            document.getElementById('by_from_date').required = false;
+            document.getElementById('by_to_date').required = false;
+            document.getElementById('by_to_date').value = '';
         }
-    });
+      } 
+      else if (this.id == 'by_to_date'){
+        if (this.value != ''){
+            document.getElementById('by_from_date').required = true;
+        }
+        else{
+            document.getElementById('by_year').value = '';
+            document.getElementById('by_to_date').required = false;
+            document.getElementById('by_from_date').required = false;
+            document.getElementById('by_from_date').value = '';
+        }
+      } 
+    }
+    document.getElementById('by_from_date').addEventListener('change', updateCalendars);
+    document.getElementById('by_to_date').addEventListener('change', updateCalendars);
+    document.getElementById('by_year').addEventListener('click', updateCalendars);
+    // if (document.getElementById('id_type').value == ""){
+    //     document.getElementById('view-btn').style.pointerEvents = 'None';
+    // }
+    // document.getElementById('id_type').addEventListener('change', function(){
+    //     console.log(document.getElementById('view-btn').style.pointerEvents)
+    //     console.log(document.getElementById('view-btn').style.display)
+    //     if (this.value == ""){
+    //         document.getElementById('view-btn').style.pointerEvents = 'None';
+    //     }
+    //     else{
+    //         document.getElementById('view-btn').style.pointerEvents = '';
+    //     }
+    // });
 </script>
 {% endblock script_links %}
