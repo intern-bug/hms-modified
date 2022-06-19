@@ -8,6 +8,10 @@ from django.contrib.messages.views import SuccessMessageMixin
 from .forms import MedicalIssueUpdationForm
 from complaints.forms import ComplaintUpdationForm
 import re
+from django.shortcuts import redirect
+from django.contrib import messages
+
+
 
 # Create your views here.
 class ComplaintDetailView(LoginRequiredMixin, DetailView):
@@ -26,6 +30,7 @@ class ComplaintDetailView(LoginRequiredMixin, DetailView):
             context['form'] = ComplaintUpdationForm(instance=self.object)
         else:
             context['form'] = MedicalIssueUpdationForm(instance=self.object)
+        context['user'] = self.request.user
         return context
 
 class ComplaintCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
@@ -65,3 +70,11 @@ class ComplaintDeleteView(LoginRequiredMixin, DeleteView):
 
     def get_success_url(self):
         return self.request.user.home_url()
+
+    def form_valid(self, form):
+        if self.object.status == 'Registered' and self.object.user == self.request.user:
+            return super().form_valid(form)
+        else:
+            messages.error(self.request, 'Unauthorized to delete complaint')
+            return redirect (self.get_success_url())
+        
