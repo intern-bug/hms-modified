@@ -1,0 +1,122 @@
+{% extends 'officials/base_officials.html' %}
+
+{% block title %}Mess Rebate Action{% endblock title %}
+
+{% block content %}
+<h1 class="text-center">Mess Rebate Action</h1>
+<hr>
+
+<form method="GET">
+    <div class="row justify-content-center mt-4">
+        <div class="col-md-4 d-flex justify-content-center">
+            <div class="form-group">
+                <label for="by_month" class="">By Month:</label>
+                <input type="month" name="by_month" id="by_month" value="{{ month }}" >
+            </div>
+        </div>
+        <div class="col-md-4 d-flex justify-content-center">
+            <div class="form-group">
+              <label for="by_regd_no" class="">By Regd. No:</label>
+              <input type="text" name="by_regd_no" id="by_regd_no" value="{{ regd_no }}">
+            </div>
+          </div>
+    </div>
+    <div class="row justify-content-center mb-5">
+        <div class="col-12 col-md-4 text-center">
+          <input type="submit" id="submit" class="btn btn-primary" />
+        </div>
+    </div>
+<!-- </form> -->
+<hr>
+{% if outing_obj %}
+<div class="row">
+    <div class="col-12">
+        <h3 class="text-center">{{ month }} Records</h3>
+    </div>
+    <div class="col-md">
+        <div class="overflow-auto p-3">
+            <table class="table table-hover table-muted table-striped">
+                <thead>
+                    <tr>
+                        <th>Regd. No.</th>
+                        <th>Name</th>
+                        <th>Block</th>
+                        <th>Outing id</th>
+                        <th>From</th>
+                        <th>To</th>
+                        <th>Out Time</th>
+                        <th>In Time</th>
+                        <th>Applied Days</th>
+                        <th>Days</th>
+                        <th>Status</th>
+                        <th>Assign Days</th>
+                        <th>Remark</th>
+                    </tr>
+                </thead>
+                <!-- <form method="GET"> -->
+                    {% csrf_token %}
+                <tbody>
+                    {% for outing in outing_obj %}
+                    <tr>
+                        <td>{{ outing.outing.student.regd_no }}</td>
+                        <td>{{ outing.outing.student.name }}</td>
+                        <td>{{ outing.outing.student.roomdetail.block.short_name }}</td>
+                        <td>{{ outing.outing.id }}</td>
+                        <td>{{ outing.outing.fromDate }}</td>
+                        <td>{{ outing.outing.toDate }}</td>
+                        <td>{{ outing.outTime }}</td>
+                        <td>{{ outing.inTime }}</td>
+                        <td>{{ outing.applied_days }}</td>
+                        <td>{{ outing.days }}</td>
+                        <td nowrap>
+                            <input type="radio" value="Processed" name="status_{{ outing.id }}" id="processed">
+                            <label for="processed"><span class="mr-3"><i class="fa fa-check-circle"></i></span></label>
+                            <input type="radio" value="Rejected" name="status_{{ outing.id }}" id="rejected">
+                            <label for="rejected"><span class="mr-3"><i class="fa fa-times"></i></span></label>
+                        </td>
+                        <td>
+                            <input type="number" min="0" max="{{ outing.days }}" name="no_of_days_{{ outing.id }}" value="0">
+                        </td>
+                        <td>
+                            <input type="textarea" cols="1" rows="4" name="remark_{{ outing.id }}">
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                <div class="row mt-4">
+                    <div class="col-12 text-center">
+                      <input type="submit" class="btn btn-primary" name="submit_action" value="Submit" />
+                    </div>
+                </div>  
+            </form>
+            </div>
+    </div>
+</div>
+{% endif %}
+{% endblock content %}
+{% block script_links %}
+<script>
+    if (document.getElementById('by_month').value == '' && document.getElementById('by_regd_no').value == ''){
+        document.getElementById('submit').disabled = true;
+    }
+    function enableSubmit(){
+        if (document.getElementById('by_month').value != '' || document.getElementById('by_regd_no').value != ''){
+            document.getElementById('submit').disabled = false;
+        }
+        else{
+            document.getElementById('submit').disabled = true;
+        }
+        if (this.id == 'by_month'){
+            document.getElementById('by_regd_no').value = '';
+        }
+        else{
+            document.getElementById('by_month').value = '';
+        }
+    }
+    document.getElementById('by_month').addEventListener('change', enableSubmit);
+    document.getElementById('by_regd_no').addEventListener('change', enableSubmit);
+</script>
+{% endblock script_links %}
+
+

@@ -1,0 +1,116 @@
+{% extends 'officials/base_officials.html' %}
+{% block title %}Mess Rebate Details{% endblock title %}
+
+{% block content %}
+<h1 class="text-center">Mess Rebate Details</h1>
+<hr>
+<form method="GET">
+    <div class="row justify-content-center mt-4">
+        <div class="col-md-4 d-flex justify-content-center">
+            <div class="form-group">
+                <!-- <label for="by_range" class="">By Range:</label> -->
+                <label for="by_range_from_date" class="">From:</label>
+                <input type="date" name="by_range_from_date" id="by_from_date" value="{{ from_date }}">
+            </div>
+        </div>
+        <div class="col-md-4 d-flex justify-content-center">
+            <div class="form-group">
+                <!-- <label for="by_date" class="">By Date:</label>
+                <input type="date" name="by_date" id="by_date" value="{{ date }}"> -->
+                <label for="by_range_to_date" class="">To:</label>
+                <input type="date" name="by_range_to_date" id="by_to_date" value="{{ to_date }}">
+            </div>
+        </div>
+        <div class="col-md-4 d-flex justify-content-center">
+            <div class="form-group">
+              <label for="by_regd_no" class="">By Regd. No:</label>
+              <input type="text" name="by_regd_no" id="by_regd_no" value="{{regd_no}}">
+            </div>
+        </div>
+    </div>
+    <div class="row justify-content-center mb-5">
+        <div class="col-12 col-md-4 text-center">
+            <input type="submit" class="btn btn-primary" name="submit" value="submit">
+            <!-- <a data-toggle="collapse" href="#downloadCollapse" class="btn btn-primary" id="view-btn">
+            </a> -->
+            <!-- <input type="submit" class="btn btn-primary" name="download"> -->
+            <input type="submit" name="download" value="download" class="btn btn-primary">
+        </div>
+    </div>
+</form>
+<hr>
+<div class="row">
+    {% if from_date and to_date %}
+    <div class="col-12">
+        <h3 class="text-center">{{ from_date }} to {{to_date}} Records</h3>
+    </div>
+    {% endif %}
+    {% if regd_no %}
+    <div class="col-12">
+        <h3 class="text-center">{{ regd_no }} Records</h3>
+    </div>
+    {% endif %}
+    {% if from_date and to_date and regd_no %}
+    <div class="col-12">
+        <h3 class="text-center">{{ from_date }} to {{to_date}} for {{ regd_no }} Records</h3>
+    </div>
+    {% endif %}
+
+    {% if rebate_list %}
+    <div class="col-md">
+        <div class="overflow-auto p-3">
+            <table class="table table-hover table-muted table-striped rebate-table">
+                <thead>
+                    <tr>
+                        <th>Regd. No.</th>
+                        <th>Name</th>
+                        <th>No. of Days</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for rebate in rebate_list %}
+                    <tr>
+                        <td>{{ rebate.outing__student__regd_no }}</td>
+                        <td>{{ rebate.outing__student__name }}</td>
+                        <td>{{ rebate.no_of_days }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock content %}
+
+{% block script_links %}
+
+<script>
+    function updateCalendars(){
+      if (this.id == 'by_from_date'){
+        if (this.value != ''){
+            document.getElementById('by_to_date').required = true;
+        }
+        else{
+            document.getElementById('by_from_date').required = false;
+            document.getElementById('by_to_date').required = false;
+        }
+      } 
+      else if (this.id == 'by_to_date'){
+        if (this.value != ''){
+            document.getElementById('by_from_date').required = true;
+        }
+        else{
+            document.getElementById('by_to_date').required = false;
+            document.getElementById('by_from_date').required = false;
+        }
+      } 
+    }
+    document.getElementById('by_from_date').addEventListener('change', updateCalendars);
+    document.getElementById('by_to_date').addEventListener('change', updateCalendars);
+</script>
+
+{% endblock script_links %}
+
+

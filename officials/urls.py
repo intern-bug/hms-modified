@@ -39,6 +39,8 @@ urlpatterns = [
     path('generate-outing-sheet/', views.get_outing_sheet, name='generate_outing_sheet'),
 
     path('mess_feedback_analysis', views.mess_feedback_analysis, name='mess_feedback_analysis'),
+    path('mess_rebate_action', views.mess_rebate_action, name='mess_rebate_action'),
+    path('mess_rebate_log', views.mess_rebate_detail_log, name='mess_rebate_log'),
 
     # path('water-cans/', views.watercan, name='watercan'),
 ]

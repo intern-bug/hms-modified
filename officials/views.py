@@ -1,3 +1,6 @@
+from datetime import timedelta
+from email import message
+from django.urls import reverse_lazy
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404, redirect, render
@@ -14,6 +17,10 @@ from complaints.models import Complaint
 from mess_feedback.models import MessFeedback
 from workers.models import Worker, Attendance as AttendanceWorker
 import uuid
+from django.db.models import IntegerField, F, Q
+from django.db.models.functions import Cast, ExtractDay, TruncDate
+
+
 
 def official_check(user):
     return user.is_authenticated and user.is_official
@@ -64,17 +71,18 @@ def attendance(request):
     official = user.official
     block = official.block
     attendance_list  = Attendance.objects.filter(student__in=block.students())
-    date = None
+    date = (timezone.now() - timedelta(hours=1)).date()
 
     if request.method == 'POST' and request.POST.get('submit'):
-        date = request.POST.get('date')
+        # date = request.POST.get('date')
+        date = date.strftime('%Y-%m-%d')
         for attendance in attendance_list:
             if request.POST.get(str(attendance.id)) and request.POST.get(str(attendance.id))!='not_marked': attendance.mark_attendance(date, request.POST.get(str(attendance.id)))
 
         messages.success(request, f'Attendance marked for date: {date}')
 
     if request.GET.get('for_date'):
-        date = request.GET.get('for_date')
+        # date = request.GET.get('for_date')
         messages.info(request, f'Selected date: {date}')
         for item in attendance_list:
             if item.present_dates and date in set(item.present_dates.split(',')): item.present_on_date = True
@@ -394,7 +402,6 @@ def get_outing_sheet(request):
         block_id = 'all'
     else:
         block_id = official.block.id
-    print(year_month_day)
 
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',)
     response['Content-Disposition'] = 'attachment; filename=Outing({date}).xlsx'.format(date=year_month_day+" "+str(timezone.now().strftime('%d-%m-%Y')),)
@@ -441,7 +448,6 @@ def mess_feedback_analysis(request):
             feedback_obj = calendar_feedback
         elif type_feedback:
             feedback_obj = type_feedback
-        print(feedback_obj)
         ratings_sum = feedback_obj.aggregate(Sum('rating'))['rating__sum']
         rating = (ratings_sum/len(feedback_obj))
         percent_5 = round(((feedback_obj.filter(rating=5).count())/len(feedback_obj))*100)
@@ -465,6 +471,111 @@ def mess_feedback_analysis(request):
         return render(request, 'officials/mess_feedback_analysis.html', context=context)
 
     return render(request, 'officials/mess_feedback_analysis.html')
+
+
+@user_passes_test(official_check)
+def mess_rebate_action(request):
+    # outing_obj = Outing.objects.filter(mess_rebate='Enabled', mess_rebate_status='NA')
+    outingInOut_obj = None
+    calendar_outings = None
+    regd_no_outings = None
+    if request.method == 'GET':
+        # print(request.GET)
+        if request.GET.get('by_month'):
+            year, month = request.GET.get('by_month').split('-')
+            calendar_outings = OutingInOutTimes.objects.filter(inTime__year=year, inTime__month=month, \
+                outing__mess_rebate='Enabled', outing__mess_rebate_status='NA').alias(days=Cast(ExtractDay(TruncDate(F('inTime')) - TruncDate(F('outTime'))), \
+                    IntegerField())).annotate(days=F('days')).alias(applied_days=Cast(ExtractDay(TruncDate(F('inTime')) - TruncDate(F('outTime'))), \
+                    IntegerField())).annotate(applied_days=F('applied_days'))
+        
+        if request.GET.get('by_regd_no'):
+            regd_no_outings = OutingInOutTimes.objects.filter(outing__student__regd_no=request.GET.get('by_regd_no'),
+                outing__mess_rebate='Enabled', outing__mess_rebate_status='NA').alias(days=Cast(ExtractDay(TruncDate(F('inTime')) - TruncDate(F('outTime'))), \
+                    IntegerField())).annotate(days=F('days')).alias(applied_days=Cast(ExtractDay(TruncDate(F('inTime')) - TruncDate(F('outTime'))), \
+                    IntegerField())).annotate(applied_days=F('applied_days'))
+        
+        if not calendar_outings and not regd_no_outings and (request.GET.get('by_month') or request.GET.get('by_regd_no')):
+            messages.error(request, 'No records found.')
+            return render(request, 'officials/mess_rebate_action.html')
+        elif calendar_outings and regd_no_outings:
+            outingInOut_obj = calendar_outings & regd_no_outings
+        elif calendar_outings:
+            outingInOut_obj = calendar_outings
+        elif regd_no_outings:
+            outingInOut_obj = regd_no_outings
+        print(request.GET,request.GET.get('by_month'), request.GET.get('by_regd_no'), outingInOut_obj)
+        if request.GET.get('submit_action'):
+            for outing in outingInOut_obj:
+                if ('status_'+str(outing.id)) in request.GET.keys():
+                    # print(request.GET.get('status_'+str(outing.id)), request.GET.get('no_of_days_'+str(outing.id)))
+                    outing_obj = get_object_or_404(Outing,id=outing.outing.id)
+                    outing_obj.mess_rebate_status = request.GET.get('status_'+str(outing.id))
+                    outing_obj.mess_rebate_days = request.GET.get('no_of_days_'+str(outing.id))
+                    if ('remark'+str(outing.id)):
+                        outing_obj.mess_rebate_remarks = request.GET.get('remark'+str(outing.id))
+                    outing_obj.save()
+                    # print('saved')
+            # print(request.GET)
+            messages.success(request, 'Mess Rebate status updated successfully.')
+            return render(request, 'officials/mess_rebate_action.html')
+            
+        return render(request, 'officials/mess_rebate_action.html', {'outing_obj':outingInOut_obj, 'regd_no': request.GET.get('by_regd_no'),\
+            'month': request.GET.get('by_month')})
+
+    return render(request, 'officials/mess_rebate_action.html')
+
+
+@user_passes_test(official_check)
+def mess_rebate_detail_log(request):
+    calendar_rebate_list=None
+    regd_no_rebate_list = None
+    rebate_list = None
+    if request.method == 'GET':
+        print(request.GET)
+        if request.GET.get('by_range_from_date') and request.GET.get('by_range_to_date'):
+            calendar_rebate_list = OutingInOutTimes.objects.filter(~Q(outing__mess_rebate_status='NA'), inTime__date__range=[request.GET.get('by_range_from_date'), request.GET.get('by_range_to_date')])
+        
+        if request.GET.get('by_regd_no'):
+            regd_no_rebate_list = OutingInOutTimes.objects.filter(~Q(outing__mess_rebate_status='NA'), outing__student__regd_no=request.GET.get('by_regd_no'))
+        
+        if not calendar_rebate_list and not regd_no_rebate_list:
+            messages.error(request, 'No record foundd.')
+            return render(request, 'officials/mess_rebate_log.html')
+        elif calendar_rebate_list and regd_no_rebate_list:
+            rebate_list = calendar_rebate_list & regd_no_rebate_list
+        elif request.GET.get('by_regd_no') and request.GET.get('by_range_from_date') and request.GET.get('by_range_to_date'):
+            messages.error(request, 'No Records found.')
+            return render(request, 'officials/mess_rebate_log.html')
+        elif calendar_rebate_list:
+            rebate_list = calendar_rebate_list
+        elif regd_no_rebate_list:
+            rebate_list = regd_no_rebate_list
+        rebate_list = rebate_list.values('outing__student__regd_no', 'outing__student__name').annotate(no_of_days=Sum('outing__mess_rebate_days'))
+        if request.GET.get('submit'):
+            context = {
+                'from_date': request.GET.get('by_range_from_date'),
+                'to_date': request.GET.get('by_range_to_date'),
+                'rebate_list': rebate_list,
+                'regd_no': request.GET.get('by_regd_no')
+            }
+            return render(request, 'officials/mess_rebate_log.html', context=context)
+        elif request.GET.get('download'):
+            from django.http import HttpResponse
+            from .utils import MessRebateBookGenerator
+
+            response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',)
+            filename = str(timezone.localtime().strftime("%d-%m-%Y_%H:%M:%S"))
+            response['Content-Disposition'] = 'attachment; filename=MessRebateLog({date}).xlsx'.format(date=filename)
+            BookGenerator = MessRebateBookGenerator(rebate_list=rebate_list)
+            workbook = BookGenerator.generate_workbook()
+            workbook.save(response)
+            return response
+    return render(request, 'officials/mess_rebate_log.html')        
+
+
+
+
+
 # @user_passes_test(chief_warden_check)
 # @csrf_exempt
 # def watercan(request):

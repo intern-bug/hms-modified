@@ -111,6 +111,7 @@ class Outing(models.Model):
     OUTING_OPTIONS = (('Local','Local'),('Non-Local', 'Non-Local'),('Emergency', 'Emergency'))
     PARENT_CONSENT= (('Accepted','Accepted'),('Denied','Denied'))
     MESS_REBATE_OPTIONS = (('Enabled', 'Enabled'), ('Disabled', 'Disabled'))
+    MESS_REBATE_STATUS_OPTIONS = (('Processed', 'Processed'), ('Rejected', 'Rejected'))
 
     student = models.ForeignKey('institute.Student', on_delete=models.CASCADE, null=False)
     fromDate = models.DateTimeField(null=False)
@@ -124,6 +125,9 @@ class Outing(models.Model):
     place_of_visit = models.CharField(max_length=255,null=False)
     status = models.CharField(max_length=9, choices=STATUS_OPTIONS, default='NA', null=False)
     mess_rebate = models.CharField(max_length=9, choices=MESS_REBATE_OPTIONS, default='Disabled', null=False)
+    mess_rebate_status = models.CharField(max_length=9, choices=MESS_REBATE_STATUS_OPTIONS, default='NA', null=False)
+    mess_rebate_days = models.IntegerField(null=False, default=0)
+    mess_rebate_remarks = models.TextField(null=True, blank=True)
     uuid = models.UUIDField(unique=True, null=True)
 
 
@@ -172,6 +176,9 @@ class Outing(models.Model):
             return False
         else:
             return False
+
+    def mess_rebate_action_status(self):
+        return self.mess_rebate=='Enabled' and self.mess_rebate_status=='NA'
 
     class Meta:
         ordering = ['-fromDate']

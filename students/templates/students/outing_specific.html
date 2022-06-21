@@ -35,8 +35,13 @@
           {% if outing.status == 'Closed' %} class="text-danger" {% endif %}
         >
         {{ outing.status }}</td>
-        <td nowrap>
         </tr>
+        <tr><th>Mess Rebate</th><td>{{ outing.mess_rebate }}</td></tr>
+        {% if outing.mess_rebate == 'Enabled' %}
+        <tr><th>Mess Rebate Status</th><td>{{ outing.mess_rebate_status }}</td></tr>
+        <tr><th>No. of Rebate days</th><td>{{ outing.mess_rebate_days }}</td></tr>
+        <tr><th>Mess Rebate Remarks</th><td>{{ outing.mess_rebate_remarks }}</td></tr>
+        {% endif %}
       </tbody>
     </table>
   </div>

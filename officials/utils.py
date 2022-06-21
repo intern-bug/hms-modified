@@ -218,3 +218,38 @@ class BlockOutingSheetGenerator:
                 return 'DC3545'
             else:
                 return '28A745'
+
+class MessRebateBookGenerator:
+    def __init__(self, rebate_list):
+        self.rebate_list = rebate_list
+    
+    def generate_workbook(self):
+        workbook = Workbook()
+        workbook.remove(workbook.active)
+
+        self.generate_sheet(workbook=workbook)
+
+        return workbook
+    
+    def generate_sheet(self, workbook):
+        file = str(timezone.localtime().strftime("%d-%m-%Y_%H-%M-%S"))
+        worksheet = workbook.create_sheet(title = "{filename}".format(filename=file))
+        headers = ['Regd. No.', 'Name', 'No. of Days']
+        row_num = 1
+        for col_num, column_title in enumerate(headers, 1):
+            cell = worksheet.cell(row=row_num, column=col_num)
+            cell.font =styles.Font(bold = True)
+            cell.value = column_title
+        
+        for rebate in self.rebate_list:
+            row_num += 1
+            row_data = [
+                rebate['outing__student__regd_no'],
+                rebate['outing__student__name'],
+                rebate['no_of_days']
+            ]
+            for col_num, cell_value in enumerate(row_data,1):
+                cell = worksheet.cell(row=row_num, column=col_num)
+                cell.value = cell_value
+
+
