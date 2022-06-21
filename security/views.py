@@ -64,8 +64,6 @@ def outing_action(request, pk):
         elif action == 'Outing Closed':
             outingInOutObj = get_object_or_404(OutingInOutTimes, outing=pk)
             student = get_object_or_404(Student, id=outingInOutObj.outing.student.id)
-            student.rating = student.calculate_rating(outingInOutObj=outingInOutObj)
-            student.save()
             outingInOutObj.inTime = timezone.now()
             if request.POST['textarea']:
                 if outingInOutObj.remark_by_security!=None:
@@ -76,6 +74,9 @@ def outing_action(request, pk):
             outing_obj = get_object_or_404(Outing, id=pk)
             outing_obj.status = 'Closed'
             outing_obj.save()
+            student.rating = student.calculate_rating(outingInOutObj=outingInOutObj)
+            print(student.rating)
+            student.save()
             messages.success(request, 'Outing closed successfully')
         return redirect('security:home')
     else:
