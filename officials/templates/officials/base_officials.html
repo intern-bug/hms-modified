@@ -66,8 +66,8 @@
       <a href="{% url 'officials:complaint_list' %}"  class="{% if url_name == 'complaint_list' %}active{% endif %}"><span class="mr-3"><i class="fa fa-quote-right"></i></span>Complaints List</a>      
       <a href="{% url 'officials:medical_issue_list' %}"  class="{% if url_name == 'medical_issue_list' %}active{% endif %}"><span class="mr-3"><i class="fa fa-ambulance"></i></span>Medical Issues List</a>      
       <a href="{% url 'officials:mess_feedback_analysis' %}"  class="{% if url_name == 'mess_feedback_analysis' %}active{% endif %}"><span class="mr-3"><i class="fa fa-bar-chart"></i></span>Mess Feedback</a>      
-      <a href="{% url 'officials:mess_rebate_action' %}" class="{% if url_name == 'mess_rebate_action' %}active{% endif %}"><span class="mr-3"><i class="fa fa-bar-chart"></i></span>Mess Rebate</a>
-      <a href="{% url 'officials:mess_rebate_log' %}" class="{% if url_name == 'mess_rebate_log' %}active{% endif %}"><span class="mr-3"><i class="fa fa-bar-chart"></i></span>Mess Rebate Log</a>
+      <a href="{% url 'officials:mess_rebate_action' %}" class="{% if url_name == 'mess_rebate_action' %}active{% endif %}"><span class="mr-3"><i class="fa fa-registered"></i></span>Mess Rebate</a>
+      <a href="{% url 'officials:mess_rebate_log' %}" class="{% if url_name == 'mess_rebate_log' %}active{% endif %}"><span class="mr-3"><i class="fa fa-table"></i></span>Mess Rebate Log</a>
 
     {% endif %}
     {% if request.user.is_official and not request.user.official.is_chief %}
