@@ -8,16 +8,48 @@
 {% endblock style_links %}
 
 {% block content %}
-<div >
-  <h2 class="text-center">Hello {{student.name}}!
-    <div id="rating" class="Stars" style="--rating: {{ rating }};" aria-label="Rating of this product is {{ rating }} out of 5.">   
+<div class="row">
+  <div class="col-lg-4">
+    <p class="text-center" style="text-align: center; font-size: large;">Hello {{student.name}}!
+    </p>
+  </div>
+  <div class="col-lg-4 text-center">
+    Outing:
+    <div id="rating" class="Stars" style="--rating: {{ outing_rating }};" aria-label="Rating of this product is {{ outing_rating }} out of 5.">   
       <div id="rating-text">
-        {{ rating }}
+        {{ outing_rating }}
       </div>
     </div>
-  </h2>
+  </div>
+  <div class="col-lg-4 text-center">
+    Discipline:
+    <div id="rating" class="Stars" style="--rating: {{ discipline_rating }};" aria-label="Rating of this product is {{ discipline_rating }} out of 5.">   
+      <div id="rating-text">
+        {{ discipline_rating }}
+      </div>
+    </div>
+  </div>
 </div>
-<div class="row mt-4">
+<br>
+<div id="test-carousel" class="carousel slide text-center announcements" data-bs-ride="carousel">
+  {% for announcement in announce_obj %}
+  <div class="carousel-inner">
+    <div class="carousel-item active" data-href="{{ announcement.document.url }}" data-bs-target="_blank">
+      <a style="text-decoration: None; color: #212529;" href="{{ announcement.document.url }}" target="_blank"><h2 class="test-text">{{ announcement.info }}</h2></a>
+    </div>
+  </div>
+  {% endfor %}
+  <button class="carousel-control-prev" type="button" data-bs-target="#test-carousel" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Previous</span>
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#test-carousel" data-bs-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Next</span>
+  </button>
+</div>
+<br>
+<div class="row">
   <div class="col-md">
     <div class="card" id="present">
       <div class="row">
@@ -48,7 +80,7 @@
     <div class="card" id="comps">
       <div class="row">
         <div class="col-8">
-          <span class="row atttext">Number of outings.</span>
+          <span class="row atttext">Number of upcoming outings.</span>
           <span class="row attnum">{{ outing_count }}</span>
         </div>
         <div class="col-4">

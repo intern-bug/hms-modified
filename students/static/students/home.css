@@ -17,24 +17,8 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
-body {
-    background: #eee;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-}
-* {
-    position: relative;
-    box-sizing: border-box;
-}
 
-#rating{
-    /* display: inline-block; */
-    float: right;
-    margin-right: 6rem;
-    /* font-size: 2rem; */
-}
+
 #rating-text{
     margin-top: 0.38rem;
     margin-left: 0.5rem;
@@ -44,7 +28,7 @@ body {
 
 .main-container {
     max-width: 1300px;
-    margin-top: 20rem;
+    margin-top: 30rem;
 }
 
 .card {

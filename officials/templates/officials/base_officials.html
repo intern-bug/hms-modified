@@ -14,10 +14,32 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,500&display=swap"
     rel="stylesheet">
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+    integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
+    crossorigin="anonymous"
+  />
   {% load static %}
   <link href="{% static 'officials/application.css' %}" rel="stylesheet">
   {% block style_links %}{% endblock style_links %}
     
+
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+    crossorigin="anonymous"
+  ></script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"
+    integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB"
+    crossorigin="anonymous"
+  ></script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"
+    integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13"
+    crossorigin="anonymous"
+  ></script>
 </head>
 
 <body>
@@ -68,6 +90,8 @@
       <a href="{% url 'officials:mess_feedback_analysis' %}"  class="{% if url_name == 'mess_feedback_analysis' %}active{% endif %}"><span class="mr-3"><i class="fa fa-bar-chart"></i></span>Mess Feedback</a>      
       <a href="{% url 'officials:mess_rebate_action' %}" class="{% if url_name == 'mess_rebate_action' %}active{% endif %}"><span class="mr-3"><i class="fa fa-registered"></i></span>Mess Rebate</a>
       <a href="{% url 'officials:mess_rebate_log' %}" class="{% if url_name == 'mess_rebate_log' %}active{% endif %}"><span class="mr-3"><i class="fa fa-table"></i></span>Mess Rebate Log</a>
+      <a href="{% url 'officials:announcement_new' %}" class="{% if url_name == 'announcement_new' %}active{% endif %}"><span class="mr-3"><i class="fa fa-table"></i></span>Create Announcement</a>
+      <a href="{% url 'officials:vacation_list' %}" class="{% if url_name == 'vacation_list' %}active{% endif %}"><span class="mr-3"><i class="fa fa-table"></i></span>Vacation List</a>
 
     {% endif %}
     {% if request.user.is_official and not request.user.official.is_chief %}
@@ -78,7 +102,9 @@
       <a href="{% url 'officials:outing-log' %}" class="{% if url_name == 'outing-log' %}active{% endif %}"><span span class="mr-3"><i class="fa fa-calendar"></i></span> Outing Log</a>
       <a href="{% url 'officials:student_list' %}" class="{% if url_name == 'student_list' %}active{% endif %}"><span class="mr-3"><i class="fa fa-graduation-cap"></i></span> Student List</a>
       <a href="{% url 'officials:grant_outing' %}" class="{% if url_name == 'grant_outing' %}active{% endif %}"><span span class="mr-3"><i class="fa fa-map-marker" ></i></span> Outing Requests</a>
-      <a href="{% url 'officials:complaint_list' %}"  class="{% if url_name == 'complaint_list' %}active{% endif %}"><span class="mr-3"><i class="fa fa-quote-right"></i></span>Complaints List</a>      
+      <a href="{% url 'officials:complaint_list' %}"  class="{% if url_name == 'complaint_list' %}active{% endif %}"><span class="mr-3"><i class="fa fa-quote-right"></i></span>Complaints List</a>   
+      <a href="{% url 'officials:vacation_list' %}" class="{% if url_name == 'vacation_list' %}active{% endif %}"><span class="mr-3"><i class="fa fa-table"></i></span>Vacation List</a>
+      
     
     {% endif %}
     {% if request.user.is_student %}

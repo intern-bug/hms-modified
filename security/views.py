@@ -74,8 +74,7 @@ def outing_action(request, pk):
             outing_obj = get_object_or_404(Outing, id=pk)
             outing_obj.status = 'Closed'
             outing_obj.save()
-            student.rating = student.calculate_rating(outingInOutObj=outingInOutObj)
-            print(student.rating)
+            student.outing_rating = student.calculate_rating(outingInOutObj=outingInOutObj)
             student.save()
             messages.success(request, 'Outing closed successfully')
         return redirect('security:home')

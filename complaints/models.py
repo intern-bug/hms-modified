@@ -36,7 +36,9 @@ class Complaint(models.Model):
     def can_edit(self, user):
         if user.is_official and user.official.is_chief():
             return True
-        elif user.is_official and ((self.user.entity_type() != 'Student' and self.entity().block == user.official.block) or self.entity().roomdetail.block == user.official.block):
+        elif user.is_official and user.official.is_warden() and self.status == 'Processing' and ((self.user.entity_type() != 'Student' and self.entity().block == user.official.block) or self.entity().roomdetail.block == user.official.block):
+            return True
+        elif user.is_official and user.official.is_caretaker() and self.status == 'Registered' and ((self.user.entity_type() != 'Student' and self.entity().block == user.official.block) or self.entity().roomdetail.block == user.official.block):
             return True
         elif user.is_worker:
             return True

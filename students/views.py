@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404, render, reverse, redirect
 from django.http import Http404, HttpResponse
-from institute.models import Student
+from institute.models import Announcements, Student
 from security.models import OutingInOutTimes
 from students.models import ExtendOuting, Outing
 from complaints.models import Complaint
@@ -30,12 +30,17 @@ def home(request):
     student = user.student
     present_dates_count = (student.attendance.present_dates and len(student.attendance.present_dates.split(','))) or 0
     absent_dates_count = (student.attendance.absent_dates and len(student.attendance.absent_dates.split(','))) or 0
-    outing_count = len(student.outing_set.all())
-    rating = student.rating
+    outing_count = 0
+    for outing in student.outing_set.all():
+        if outing.is_upcoming():
+            outing_count+=1
+    outing_rating = student.outing_rating
+    discipline_rating = student.discipline_rating
     complaints = Complaint.objects.filter(user = user, status="Registered") | Complaint.objects.filter(user = user, status="Processing")
-
+    announce_obj = Announcements.objects.all()[:5]
     return render(request, 'students/home.html', {'student': student, 'present_dates_count':present_dates_count, \
-        'absent_dates_count':absent_dates_count, 'outing_count': outing_count, 'complaints':complaints, 'rating':rating})
+        'absent_dates_count':absent_dates_count, 'outing_count': outing_count, 'complaints':complaints, 'outing_rating':outing_rating, \
+            'announce_obj':announce_obj, 'discipline_rating':discipline_rating})
 
 
 class OutingListView(StudentTestMixin, ListView):

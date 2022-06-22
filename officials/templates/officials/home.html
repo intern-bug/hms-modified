@@ -14,6 +14,24 @@
   of {% if user_details.is_chief %} NIT Andhra Pradesh {% else %} {{user_details.block.name}}{% endif %}!
 </p>
 
+<div id="test-carousel" class="carousel slide text-center announcements" data-bs-ride="carousel">
+  {% for announcement in announce_obj %}
+  <div class="carousel-inner">
+    <div class="carousel-item active" data-href="{{ announcement.document.url }}" data-bs-target="_blank">
+      <a style="text-decoration: None; color: #212529;" href="{{ announcement.document.url }}" target="_blank"><h2 class="test-text">{{ announcement.info }}</h2></a>
+    </div>
+  </div>
+  {% endfor %}
+  <button class="carousel-control-prev" type="button" data-bs-target="#test-carousel" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Previous</span>
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#test-carousel" data-bs-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Next</span>
+  </button>
+</div>
+<br>
 <div class="row">
   <div class="col-md" data-toggle="tooltip" title="Click to get list!">
     <div class="card" id="present" data-toggle="collapse" data-target="#attendance_tables" aria-expanded="false"
@@ -58,8 +76,21 @@
     <div class="card" id="comps">
       <div class="row">
         <div class="col-8">
-          <span class="row atttext">Number of complaints received.</span>
-          <span class="row attnum">{{complaints|length}}</span>
+          <span class="row atttext">Number of complaints pending.</span>
+          <span class="row attnum">{{complaints_pending|length}}</span>
+        </div>
+        <div class="col-4">
+          <span class="atticon"><i class="fa fa-font-awesome"></i></span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md">
+    <div class="card" id="comps">
+      <div class="row">
+        <div class="col-8">
+          <span class="row atttext">Number of complaints resolved.</span>
+          <span class="row attnum">{{complaints_resolved|length}}</span>
         </div>
         <div class="col-4">
           <span class="atticon"><i class="fa fa-font-awesome"></i></span>
@@ -166,7 +197,7 @@
       </tr>
     </thead>
     <tbody>
-      {% for item in complaints %}
+      {% for item in complaints_pending %}
       <tr class="text-center" data-row-href="{% url 'complaints:complaint_detail' item.pk %}">
         <td>{{item.entity}}</td>
         <td>{{item.type}}</td>

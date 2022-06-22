@@ -38,7 +38,6 @@ class ComplaintCreationForm(forms.ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
-        print(cleaned_data.keys(), cleaned_data.get('file'))
         type = cleaned_data.get('type')
         complainee_id = cleaned_data.get('complainee_id')
 
@@ -51,6 +50,14 @@ class ComplaintCreationForm(forms.ModelForm):
 
 class ComplaintUpdationForm(forms.ModelForm):
 
+    def __init__(self, *args, **kwargs):
+        if 'request' in kwargs.keys():
+            self.request = kwargs.pop('request')
+        super(ComplaintUpdationForm, self).__init__(*args, **kwargs)
+        if 'request' in self.__dict__.keys() and self.request.user.is_official and self.request.user.official.is_caretaker():
+            self.fields['status'] = forms.ChoiceField(choices = [('Registered', 'Registered'), ('Processing', 'Processing')])
+        if 'request' in self.__dict__.keys() and self.request.user.is_official and self.request.user.official.is_warden():
+            self.fields['status'] = forms.ChoiceField(choices = [('Processing', 'Processing'), ('Resolved', 'Resolved')])
     class Meta:
         model = Complaint
         fields = ['status', 'remark', ]

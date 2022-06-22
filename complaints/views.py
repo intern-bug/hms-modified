@@ -8,7 +8,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 from .forms import MedicalIssueUpdationForm
 from complaints.forms import ComplaintUpdationForm
 import re
-from django.shortcuts import redirect
+from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
 
 
@@ -23,11 +23,13 @@ class ComplaintDetailView(LoginRequiredMixin, DetailView):
             raise Http404()
         return response
 
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['can_edit'] = self.object.can_edit(self.request.user)
         if self.model == Complaint:
-            context['form'] = ComplaintUpdationForm(instance=self.object)
+            form = ComplaintUpdationForm(instance=self.object, request=self.request)
+            context['form'] = form
         else:
             context['form'] = MedicalIssueUpdationForm(instance=self.object)
         context['user'] = self.request.user
@@ -65,6 +67,12 @@ class ComplaintUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     def get_success_url(self):
         # return self.request.user.home_url()
         return reverse('complaints:{}_detail'.format((self.model.__name__).lower()), args=[self.get_object().pk])
+    def form_valid(self, form):
+        if form.cleaned_data['status']=='Resolved' and 'indisciplinary_points' in form.data and form.data['indisciplinary_points']!='':
+            student = get_object_or_404(Student, regd_no=form.instance.complainee.regd_no)
+            student.update_disciplinary_rating(points=int(form.data['indisciplinary_points']))
+            student.save()
+        return super().form_valid(form)
 
 class ComplaintDeleteView(LoginRequiredMixin, DeleteView):
 

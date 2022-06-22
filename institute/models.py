@@ -1,3 +1,4 @@
+from unicodedata import decimal
 import complaints
 from django.db import models
 from django.core.exceptions import ValidationError
@@ -50,7 +51,8 @@ class Student(models.Model):
     address = models.TextField(null=False)
     photo = models.ImageField(null=True, blank=True, upload_to=photo_storage_path)
     is_hosteller = models.BooleanField(null=False, default=True)
-    rating = models.DecimalField(null=False, default=5.0, max_digits=3, decimal_places=2)
+    outing_rating = models.DecimalField(null=False, default=5.0, max_digits=3, decimal_places=2)
+    discipline_rating = models.DecimalField(null=False, default=5.0, max_digits=3, decimal_places=2)
 
     def __str__(self):
         return str(self.regd_no)
@@ -65,7 +67,7 @@ class Student(models.Model):
 
     def calculate_rating(self, outingInOutObj):
         outingInOutObjs = OutingInOutTimes.objects.filter(outing__student=self).filter(inTime__isnull=False)
-        invalid = round((5-self.rating)*len(outingInOutObjs))
+        invalid = round((5-self.outing_rating)*len(outingInOutObjs))
         if outingInOutObj.outing.type == 'Local':
             if outingInOutObj.outing.student.gender == 'Male' and outingInOutObj.inTime != None:
                 if (outingInOutObj.inTime.date()!=outingInOutObj.outing.toDate.date()) or (outingInOutObj.inTime.hour*100 + outingInOutObj.inTime.minute) > 2115 :
@@ -98,6 +100,11 @@ class Student(models.Model):
             rating = 5
         return rating
 
+    def update_disciplinary_rating(self, points):
+        if (float(self.discipline_rating) - (points/5)) > 0:
+            self.discipline_rating = float(self.discipline_rating) - (points/5)
+        else:
+            self.discipline_rating = 0
 
 class Official(models.Model):
     EMP=(
@@ -198,7 +205,10 @@ class Block(models.Model):
         return self.name.split()[0]
 
     def available_floors(self):
-        return FLOOR_OPTIONS[:self.floor_count]
+        if self.name!='Vamsadhara-II':
+            return FLOOR_OPTIONS[:self.floor_count]
+        elif self.name=='Vamsadhara-II':
+            return FLOOR_OPTIONS[3:self.floor_count+3]
 
     def per_room_capacity(self):
         import re
@@ -223,3 +233,18 @@ class Block(models.Model):
 
     def warden(self):
         return self.official_set.filter(designation='Warden').first()
+
+class Announcements(models.Model):
+
+    def announcement_file_storage(instance, filename):
+        extension = filename.split('.')[-1]
+        name = str(instance.id)+'_'+str(instance.created_at.strftime("%d-%m-%Y_%H-%M-%S"))
+        return 'Announcements/Year-{}/{}.{}'.format(timezone.localtime().year, name, extension)
+
+
+    info = models.TextField(null=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    document = models.FileField(null=True, upload_to=announcement_file_storage)
+
+    class Meta:
+        ordering = ['-id']

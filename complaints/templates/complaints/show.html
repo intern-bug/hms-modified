@@ -112,6 +112,12 @@
           <div class="col-12 order-2 order-md-3">
             {{form.remark|as_crispy_field}}
           </div>
+          {% if object.complainee and user.is_official and not user.official.is_caretaker %}
+          <div class="col-6">
+            <label for="indisciplinary_points">Indisciplinary Points for {{ object.complainee.regd_no }}:</label>
+            <input type="number" min="0" max="5" class="form-control" name="indisciplinary_points">
+          </div>
+          {% endif %}
           <div class="col-md-2 d-flex align-items-end py-3 order-3 order-md-2 justify-content-center">
             <input type="submit" value="Update" class="btn btn-primary">
           </div>
