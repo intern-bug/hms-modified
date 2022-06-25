@@ -8,22 +8,24 @@ class Command(BaseCommand):
 
     BLOCKS = [
         {"name": "Godavari Hall of Residency",      "block_id": "4S-A", "gender": "Male", "room_type": "4S", "floor_count": 3, "capacity": 76},
-        {"name": "Sabari Hall of Residency",        "block_id": "2S-A", "gender": "Male", "room_type": "2S", "floor_count": 3, "capacity": 100},
+        # {"name": "Sabari Hall of Residency",        "block_id": "2S-A", "gender": "Male", "room_type": "2S", "floor_count": 3, "capacity": 100},
         {"name": "Indravathi Hall of Residency",    "block_id": "2S-B", "gender": "Male", "room_type": "2S", "floor_count": 3, "capacity": 100},
         {"name": "Pranahitha Hall of Residency",    "block_id": "2S-C", "gender": "Male", "room_type": "2S", "floor_count": 3, "capacity": 100},
         {"name": "Banganga Hall of Residency",      "block_id": "1S-A", "gender": "Male", "room_type": "1S", "floor_count": 3, "capacity": 100},
         {"name": "Purna Hall of Residency",         "block_id": "1S-B", "gender": "Male", "room_type": "1S", "floor_count": 3, "capacity": 100},
         {"name": "Manjeera Hall of Residency",      "block_id": "1S-C", "gender": "Male", "room_type": "1S", "floor_count": 3, "capacity": 100},
         
+
         {"name": "Krishnaveni Hall of Residency",   "block_id": "4S-FA", "gender": "Female", "room_type": "4S", "floor_count": 3, "capacity": 50},
-        {"name": "Bheema Hall of Residency",        "block_id": "2S-FA", "gender": "Female", "room_type": "2S", "floor_count": 3, "capacity": 100},
+        {"name": "Bhima Hall of Residency",        "block_id": "2S-FA", "gender": "Female", "room_type": "2S", "floor_count": 3, "capacity": 100},
         {"name": "Tungabhadra Hall of Residency",   "block_id": "2S-FB", "gender": "Female", "room_type": "2S", "floor_count": 3, "capacity": 100},
         {"name": "Ghataprabha Hall of Residency",   "block_id": "1S-FA", "gender": "Female", "room_type": "1S", "floor_count": 3, "capacity": 100},
         {"name": "Munneru Hall of Residency",       "block_id": "1S-FB", "gender": "Female", "room_type": "1S", "floor_count": 3, "capacity": 100},
         
-        {"name": "4S-B Hall of Residency",          "block_id": "4S-B", "gender": "Male", "room_type": "4S", "floor_count": 5, "capacity": 115},
-        {"name": "2S-D Hall of Residency",          "block_id": "2S-D", "gender": "Male", "room_type": "2S", "floor_count": 5, "capacity": 175},
-        {"name": "1S-D Hall of Residency",          "block_id": "1S-D", "gender": "Male", "room_type": "1S", "floor_count": 5, "capacity": 175},
+        {"name": "Vamsadhara-I Hall of Residency",          "block_id": "4S-B1", "gender": "Male", "room_type": "4S", "floor_count": 3, "capacity": 69},
+        {"name": "Vamsadhara-II Hall of Residency",         "block_id": "4S-B2", "gender": "Male", "room_type": "4S", "floor_count": 2, "capacity": 46},
+        {"name": "Nagavalli Hall of Residency",          "block_id": "2S-D", "gender": "Male", "room_type": "2S", "floor_count": 5, "capacity": 175},
+        {"name": "Swarnamukhi Hall of Residency",        "block_id": "1S-D", "gender": "Male", "room_type": "1S", "floor_count": 5, "capacity": 175},
     ]
 
 
