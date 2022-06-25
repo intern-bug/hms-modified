@@ -65,7 +65,11 @@
                         <td>{{ outing.outing.fromDate }}</td>
                         <td>{{ outing.outing.toDate }}</td>
                         <td>{{ outing.outTime }}</td>
+                        {% if outing.outing.type != 'Vacation' %}
                         <td>{{ outing.inTime }}</td>
+                        {% else %}
+                        <td>None</td>
+                        {% endif %}
                         <td>{{ outing.applied_days }}</td>
                         <td>{{ outing.days }}</td>
                         <td nowrap>

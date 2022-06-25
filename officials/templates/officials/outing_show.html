@@ -18,7 +18,11 @@
         </tr>
         <tr>
           <th>To</th>
+          {% if outing.type != 'Vacation' %}
           <td>{{ outing.toDate }}</td>
+          {% else %}
+          <td>None</td>
+          {% endif %}
         </tr>
         <tr>
           <th>Mode of outing</th>
@@ -91,7 +95,7 @@
           <td>{{ outing.remark_by_caretaker }}</td>
           {% endif %}
         </tr>
-        {% if outing.type != 'Local' %}
+        {% if outing.type != 'Local' and outing.type != 'Vacation' %}
         <tr>
           <th>Mess Rebate</th>
           <td>

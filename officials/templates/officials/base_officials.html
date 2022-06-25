@@ -79,23 +79,26 @@
     {% if not request.user.is_security %}
     {% if request.user.is_official and request.user.official.is_chief %}
       <a href="{% url 'officials:home' %}" class="{% if url_name == 'home' %}active{% endif %}"><span class="mr-3"><i class="fa fa-tachometer"></i></span>Dashboard</a>
+      <a href="{% url 'officials:announcement_list' %}" class="{% if url_name == 'announcement_list' %}active{% endif %}"><span class="mr-3"><i class="fa fa-bullhorn"></i></span>Announcements</a>
+      <a href="{% url 'officials:announcement_new' %}" class="{% if url_name == 'announcement_new' %}active{% endif %}"><span class="mr-3"><i class="fa fa-pencil"></i></span>Create Announcement</a>
       <a href="{% url 'officials:blockSearch' %}" class="{% if url_name == 'blockSearch' %}active{% endif %}"><span class="mr-3"><i class="fa fa-building"></i></span> Block Layout</a>
-      <a href="{% url 'officials:attendance_log' %}" class="{% if url_name == 'attendance_log' %}active{% endif %}"><span class="mr-3"><i class="fa fa-calendar"></i></span> Attendance Log</a>
-      <a href="{% url 'officials:outing-log' %}" class="{% if url_name == 'outing-log' %}active{% endif %}"><span span class="mr-3"><i class="fa fa-calendar"></i></span> Outing Log</a>
       <a href="{% url 'officials:student_list' %}" class="{% if url_name == 'student_list' %}active{% endif %}"><span class="mr-3"><i class="fa fa-graduation-cap"></i></span> Student List</a>
       <a href="{% url 'officials:emp_list' %}" class="{% if url_name == 'emp_list' %}active{% endif %}"><span class="mr-3"><i class="fa fa-users"></i></span>Official List</a>
       <a href="{% url 'officials:workers_list' %}"  class="{% if url_name == 'workers_list' %}active{% endif %}"><span class="mr-3"><i class="fa fa-file-text"></i></span>Staff List</a>      
+      <a href="{% url 'officials:attendance_log' %}" class="{% if url_name == 'attendance_log' %}active{% endif %}"><span class="mr-3"><i class="fa fa-calendar"></i></span> Attendance Log</a>
+      <a href="{% url 'officials:outing-log' %}" class="{% if url_name == 'outing-log' %}active{% endif %}"><span span class="mr-3"><i class="fa fa-calendar"></i></span> Outing Log</a>
+      <a href="{% url 'officials:mess_rebate_action' %}" class="{% if url_name == 'mess_rebate_action' %}active{% endif %}"><span class="mr-3"><i class="fa fa-registered"></i></span>Mess Rebate</a>
+      <a href="{% url 'officials:mess_rebate_log' %}" class="{% if url_name == 'mess_rebate_log' %}active{% endif %}"><span class="mr-3"><i class="fa fa-table"></i></span>Mess Report</a>
       <a href="{% url 'officials:complaint_list' %}"  class="{% if url_name == 'complaint_list' %}active{% endif %}"><span class="mr-3"><i class="fa fa-quote-right"></i></span>Complaints List</a>      
       <a href="{% url 'officials:medical_issue_list' %}"  class="{% if url_name == 'medical_issue_list' %}active{% endif %}"><span class="mr-3"><i class="fa fa-ambulance"></i></span>Medical Issues List</a>      
-      <a href="{% url 'officials:mess_feedback_analysis' %}"  class="{% if url_name == 'mess_feedback_analysis' %}active{% endif %}"><span class="mr-3"><i class="fa fa-bar-chart"></i></span>Mess Feedback</a>      
-      <a href="{% url 'officials:mess_rebate_action' %}" class="{% if url_name == 'mess_rebate_action' %}active{% endif %}"><span class="mr-3"><i class="fa fa-registered"></i></span>Mess Rebate</a>
-      <a href="{% url 'officials:mess_rebate_log' %}" class="{% if url_name == 'mess_rebate_log' %}active{% endif %}"><span class="mr-3"><i class="fa fa-table"></i></span>Mess Rebate Log</a>
-      <a href="{% url 'officials:announcement_new' %}" class="{% if url_name == 'announcement_new' %}active{% endif %}"><span class="mr-3"><i class="fa fa-table"></i></span>Create Announcement</a>
-      <a href="{% url 'officials:vacation_list' %}" class="{% if url_name == 'vacation_list' %}active{% endif %}"><span class="mr-3"><i class="fa fa-table"></i></span>Vacation List</a>
+      <a href="{% url 'mess_feedback:mess_feedback' %}" class="{% if url_name == 'mess_feedback' %}active{% endif %}"><span span class="mr-3"><i class="fa fa-star"></i></span> Mess Feedback</a>
+      <a href="{% url 'officials:mess_feedback_analysis' %}"  class="{% if url_name == 'mess_feedback_analysis' %}active{% endif %}"><span class="mr-3"><i class="fa fa-bar-chart"></i></span>Mess Feedback Analysis</a>      
+      <a href="{% url 'officials:vacation_list' %}" class="{% if url_name == 'vacation_list' %}active{% endif %}"><span class="mr-3"><i class="fa fa-plane"></i></span>Vacation List</a>
 
     {% endif %}
     {% if request.user.is_official and not request.user.official.is_chief %}
       <a href="{% url 'officials:home' %}" class="{% if url_name == 'home' %}active{% endif %}"><span class="mr-3"><i class="fa fa-tachometer"></i></span>Dashboard</a>
+      <a href="{% url 'officials:announcement_list' %}" class="{% if url_name == 'announcement_list' %}active{% endif %}"><span class="mr-3"><i class="fa fa-bullhorn"></i></span>Announcements</a>
       <a href="{% url 'officials:attendance' %}" class="{% if url_name == 'attendance' %}active{% endif %}"><span span class="mr-3"><i class="fa fa-list"></i></span> Attendance</a>
       <a href="{% url 'officials:attendance_workers' %}" class="{% if url_name == 'attendance_workers' %}active{% endif %}"><span span class="mr-3"><i class="fa fa-users"></i></span> Attendance-Staff</a>
       <a href="{% url 'officials:attendance_log' %}" class="{% if url_name == 'attendance_log' %}active{% endif %}"><span span class="mr-3"><i class="fa fa-calendar"></i></span> Attendance Log</a>
@@ -103,16 +106,20 @@
       <a href="{% url 'officials:student_list' %}" class="{% if url_name == 'student_list' %}active{% endif %}"><span class="mr-3"><i class="fa fa-graduation-cap"></i></span> Student List</a>
       <a href="{% url 'officials:grant_outing' %}" class="{% if url_name == 'grant_outing' %}active{% endif %}"><span span class="mr-3"><i class="fa fa-map-marker" ></i></span> Outing Requests</a>
       <a href="{% url 'officials:complaint_list' %}"  class="{% if url_name == 'complaint_list' %}active{% endif %}"><span class="mr-3"><i class="fa fa-quote-right"></i></span>Complaints List</a>   
-      <a href="{% url 'officials:vacation_list' %}" class="{% if url_name == 'vacation_list' %}active{% endif %}"><span class="mr-3"><i class="fa fa-table"></i></span>Vacation List</a>
+      <a href="{% url 'mess_feedback:mess_feedback' %}" class="{% if url_name == 'mess_feedback' %}active{% endif %}"><span span class="mr-3"><i class="fa fa-star"></i></span> Mess Feedback</a>
+      <a href="{% url 'officials:vacation_list' %}" class="{% if url_name == 'vacation_list' %}active{% endif %}"><span class="mr-3"><i class="fa fa-plane"></i></span>Vacation List</a>
       
     
     {% endif %}
     {% if request.user.is_student %}
       <a href="{% url 'students:home' %}" class="{% if url_name == 'home' %}active{% endif %}"><span span class="mr-3"><i class="fa fa-tachometer"></i></span> Dashboard</a>
+      <a href="{% url 'officials:announcement_list' %}" class="{% if url_name == 'announcement_list' %}active{% endif %}"><span class="mr-3"><i class="fa fa-bullhorn"></i></span>Announcements</a>
       <a href="{% url 'students:outing_new' %}" class="{% if url_name == 'outing_new' %}active{% endif %}"><span span class="mr-3"><i class="fa fa-map-marker"></i></span> Outing Application</a>
       <a href="{% url 'students:attendance_history' %}" class="{% if url_name == 'attendance_history' %}active{% endif %}"><span span class="mr-3"><i class="fa fa-list" ></i></span> Attendance History</a>
       <a href="{% url 'students:outing_list' %}" class="{% if url_name == 'outing_list' %}active{% endif %}"><span span class="mr-3"><i class="fa fa-history" ></i></span> Outing History</a>
       <a href="{% url 'mess_feedback:mess_feedback' %}" class="{% if url_name == 'mess_feedback' %}active{% endif %}"><span span class="mr-3"><i class="fa fa-star"></i></span> Mess Feedback</a>
+      <a href="{% url 'students:vacation_history' %}" class="{% if url_name == 'vacation_history' %}active{% endif %}"><span span class="mr-3"><i class="fa fa-plane"></i></span> Vacation History</a>
+
     {% endif %}
 
     <a href="{% url 'complaints:registerMedical' %}"><span class="mr-3"><i class="fa fa-medkit"></i></span> Medical Issue</a>

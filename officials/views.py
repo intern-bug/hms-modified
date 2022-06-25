@@ -1,5 +1,7 @@
-from datetime import timedelta
+from datetime import datetime, timedelta
 from email import message
+from ssl import Purpose
+from django.forms import CharField
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.core.exceptions import ValidationError
@@ -7,18 +9,19 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.decorators import user_passes_test
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.detail import DetailView
-from django.db.models import Sum
-from institute.models import Block, Student, Official
+from institute.models import Announcements, Block, Student, Official
 from security.models import OutingInOutTimes
-from students.models import Attendance, RoomDetail, Outing, ExtendOuting
+from students.models import Attendance, RoomDetail, Outing, ExtendOuting, Vacation
 from django.contrib import messages
 from django.http.response import Http404, HttpResponseForbidden
 from complaints.models import Complaint
 from mess_feedback.models import MessFeedback
 from workers.models import Worker, Attendance as AttendanceWorker
 import uuid
-from django.db.models import IntegerField, F, Q
+from django.db.models import IntegerField, F, Q, Sum, Value, CharField
 from django.db.models.functions import Cast, ExtractDay, TruncDate
+from django.contrib.messages.views import SuccessMessageMixin
+
 
 
 
@@ -34,11 +37,13 @@ def home(request):
     user = request.user
     official = user.official
     outing_requests = ''
-
+    announce_obj = Announcements.objects.all()[:5]
     if official.is_chief():
         present_students = Attendance.objects.filter(status='Present')
         absent_students = Attendance.objects.filter(status='Absent')
-        complaints = official.related_complaints()
+        complaints = official.related_complaints(pending=False)
+        complaints_pending = complaints.filter(status__in = ['Registered', 'Processing'])
+        complaints_resolved = complaints.filter(status = 'Resolved')
 
     else:
         if not official.block: 
@@ -49,11 +54,12 @@ def home(request):
         students = Student.objects.filter(pk__in=student_ids)
         present_students = Attendance.objects.filter(student__in=students, status='Present')
         absent_students = Attendance.objects.filter(student__in=students, status='Absent')
-        complaints = official.related_complaints()
+        complaints_pending = official.related_complaints(pending=False).filter(status__in = ['Registered', 'Processing'])
+        complaints_resolved = official.related_complaints(pending=False).filter(status = 'Resolved')
         outing_requests = official.related_outings()
 
     return render(request, 'officials/home.html', {'user_details': official, 'present':present_students, \
-        'absent':absent_students, 'complaints':complaints, 'outings':outing_requests})
+        'absent':absent_students, 'complaints_pending':complaints_pending, 'complaints_resolved':complaints_resolved, 'outings':outing_requests, 'announce_obj':announce_obj})
 
 
 @user_passes_test(official_check)
@@ -63,6 +69,12 @@ def profile(request):
     complaints = Complaint.objects.filter(user = user)
     return render(request, 'officials/profile.html', {'official': official, 'complaints': complaints})
 
+def announcements_list(request):
+    if request.user.is_official:
+        announce_obj = Announcements.objects.all()
+    elif request.user.is_student:
+        announce_obj = Announcements.objects.all().exclude(officials_only=True)
+    return render(request, 'officials/announcements.html', {'announce_obj':announce_obj})
 
 @user_passes_test(official_check)
 @csrf_exempt
@@ -71,7 +83,7 @@ def attendance(request):
     official = user.official
     block = official.block
     attendance_list  = Attendance.objects.filter(student__in=block.students())
-    date = (timezone.now() - timedelta(hours=1)).date()
+    date = (timezone.localtime() - timedelta(hours=1)).date()
 
     if request.method == 'POST' and request.POST.get('submit'):
         # date = request.POST.get('date')
@@ -98,17 +110,18 @@ def attendance_workers(request):
     official = user.official
     block = official.block
     attendance_list  = AttendanceWorker.objects.filter(worker__in=block.worker_set.all())
-    date = None 
+    date = (timezone.localtime() - timedelta(hours=1)).date()
 
     if request.method == 'POST' and request.POST.get('submit'):
-        date = request.POST.get('date')
+        # date = request.POST.get('date')
+        date = date.strftime('%Y-%m-%d')
+
         for attendance in attendance_list:
             if request.POST.get(str(attendance.id)): attendance.mark_attendance(date, request.POST.get(str(attendance.id)))
 
         messages.success(request, f'Staff Attendance marked for date: {date}')
 
     if request.GET.get('for_date'):
-        date = request.GET.get('for_date')
         messages.info(request, f'Selected date: {date}')
         for item in attendance_list:
             if item.present_dates and  date in set(item.present_dates.split(',')): item.present_on_date = True
@@ -205,7 +218,7 @@ def outing_detail(request, pk):
 
             if request.POST.get('permission'):
                 if request.POST.get('permission') == 'Granted':
-                    if outing.type != 'Local' and request.POST.get('permission') == 'Granted':
+                    if outing.type not in ['Local','Vacation'] and request.POST.get('permission') == 'Granted':
                         if outing.permission == 'Processing':
                             outing.permission = 'Granted'
                         elif outing.permission == 'Processing Extension':
@@ -218,6 +231,12 @@ def outing_detail(request, pk):
                             # outing.remark_by_warden = outingExtendObj.remark_by_warden
                             outingExtendObj.permission = 'Extension Granted'
                             outingExtendObj.save()
+                    if outing.type == 'Vacation':
+                        outing.permission = 'Granted'
+                        outing_list = Outing.objects.filter(toDate__gte=outing.fromDate, student=outing.student).exclude(status='In Outing')
+                        for out in outing_list:
+                            out.permission='Revoked'
+                            out.save()
                     if outing.status != 'In Outing':
                         uid = uuid.uuid4()
                         outing.uuid = uid
@@ -480,7 +499,6 @@ def mess_rebate_action(request):
     calendar_outings = None
     regd_no_outings = None
     if request.method == 'GET':
-        # print(request.GET)
         if request.GET.get('by_month'):
             year, month = request.GET.get('by_month').split('-')
             calendar_outings = OutingInOutTimes.objects.filter(inTime__year=year, inTime__month=month, \
@@ -503,19 +521,15 @@ def mess_rebate_action(request):
             outingInOut_obj = calendar_outings
         elif regd_no_outings:
             outingInOut_obj = regd_no_outings
-        print(request.GET,request.GET.get('by_month'), request.GET.get('by_regd_no'), outingInOut_obj)
         if request.GET.get('submit_action'):
             for outing in outingInOut_obj:
                 if ('status_'+str(outing.id)) in request.GET.keys():
-                    # print(request.GET.get('status_'+str(outing.id)), request.GET.get('no_of_days_'+str(outing.id)))
                     outing_obj = get_object_or_404(Outing,id=outing.outing.id)
                     outing_obj.mess_rebate_status = request.GET.get('status_'+str(outing.id))
                     outing_obj.mess_rebate_days = request.GET.get('no_of_days_'+str(outing.id))
                     if ('remark'+str(outing.id)):
                         outing_obj.mess_rebate_remarks = request.GET.get('remark'+str(outing.id))
                     outing_obj.save()
-                    # print('saved')
-            # print(request.GET)
             messages.success(request, 'Mess Rebate status updated successfully.')
             return render(request, 'officials/mess_rebate_action.html')
             
@@ -531,49 +545,171 @@ def mess_rebate_detail_log(request):
     regd_no_rebate_list = None
     rebate_list = None
     if request.method == 'GET':
-        print(request.GET)
-        if request.GET.get('by_range_from_date') and request.GET.get('by_range_to_date'):
-            calendar_rebate_list = OutingInOutTimes.objects.filter(~Q(outing__mess_rebate_status='NA'), inTime__date__range=[request.GET.get('by_range_from_date'), request.GET.get('by_range_to_date')])
+        if 'submit' in request.GET.keys() or 'download' in request.GET.keys():
+            total_days = (datetime.strptime(request.GET.get('by_range_to_date'), '%Y-%m-%d')-datetime.strptime(request.GET.get('by_range_from_date'),'%Y-%m-%d')).days
+            if request.GET.get('by_mode') == 'Rebate':
+                if request.GET.get('by_range_from_date') and request.GET.get('by_range_to_date'):
+                    calendar_rebate_list = OutingInOutTimes.objects.filter(~Q(outing__mess_rebate_status='NA'), inTime__date__range=[request.GET.get('by_range_from_date'), request.GET.get('by_range_to_date')])
+                
+                if request.GET.get('by_regd_no'):
+                    regd_no_rebate_list = OutingInOutTimes.objects.filter(~Q(outing__mess_rebate_status='NA'), outing__student__regd_no=request.GET.get('by_regd_no'))
+                if not calendar_rebate_list and not regd_no_rebate_list:
+                    messages.error(request, 'No record foundd.')
+                    return render(request, 'officials/mess_rebate_log.html')
+                elif calendar_rebate_list and regd_no_rebate_list:
+                    rebate_list = calendar_rebate_list & regd_no_rebate_list
+                elif  request.GET.get('by_regd_no') and request.GET.get('by_range_from_date') and request.GET.get('by_range_to_date'):
+                    messages.error(request, 'No Records found.')
+                    return render(request, 'officials/mess_rebate_log.html')
+                elif calendar_rebate_list:
+                    rebate_list = calendar_rebate_list
+                elif regd_no_rebate_list:
+                    rebate_list = regd_no_rebate_list
+                rebate_list = rebate_list.values('outing__student__regd_no', 'outing__student__name').annotate(no_of_days=Sum('outing__mess_rebate_days'), \
+                    effective_days=total_days-F('no_of_days'), from_date=Value(request.GET.get('by_range_from_date'), output_field=CharField()), to_date=Value(request.GET.get('by_range_to_date'), output_field=CharField()),\
+                        total_days=Value(total_days, output_field=IntegerField()))
+            elif request.GET.get('by_mode') == 'all':
+                if request.GET.get('by_range_from_date') and request.GET.get('by_range_to_date'):
+                    rebate_list = []
+                    students = Student.objects.all()
+                    if request.GET.get('by_regd_no'):
+                        students = students.filter(regd_no=request.GET.get('by_regd_no'))
+                    for student in students:
+                        rebate={}
+                        rebate['outing__student__regd_no']=student.regd_no
+                        rebate['outing__student__name'] = student.name
+                        rebate['from_date'] = request.GET.get('by_range_from_date')
+                        rebate['to_date'] = request.GET.get('by_range_to_date')
+                        rebate_days = 0
+                        for outing in student.outing_set.all():
+                            if outing.outinginouttimes_set.filter(inTime__date__range=[request.GET.get('by_range_from_date'), request.GET.get('by_range_to_date')]):
+                                rebate_days+=outing.mess_rebate_days
+                        rebate['no_of_days']=rebate_days
+                        rebate['effective_days']=total_days-rebate_days
+                        rebate['total_days'] = total_days
+                        rebate_list.append(rebate)
+
+            if request.GET.get('submit'):
+                context = {
+                    'from_date': request.GET.get('by_range_from_date'),
+                    'to_date': request.GET.get('by_range_to_date'),
+                    'rebate_list': rebate_list,
+                    'regd_no': request.GET.get('by_regd_no'),
+                    'mode': request.GET.get('by_mode'),
+                }
+                return render(request, 'officials/mess_rebate_log.html', context=context)
+            elif request.GET.get('download'):
+                from django.http import HttpResponse
+                from .utils import MessReportBookGenerator
+
+                response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',)
+                filename = str(timezone.localtime().strftime("%d-%m-%Y_%H:%M:%S"))
+                response['Content-Disposition'] = 'attachment; filename=MessReportLog({date}).xlsx'.format(date=filename)
+                BookGenerator = MessReportBookGenerator(rebate_list=rebate_list)
+                workbook = BookGenerator.generate_workbook()
+                workbook.save(response)
+                return response
+    return render(request, 'officials/mess_rebate_log.html')      
+
+@user_passes_test(official_check)
+def vacation_mess_report(request):
+    students = Student.objects.all()
+    rebate_list=[]
+    for student in students:
+        rebate={}
+        rebate['outing__student__regd_no']=student.regd_no
+        rebate['outing__student__name'] = student.name
+        rebate['from_date'] = student.roomdetail.allotted_on
+        vacation = Vacation.objects.filter(room_detail__student=student)
+        if vacation and vacation[0].vacation_outing_obj:
+            outingInOut_obj = OutingInOutTimes.objects.filter(outing=vacation[0].vacation_outing_obj)
+            if outingInOut_obj:
+                rebate['to_date'] = outingInOut_obj.outTime.date()
+                rebate['total_days'] = (rebate['to_date']-rebate['from_date']).days
+            else:
+                rebate['to_date'] = 'Not vacated'
+                rebate['total_days'] = (timezone.localdate()-rebate['from_date']).days
+        else:
+            rebate['to_date'] = 'Not vacated'
+            rebate['total_days'] = (timezone.localdate()-rebate['from_date']).days
+
+        rebate_days = 0
+        for outing in student.outing_set.all():
+            if outing.outinginouttimes_set.all():
+                rebate_days+=outing.mess_rebate_days
+        rebate['no_of_days']=rebate_days
+        rebate['effective_days']=rebate['total_days']-rebate_days
+        rebate_list.append(rebate)
+        context = {'rebate_list':rebate_list}
+
+        from django.http import HttpResponse
+        from .utils import MessReportBookGenerator
+
+        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',)
+        filename = str(timezone.localtime().strftime("%d-%m-%Y_%H:%M:%S"))
+        response['Content-Disposition'] = 'attachment; filename=VacationMessReportLog({date}).xlsx'.format(date=filename)
+        BookGenerator = MessReportBookGenerator(rebate_list=rebate_list)
+        workbook = BookGenerator.generate_workbook()
+        workbook.save(response)
+        return response
+
+@user_passes_test(official_check)
+def vacation_student_details(request):
+    is_chief = request.user.official.is_chief()
+    applied_students = None
+    unapplied_students = None
+    if request.user.official.is_chief(): 
+        applied_students = Vacation.objects.all().order_by('submitted')
+    else: 
+        students =  request.user.official.block.students()
+        applied_students = Vacation.objects.filter(room_detail__block = request.user.official.block).order_by('-submitted')
+        applied_students_room_detail = applied_students.values('room_detail__student__id')
+        unapplied_students = students.exclude(id__in=applied_students_room_detail)
+    return render(request, 'officials/vacation_list.html', {'unapplied_students': unapplied_students, \
+        'vacation_list':applied_students, 'is_chief':is_chief})
+
+@user_passes_test(official_check)
+def vacation_detail(request, pk):
+    vac = get_object_or_404(Vacation, id=pk)
+    if request.method == 'POST':
+        if request.POST.get('submit'):
+            vac.submitted = True
+            vacation_outing = Outing(
+                student = vac.room_detail.student, 
+                fromDate = vac.vacated_on,
+                toDate = vac.vacated_on,
+                purpose = 'vacation',
+                type = 'Vacation',
+                place_of_visit = vac.journey_destination,
+            )
+            vacation_outing.save()
+            vac.vacation_outing_obj = vacation_outing
+            vac.save()
+            messages.success(request, 'Vacation object submitted successfully.')
+        elif request.POST.get('delete'):
+            vac.submitted=False
+            vac.save()
+            vacation_outing = Outing.objects.filter(student=vac.room_detail.student, fromDate=vac.vacated_on, toDate=vac.vacated_on, type='Vacation')
+            if vacation_outing:
+                vacation_outing.delete()
+            else:
+                raise Http404('Error: Outing object not found.')
+            messages.error(request, 'Vacation object revoked successfully.')
+        return redirect('officials:vacation_list')
+    return render(request, 'officials/vacation_detail.html', {'vac':vac})
+
+# @user_passes_test(official_check)
+# def vacation_history(request):
+#     is_chief = request.user.official.is_chief()
+#     if is_chief:
+#         vacation_list = Vacation.objects.all()
+#     else:
+#         vacation_list = Vacation.objects.filter(room_detail__block = request.user.official.block)
         
-        if request.GET.get('by_regd_no'):
-            regd_no_rebate_list = OutingInOutTimes.objects.filter(~Q(outing__mess_rebate_status='NA'), outing__student__regd_no=request.GET.get('by_regd_no'))
-        
-        if not calendar_rebate_list and not regd_no_rebate_list:
-            messages.error(request, 'No record foundd.')
-            return render(request, 'officials/mess_rebate_log.html')
-        elif calendar_rebate_list and regd_no_rebate_list:
-            rebate_list = calendar_rebate_list & regd_no_rebate_list
-        elif request.GET.get('by_regd_no') and request.GET.get('by_range_from_date') and request.GET.get('by_range_to_date'):
-            messages.error(request, 'No Records found.')
-            return render(request, 'officials/mess_rebate_log.html')
-        elif calendar_rebate_list:
-            rebate_list = calendar_rebate_list
-        elif regd_no_rebate_list:
-            rebate_list = regd_no_rebate_list
-        rebate_list = rebate_list.values('outing__student__regd_no', 'outing__student__name').annotate(no_of_days=Sum('outing__mess_rebate_days'))
-        if request.GET.get('submit'):
-            context = {
-                'from_date': request.GET.get('by_range_from_date'),
-                'to_date': request.GET.get('by_range_to_date'),
-                'rebate_list': rebate_list,
-                'regd_no': request.GET.get('by_regd_no')
-            }
-            return render(request, 'officials/mess_rebate_log.html', context=context)
-        elif request.GET.get('download'):
-            from django.http import HttpResponse
-            from .utils import MessRebateBookGenerator
-
-            response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',)
-            filename = str(timezone.localtime().strftime("%d-%m-%Y_%H:%M:%S"))
-            response['Content-Disposition'] = 'attachment; filename=MessRebateLog({date}).xlsx'.format(date=filename)
-            BookGenerator = MessRebateBookGenerator(rebate_list=rebate_list)
-            workbook = BookGenerator.generate_workbook()
-            workbook.save(response)
-            return response
-    return render(request, 'officials/mess_rebate_log.html')        
-
-
-
+#     return render(request, 'officials/vacation_history.html', {'vacation_list':vacation_list, 'is_chief':is_chief})
+# @user_passes_test(official_check)
+# def vacation_form(request, ):
+#     return render(request, 'officials/room_vacation.html')
 
 
 # @user_passes_test(chief_warden_check)
@@ -627,7 +763,7 @@ def mess_rebate_detail_log(request):
 #     return render(request, 'officials/water-can.html')
 
 
-from .forms import StudentForm, WorkerForm
+from .forms import AnnouncementCreationForm, StudentForm, VacationForm, WorkerForm
 from django.views.generic import CreateView, UpdateView, DeleteView, ListView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
@@ -759,3 +895,63 @@ class MedicalIssueListView(OfficialTestMixin, LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         return self.request.user.official.related_medical_issues(pending=False)
+
+class VacationDetails(OfficialTestMixin, SuccessMessageMixin, CreateView):
+    template_name = 'officials/room_vacation.html'
+    model = Vacation
+    form_class = VacationForm
+    success_url = reverse_lazy('officials:vacation_list')
+    success_message = 'Vacation form created successfully.'
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form_title'] = 'Vacation form'
+        return context
+    
+    def form_valid(self, form):
+        roomDetail = get_object_or_404(RoomDetail, id=self.kwargs['pk'])
+        form.instance.room_detail = roomDetail
+        return super().form_valid(form)
+
+class VacationEditView(OfficialTestMixin, SuccessMessageMixin, UpdateView):
+    model = Vacation
+    template_name = 'officials/room_vacation.html'
+    form_class = VacationForm
+    success_message = 'Vacation form updated successfully.'
+    success_url = reverse_lazy('officials:vacation_list')
+
+    def get(self, request, *args, **kwargs):
+        response =  super().get(request, *args, **kwargs)
+        if self.object.submitted: 
+            raise Http404('Cannot edit the outing application.')
+        return response
+
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form_title'] = 'Edit Vacation Application'
+        return context
+
+    def form_valid(self,form):
+        vacation_obj = get_object_or_404(Vacation, id=self.kwargs['pk'])
+        if not vacation_obj.submitted:
+            return super().form_valid(form)
+        else:
+            raise Http404('Cannot edit the outing application.')
+
+
+    
+
+
+class AnnouncementCreateView(OfficialTestMixin, SuccessMessageMixin, CreateView):
+    template_name = 'officials/announcement_new.html'
+    success_message = 'Announcement added successfully.'
+    success_url = reverse_lazy('officials:home')
+    model = Announcements
+    form_class = AnnouncementCreationForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form_title'] = 'Create New Announcement'
+        return context

@@ -92,8 +92,6 @@
     
   {% if outing_list %}
   <div class="col-md">
-    <h3 class="text-center">Outing log</h3>
-    <span class="ml-4">Date: {{ date }}</span>
     <div class="overflow-auto p-3">
       <table class="table table-hover table-muted table-striped attendance-table">
         <thead>
@@ -114,7 +112,11 @@
             <td>{{ outing.outing.student.roomdetail.block.short_name }}</td>
             <td>{{ outing.outing.student.roomdetail.room }}</td>
             <td>{{ outing.outTime }}</td>
+            {% if outing.outing.type != 'Vacation' %}
             <td>{{ outing.inTime }}</td>
+            {% else %}
+            <td>None</td>
+            {% endif %}
           </tr>
           {% endfor %}
         </tbody>
@@ -170,5 +172,16 @@
         document.getElementById('dwnld_by_month').value = '';
         document.getElementById('dwnld_by_year').value = '';
     });
+</script>
+<script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js"></script>
+<script>
+  $(document).ready(function () {
+    $('table').DataTable({
+      "lengthMenu": [[10, 25, 50, 100, 250, 500, 1000, -1], [10, 25, 50, 100, 250, 500, 1000, "All"]],
+      "info": false,
+      "dom": '<"row"<"col-3"l><"col"f><"col"p>>t'
+    });
+  });
 </script>
 {% endblock script_links %}
