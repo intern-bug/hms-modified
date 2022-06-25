@@ -1,0 +1,19 @@
+{% extends 'officials/base_officials.html' %}
+
+{% block title %}Outing History{% endblock title %}
+{% block content %}
+<h2 class="text-center">Announcements</h2>
+<hr />
+{% for announcement in announce_obj %}
+<div class="row">
+    <div class="col">
+        <p class="text-center">
+            <a href="{{ announcement.document.url }}" target="_blank">
+                {{ announcement.info }}
+            </a>
+        </p>
+        <hr>
+    </div>
+</div>
+{% endfor %}
+{% endblock content %}

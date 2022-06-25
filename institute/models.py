@@ -1,6 +1,7 @@
 from unicodedata import decimal
 import complaints
 from django.db import models
+from django.db.models import Q
 from django.core.exceptions import ValidationError
 from django.conf import settings
 from django.core.validators import MinLengthValidator
@@ -23,6 +24,16 @@ class Student(models.Model):
     GENDER=(
         ('Male','Male'),
         ('Female','Female'),
+    )
+
+    PROGRAMME_OPTIONS=(
+        ('B.Tech.', 'B.Tech.'),
+        ('M.Tech.', 'M.Tech.'),
+        ('MS(Research)','MS(Research)'),
+        ('Ph.D', 'Ph.D'),
+        ('Project Staff', 'Project Staff'),
+        ('Interns', 'Interns'),
+        ('Others', 'Others')
     )
 
     def photo_storage_path(instance, filename):
@@ -53,6 +64,7 @@ class Student(models.Model):
     is_hosteller = models.BooleanField(null=False, default=True)
     outing_rating = models.DecimalField(null=False, default=5.0, max_digits=3, decimal_places=2)
     discipline_rating = models.DecimalField(null=False, default=5.0, max_digits=3, decimal_places=2)
+    specialization = models.CharField(max_length=15, choices=PROGRAMME_OPTIONS, null=False)
 
     def __str__(self):
         return str(self.regd_no)
@@ -139,10 +151,10 @@ class Official(models.Model):
     def related_outings(self):
         if self.is_warden():
             return Outing.objects.filter(student__in=self.block.students(), permission__in=['Processing', 'Processing Extension']).\
-                filter(toDate__gt=timezone.now()).exclude(status='Closed')
+                filter(toDate__gt=timezone.now()).exclude(status='Closed') | Outing.objects.filter(~Q(status='Closed'), type='Vacation', permission__in=['Processing', 'Processing Extension'])
         elif self.is_caretaker():
             return Outing.objects.filter(student__in=self.block.students(), permission__in=['Pending', 'Pending Extension']).\
-                filter(toDate__gt=timezone.now()).exclude(status='Closed')
+                filter(toDate__gt=timezone.now()).exclude(status='Closed') | Outing.objects.filter(~Q(status='Closed'), type='Vacation', permission__in=['Pending', 'Pending Extension'])
         else:
             raise ValidationError('You are not authorized to view outings.')
 
@@ -154,7 +166,11 @@ class Official(models.Model):
                 return complaints.models.Complaint.objects.all()
         else:
             students = self.block.students()
-            users = students.values_list('user', flat=True)
+            users = list(students.values_list('user', flat=True))
+            officials = self.block.officials()
+            users = users + list(officials.values_list('user', flat=True))
+            workers = self.block.workers()
+            users = users + list(workers.values_list('user', flat=True))
             if pending:
                 return complaints.models.Complaint.objects.filter(user__in=users, status__in=['Registered', 'Processing']) | self.user.complaint_set.filter(status__in=['Registered', 'Processing'])
             else:
@@ -205,9 +221,9 @@ class Block(models.Model):
         return self.name.split()[0]
 
     def available_floors(self):
-        if self.name!='Vamsadhara-II':
+        if self.short_name()!='Vamsadhara-II':
             return FLOOR_OPTIONS[:self.floor_count]
-        elif self.name=='Vamsadhara-II':
+        elif self.short_name()=='Vamsadhara-II':
             return FLOOR_OPTIONS[3:self.floor_count+3]
 
     def per_room_capacity(self):
@@ -228,6 +244,12 @@ class Block(models.Model):
         student_ids = student_rooms.values_list('student', flat=True)
         return Student.objects.filter(pk__in=student_ids)
 
+    def officials(self):
+        return self.official_set
+    
+    def workers(self):
+        return self.worker_set
+
     def caretaker(self):
         return self.official_set.filter(designation='Caretaker').first()
 
@@ -245,6 +267,7 @@ class Announcements(models.Model):
     info = models.TextField(null=False)
     created_at = models.DateTimeField(auto_now_add=True)
     document = models.FileField(null=True, upload_to=announcement_file_storage)
+    officials_only = models.BooleanField(null=False, default=False)
 
     class Meta:
         ordering = ['-id']
