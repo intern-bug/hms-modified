@@ -12,21 +12,19 @@
       <div class="row">
         <div class="col-12">
             <div id="div_id_date" class="form-group"> 
-                <label for="id_date" class=" requiredField">Date<span class="asteriskField">*</span> </label> 
-                <div> 
+                <label for="id_date" class=" requiredField">
+                    Date: <p style="display: inline; font-weight: bold">{{ date }}</p>
+                </label> 
+                <!-- <div> 
                     <input type="date" name="date" class="dateinput form-control" required id="id_date"> 
-                </div> 
+                </div>  -->
             </div> 
             <div id="div_id_type" class="form-group"> 
-                <label for="id_type" class=" requiredField">Type<span class="asteriskField">*</span> </label> 
+                <label for="id_type" class=" requiredField">
+                    Session: <p style="display: inline; font-weight: bold">{{session}} </p>
+                </label> 
                 <div> 
-                    <select name="type" class="select form-control" required id="id_type"> 
-                        <option value="" selected>---------</option> 
-                        <option value="Breakfast">Breakfast</option> 
-                        <option value="Lunch">Lunch</option> 
-                        <option value="Snacks">Snacks</option> 
-                        <option value="Dinner">Dinner</option>
-                    </select> 
+                    <input type="hidden" name="type" value="{{session}}">
                 </div> 
             </div>
 
@@ -56,7 +54,7 @@
     </div>
     <div class="card-footer">
       <div class="row justify-content-center">
-        <button type="submit" class="btn btn-warning px-4 py-2">Register</button>
+        <button type="submit" class="btn btn-warning px-4 py-2">Submit</button>
       </div>
     </div>  
   </form>

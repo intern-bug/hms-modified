@@ -2,9 +2,10 @@ from django.shortcuts import render, redirect
 from django.views.generic import CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
-from mess_feedback.models import MessFeedback
+from mess_feedback.models import MessFeedback, get_type
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib import messages
+from django.utils import timezone
 
 # Create your views here.
 def official_check(user):
@@ -13,13 +14,20 @@ def student_check(user):
     return user.is_authenticated and user.is_student
 
 
-@user_passes_test(student_check)
+# @user_passes_test(user_check)
 def mess_feedback_view(request):
+    session = get_type()
+    if not session:
+        messages.error(request, 'No active mess session.') 
+        return redirect(request.user.home_url())
     if request.method == 'POST':
-        mess_feedback_obj = MessFeedback.objects.filter(user=request.user, date=request.POST.get('date'), \
+        if session!=request.POST.get('type'):
+            messages.error(request, 'No active mess session.') 
+            return redirect(request.user.home_url())
+        mess_feedback_obj = MessFeedback.objects.filter(user=request.user, date=timezone.localdate(), \
             type=request.POST.get('type'))
         if len(mess_feedback_obj)==0:
-            mess_feedback_obj = MessFeedback(user=request.user, date=request.POST.get('date'), \
+            mess_feedback_obj = MessFeedback(user=request.user, date=timezone.localdate(), \
                 type=request.POST.get('type'), rating=request.POST.get('rating'), review=request.POST.get('review'))
             mess_feedback_obj.save()
         else:
@@ -27,7 +35,6 @@ def mess_feedback_view(request):
             mess_feedback_obj[0].review = request.POST.get('review')
             mess_feedback_obj[0].save()
         messages.success(request, 'Feedback noted Successfully!')
-        return redirect('students:home')
-            
-        
-    return render(request, 'mess_feedback/mess_feedback.html', {'form_title': 'Mess Feedback'})
+        return redirect(request.user.home_url())
+    return render(request, 'mess_feedback/mess_feedback.html', {'form_title': 'Mess Feedback', 'date':timezone.localdate(), 'session':session})
+
