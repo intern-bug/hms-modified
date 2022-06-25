@@ -121,6 +121,18 @@
     document.getElementById('by_month').addEventListener('change', enableSubmit);
     document.getElementById('by_regd_no').addEventListener('change', enableSubmit);
 </script>
+
+<script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js"></script>
+<script>
+  $(document).ready(function () {
+    $('table').DataTable({
+      "lengthMenu": [[10, 25, 50, 100, 250, 500, 1000, -1], [10, 25, 50, 100, 250, 500, 1000, "All"]],
+      "info": false,
+      "dom": '<"row"<"col-3"l><"col"f><"col"p>>t'
+    });
+  });
+</script>
 {% endblock script_links %}
 
 

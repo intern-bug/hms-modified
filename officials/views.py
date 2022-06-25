@@ -546,7 +546,7 @@ def mess_rebate_action(request):
             messages.success(request, 'Mess Rebate status updated successfully.')
             return render(request, 'officials/mess_rebate_action.html')
             
-        return render(request, 'officials/mess_rebate_action.html', {'outing_obj':outingInOut_obj, 'regd_no': request.GET.get('by_regd_no'),\
+        return render(request, 'officials/mess_rebate_action.html', {'outing_obj':outingInOut_obj, 'regd_no': request.GET.get('by_regd_no') or '',\
             'month': request.GET.get('by_month')})
 
     return render(request, 'officials/mess_rebate_action.html')
