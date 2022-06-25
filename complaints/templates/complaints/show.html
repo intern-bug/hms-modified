@@ -59,6 +59,7 @@
       </form>
     </div>
   </div>
+  {% if object.user == user or user.is_official and not user.official.is_caretaker %}
   <div class="col-md-6 border py-3">
     <h4 class="text-center border-bottom border-secondary pb-3">Registrant Details</h4>
     <table class="table table-borderless">
@@ -93,7 +94,7 @@
       </tbody>
     </table>
   </div>
-
+{% endif %}
   
   {% if can_edit %}    
     <div class="col-11 mt-4 border p-3">
