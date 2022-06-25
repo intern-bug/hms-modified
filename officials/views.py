@@ -1,6 +1,8 @@
+from calendar import weekday
 from datetime import datetime, timedelta
 from email import message
 from ssl import Purpose
+from unittest.mock import CallableMixin
 from django.forms import CharField
 from django.urls import reverse_lazy
 from django.utils import timezone
@@ -443,8 +445,19 @@ def mess_feedback_analysis(request):
         #     calendar_feedback = MessFeedback.objects.filter(date__year=year, date__month=month)
         if request.POST.get('by_range_from_date') and request.POST.get('by_range_to_date'):
             calendar_feedback = MessFeedback.objects.filter(date__range=[request.POST.get('by_range_from_date'), request.POST.get('by_range_to_date')])
+            if request.POST.get('by_day'):
+                weekday_feedback = MessFeedback.objects.filter(date__week_day=request.POST.get('by_day'))
+            if calendar_feedback and weekday_feedback:
+                calendar_feedback = calendar_feedback & weekday_feedback
         elif request.POST.get('by_year'):
             calendar_feedback = MessFeedback.objects.filter(date__year=request.POST.get('by_year'))
+            if request.POST.get('by_day'):
+                weekday_feedback = MessFeedback.objects.filter(date__week_day=request.POST.get('by_day'))
+            if calendar_feedback and weekday_feedback:
+                calendar_feedback = calendar_feedback & weekday_feedback
+
+        elif request.POST.get('by_day'):
+            calendar_feedback = MessFeedback.objects.filter(date__week_day=request.POST.get('by_day'))
         if calendar_feedback!=None and len(calendar_feedback)==0:
             messages.error(request, 'No feedback found.')
             return render(request, 'officials/mess_feedback_analysis.html')
@@ -482,7 +495,7 @@ def mess_feedback_analysis(request):
                    'percent_1':percent_1,
                    'from_date': request.POST.get('by_range_from_date'),
                    'to_date': request.POST.get('by_range_to_date'),
-                #    'month': request.POST.get('by_month'),
+                   'day': request.POST.get('by_day'),
                    'year': request.POST.get('by_year'),
                    'type': request.POST.get('by_type'),
                    'count': len(feedback_obj)

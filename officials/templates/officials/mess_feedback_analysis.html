@@ -50,6 +50,21 @@
                 </select> 
             </div>
         </div>
+        <div class="col-md-4 d-flex justify-content-center">
+            <div class="form-group">
+                <label for="by_day" class="">Day</label>
+                <select name="by_day" class="select form-control" id="id_day"> 
+                    <option value="" selected>---------</option> 
+                    <option value="1">Sunday</option> 
+                    <option value="2">Monday</option> 
+                    <option value="3">Tuesday</option> 
+                    <option value="4">Wednesday</option>
+                    <option value="5">Thursday</option>
+                    <option value="6">Friday</option>
+                    <option value="7">Saturday</option>
+                </select> 
+            </div>
+        </div>
     </div>
     <div class="row justify-content-center mb-5">
     <div class="col-12 col-md-4 text-center">
@@ -132,6 +147,15 @@
         for (let i=0; i<document.getElementById('id_type').options.length; i++){
             if (document.getElementById('id_type').options[i].value == type){
                 document.getElementById('id_type').options[i].selected = true;
+                break;
+            }
+        }
+    }
+    var day = '{{day}}'
+    if (day != ""){
+        for (let i=0; i<document.getElementById('id_day').options.length; i++){
+            if (document.getElementById('id_day').options[i].value == day){
+                document.getElementById('id_day').options[i].selected = true;
                 break;
             }
         }
