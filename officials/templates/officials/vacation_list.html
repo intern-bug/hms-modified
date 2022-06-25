@@ -1,0 +1,149 @@
+{% extends 'officials/base_officials.html' %}
+{% block title %}Vacation List{% endblock title %}
+
+{% block content %}
+{% if not is_chief %}
+<h2 class="text-center">Unapplied Students List</h2>
+<hr>
+
+<div class="overflow-auto p-3">
+    <table class="table table-hover table-muted table-striped">
+        <thead>
+            <tr >
+                <th>Regd. No.</th>
+                <th>Name</th>
+                <th>Year</th>
+                {% if is_chief %}
+                <th>Block</th>
+                {% endif %}
+                <th>Room No.</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in unapplied_students %}
+            <tr data-row-href="{% url 'officials:vacation-form' student.roomdetail.id %}">
+                <td>{{ student.regd_no }}</td>
+                <td>{{ student.name }}</td>
+                <td>{{ student.year }}</td>
+                {% if is_chief %}
+                <td>{{ student.roomdetail.block.short_name }}</td>
+                {% endif %}
+                <td>{{ student.roomdetail.room_no }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<br>
+{% endif %}
+
+<h4 class="text-center">Unsubmitted Applications</h4>
+<hr>
+<div class="overflow-auto p-3">
+    <table class="table table-hover table-muted table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Regd. No.</th>
+                <th>Name</th>
+                {% if is_chief %}
+                <th>Block</th>
+                {% endif %}
+                <th>Room No.</th>
+                <th>Vacation Date</th>
+                <th>Submitted</th>
+                {% if not is_chief %}
+                <th>Action</th>
+                {% endif %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for vac in vacation_list %}
+            {% if not vac.submitted %}
+            <tr {% if is_chief %}data-row-href="{% url 'officials:vacation_detail' vac.id %}"{% endif %}>
+                <td>{{ vac.id }}</td>
+                <td>{{ vac.room_detail.student.regd_no }}</td>
+                <td>{{ vac.room_detail.student.name }}</td>
+                {% if is_chief %}
+                <td>{{ vac.room_detail.block.short_name }}</td>
+                {% endif %}
+                <td>{{ vac.room_detail.room_no }}</td>
+                <td>{{ vac.vacated_on }}</td>
+                <td>{{ vac.submitted }}</td>
+                {% if not is_chief %}
+                <td>
+                    {% if not vac.submitted %}
+                    <a href="{% url 'officials:vacation-form-edit' vac.id %}" class="btn btn-primary">Edit</a>
+                    {% endif %}
+                </td>
+                {% endif %}
+            </tr>
+            {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<br>
+<h4 class="text-center">Submitted Applications</h4>
+<hr>
+<div class="overflow-auto p-3">
+    <table class="table table-hover table-muted table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Regd. No.</th>
+                <th>Name</th>
+                {% if is_chief %}
+                <th>Block</th>
+                {% endif %}
+                <th>Room No.</th>
+                <th>Vacation Date</th>
+                <th>Submitted</th>
+                {% if not is_chief %}
+                <th>Action</th>
+                {% endif %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for vac in vacation_list %}
+            {% if vac.submitted %}
+            <tr {% if is_chief %}data-row-href="{% url 'officials:vacation_detail' vac.id %}"{% endif %}>
+                <td>{{ vac.id }}</td>
+                <td>{{ vac.room_detail.student.regd_no }}</td>
+                <td>{{ vac.room_detail.student.name }}</td>
+                {% if is_chief %}
+                <td>{{ vac.room_detail.block.short_name }}</td>
+                {% endif %}
+                <td>{{ vac.room_detail.room_no }}</td>
+                <td>{{ vac.vacated_on }}</td>
+                <td>{{ vac.submitted }}</td>
+                {% if not is_chief %}
+                <td>
+                    {% if not vac.submitted %}
+                    <a href="{% url 'officials:vacation-form-edit' vac.id %}" class="btn btn-primary">Edit</a>
+                    {% endif %}
+                </td>
+                {% endif %}
+            </tr>
+            {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock content %}
+
+{% block script_links %}
+<script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js"></script>
+<script>
+  $(document).ready(function () {
+    $('table').DataTable({
+      "lengthMenu": [[10, 25, 50, 100, 250, 500, 1000, -1], [10, 25, 50, 100, 250, 500, 1000, "All"]],
+      "info": false,
+      "dom": '<"row"<"col-3"l><"col"f><"col"p>>t'
+    });
+  });
+</script>
+{% endblock script_links %}

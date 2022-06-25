@@ -41,7 +41,15 @@ urlpatterns = [
     path('mess_feedback_analysis', views.mess_feedback_analysis, name='mess_feedback_analysis'),
     path('mess_rebate_action', views.mess_rebate_action, name='mess_rebate_action'),
     path('mess_rebate_log', views.mess_rebate_detail_log, name='mess_rebate_log'),
+    path('vacation_mess_report', views.vacation_mess_report, name='vacation_mess_report'),
+    path('vacation_list', views.vacation_student_details, name='vacation_list'),
+    path('vacation-form/<int:pk>', views.VacationDetails.as_view(), name='vacation-form'),
+    path('vacation-form/<int:pk>/edit', views.VacationEditView.as_view(), name='vacation-form-edit'),
+    path('vacation_detail/<int:pk>', views.vacation_detail, name='vacation_detail'),
+    # path('vacation-list', views.vacation_history, name='vacation-list'),
 
+    path('announcement_new', views.AnnouncementCreateView.as_view(), name='announcement_new'),
+    path('announcement_list', views.announcements_list, name='announcement_list'),
     # path('water-cans/', views.watercan, name='watercan'),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

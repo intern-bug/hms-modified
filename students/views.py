@@ -1,8 +1,8 @@
 from django.shortcuts import get_object_or_404, render, reverse, redirect
-from django.http import Http404, HttpResponse
+from django.http import Http404, HttpResponse, FileResponse
 from institute.models import Announcements, Student
 from security.models import OutingInOutTimes
-from students.models import ExtendOuting, Outing
+from students.models import ExtendOuting, Outing, Vacation
 from complaints.models import Complaint
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth.decorators import user_passes_test
@@ -12,6 +12,9 @@ from django.urls import reverse_lazy
 from .forms import OutingExtendForm, OutingForm
 from django.db.models import F
 from django.contrib import messages
+from django.utils import timezone
+import io
+from vacation_form import create_vacation_form
 
 
 
@@ -37,7 +40,7 @@ def home(request):
     outing_rating = student.outing_rating
     discipline_rating = student.discipline_rating
     complaints = Complaint.objects.filter(user = user, status="Registered") | Complaint.objects.filter(user = user, status="Processing")
-    announce_obj = Announcements.objects.all()[:5]
+    announce_obj = Announcements.objects.all().exclude(officials_only=True)[:5]
     return render(request, 'students/home.html', {'student': student, 'present_dates_count':present_dates_count, \
         'absent_dates_count':absent_dates_count, 'outing_count': outing_count, 'complaints':complaints, 'outing_rating':outing_rating, \
             'announce_obj':announce_obj, 'discipline_rating':discipline_rating})
@@ -114,12 +117,12 @@ def attendance_history(request):
 def cancel_outing(request, pk):
     if request.method == 'POST':
         outing = get_object_or_404(Outing, id=pk)
-        print(outing.status)
-        if outing.permission == 'Pending':
-            Outing.objects.get(id=pk).delete()
-        elif outing.status!='In Outing':
-            outing.permission = 'Revoked'
-            outing.save()
+        if outing.can_cancel():
+            if outing.permission == 'Pending':
+                Outing.objects.get(id=pk).delete()
+            elif outing.status!='In Outing':
+                outing.permission = 'Revoked'
+                outing.save()
         return redirect('students:outing_list')
     else:
         return HttpResponse("not post")
@@ -162,5 +165,32 @@ class OutingExtendView(StudentTestMixin, SuccessMessageMixin, CreateView):
         form.instance.outing = outing
         return super().form_valid(form)
 
+@user_passes_test(student_check)
+def vacation_history(request):
+    user = request.user
+    student = user.student
+    if not Vacation.objects.filter(room_detail=student.roomdetail).exists():
+        messages.error(request, 'No vacation history found.')
+        return redirect('students:home')
+    else:
+        vac = get_object_or_404(Vacation, room_detail=student.roomdetail)
+        return render(request, 'students/vacation_history.html', {'vac':vac})
 
 
+
+@user_passes_test(student_check)
+def vacation_form_download(request):
+    user = request.user
+    student = user.student
+
+    vac = get_object_or_404(Vacation, room_detail=student.roomdetail)
+
+    buf = io.BytesIO()
+
+    context = {'vac':vac}
+
+    create_vacation_form(buf, context)
+
+    buf.seek(0)
+    file = 'Vacation_form-{}/{}.{}'.format(vac.room_detail.__str__(), timezone.localtime().strftime('%d-%m-%Y_%H-%M-%S'),'pdf')
+    return FileResponse(buf, as_attachment=True, filename=file)

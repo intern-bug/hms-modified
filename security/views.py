@@ -51,9 +51,13 @@ def outing_action(request, pk):
             else:
                 messages.error(request, 'Outing is outdated.')
                 return redirect('security:home')
-            outingInOutObj.save()
-            outing_obj.status = 'In Outing'
+            if outingInOutObj.outing.type != 'Vacation':
+                outing_obj.status = 'In Outing'
+            else:
+                outing_obj.status = 'Closed'
+                outingInOutObj.inTime = timezone.now()
             outing_obj.save()
+            outingInOutObj.save()
             messages.success(request, 'Outing Allowed successfully')
         elif action == 'Disallowed':
             # outing_obj = get_object_or_404(Outing, id=pk)

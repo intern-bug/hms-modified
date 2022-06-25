@@ -12,9 +12,23 @@
       <tbody>
         <tr><th>ID</th><td>{{ outing.id }}</td></tr>
         <tr><th>From</th> <td nowrap>{{ outing.fromDate }}</td></tr>
-        <tr><th>To</th><td nowrap>{{ outing.toDate }}</td></tr>
+        <tr>
+          <th>To</th>
+          {% if outing.type != 'Vacation' %}
+          <td nowrap>{{ outing.toDate }}</td>
+          {% else %}
+          <td nowrap>None</td>
+          {% endif %}
+        </tr>
         <tr><th>Out Time</th><td nowrap>{{ outing.outTime }}</td></tr>
-        <tr><th>In Time</th><td nowrap>{{ outing.inTime }}</td></tr>
+        <tr>
+          <th>In Time</th>
+          {% if outing.type != 'Vacation' %}
+          <td nowrap>{{ outing.inTime }}</td>
+          {% else %}
+          <td nowrap>None</td>
+          {% endif %}
+        </tr>
         <tr><th>Type</th><td>{{ outing.type }}</td></tr>
         <tr><th>Purpose of Visit</th><td>{{ outing.purpose }}</td></tr>
         <tr><th>Parent Consent</th><td>{{ outing.parent_consent }}</td></tr>

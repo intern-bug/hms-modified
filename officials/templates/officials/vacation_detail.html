@@ -1,0 +1,122 @@
+{% extends 'officials/base_officials.html' %}
+
+{% block title %}Vacation Detail - {{object.regd_no}}{% endblock title %}
+
+{% block style_links %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'officials/home.css' %}">
+{% endblock style_links %}
+
+{% block content %}
+<h2 class="text-center">Student {{vac.room_detail.student.regd_no}} - {{vac.room_detail.student.name}}</h2>
+<hr>
+<div class="row mx-md-4 mt-4 justify-content-center">
+  <div class="col-md-6 p-3">
+    <table class="table table-borderless">
+      <tbody>
+        <tr>
+          <th>Name</th>
+          <td>{{vac.room_detail.student.name}}</td>
+        </tr>
+        <tr>
+          <th>Registration No.</th>
+          <td>{{vac.room_detail.student.regd_no}}</td>
+        </tr>
+        <tr>
+          <th>Roll No.</th>
+          <td>{{vac.room_detail.student.roll_no}}</td>
+        </tr>
+        <tr>
+          <th>Year</th>
+          <td>{{vac.room_detail.student.year}}</td>
+        </tr>
+        <tr>
+          <th>Branch</th>
+          <td>{{vac.room_detailstudent.branch}}</td>
+        </tr>
+        <tr>
+          <th>Room</th>
+          <td>{{ vac.room_detail.room }}</td>
+        </tr>
+        <tr>
+          <th>Block</th>
+          <td>{{vac.room_detail.block.name}}</td>
+        </tr>
+        <tr>
+            <th>Vacated on</th>
+            <td>{{ vac.vacated_on }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="col-md-6 p-3">
+    <table class="table table-borderless">
+      <tbody>
+        <tr>
+            <th>Iron Cot Status</th>
+            <td>{{ vac.iron_cot_status }}</td>
+            <th>Iron Cot Remarks</th>
+            <td>{{ vac.iron_cot_remarks }}</td>
+          </tr>
+          <tr>
+            <th>Tube Light Status</th>
+            <td>{{ vac.tube_light_status }}</td>
+            <th>Tube Light Remarks</th>
+            <td>{{ vac.tube_light_remarks }}</td>
+          </tr>
+          <tr>
+            <th>Fan Status</th>
+            <td>{{ vac.fan_status }}</td>
+            <th>Fan Remarks</th>
+            <td>{{ vac.fan_remarkss }}</td>
+          </tr>
+          <tr>
+            <th>Fan Regulator Status</th>
+            <td>{{ vac.fan_regulator_status }}</td>
+            <th>Fan Regulator Remarks</th>
+            <td>{{ vac.fan_regulator_remarks }}</td>
+          </tr>
+          <tr>
+            <th>Cupboards Status</th>
+            <td>{{ vac.cupboards_status }}</td>
+            <th>Cupboards Remarks</th>
+            <td>{{ vac.cupboards_remarks }}</td>
+          </tr>
+          <tr>
+            <th>Switches Status</th>
+            <td>{{ vac.switches_status }}</td>
+            <th>Switches Remarks</th>
+            <td>{{ vac.switches_remarks }}</td>
+          </tr>
+          <tr>
+            <th>Socket Status</th>
+            <td>{{ vac.amperes_socket_15_status }}</td>
+            <th>Socket Remarks</th>
+            <td>{{ vac.amperes_socket_15_remarks }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <br>
+  <form method="POST" class="text-center">{% csrf_token %}
+    {% if vac.submitted %}
+    <input type="submit" class="btn btn-danger" name="delete" value="Unsubmit">
+    {% endif %}
+    {% if not vac.submitted %}
+    <input type="submit" class="btn btn-primary" name="submit">
+    {% endif %}
+  </form>
+</div>
+
+{% endblock content %}
+
+{% block script_links %}
+<script>
+  $(document).ready(function() {
+  setInterval(function() {
+    window.location.reload(true);
+  }, 5000);
+});
+</script>
+
+{% endblock script_links %}

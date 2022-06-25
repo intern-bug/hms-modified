@@ -11,6 +11,7 @@ class RoomDetail(models.Model):
     block = models.ForeignKey('institute.Block', on_delete=models.SET_NULL, null=True, blank=True)
     room_no = models.IntegerField(null=True, blank=True)
     floor = models.CharField(max_length=10, choices=list(map(lambda floor: (floor, floor), FLOOR_OPTIONS)), null=True, blank=True)
+    allotted_on = models.DateField(auto_now_add=True)
 
     def __str__(self):
         if self.floor and self.room_no:
@@ -108,7 +109,7 @@ class Outing(models.Model):
         ('Extension Rejected', 'Extension Rejected')
     )
     STATUS_OPTIONS=(('In Outing', 'In Outing'),('Closed', 'Closed'))
-    OUTING_OPTIONS = (('Local','Local'),('Non-Local', 'Non-Local'),('Emergency', 'Emergency'))
+    OUTING_OPTIONS = (('Local','Local'),('Non-Local', 'Non-Local'),('Emergency', 'Emergency'), ('Vacation', 'Vacation'))
     PARENT_CONSENT= (('Accepted','Accepted'),('Denied','Denied'))
     MESS_REBATE_OPTIONS = (('Enabled', 'Enabled'), ('Disabled', 'Disabled'))
     MESS_REBATE_STATUS_OPTIONS = (('Processed', 'Processed'), ('Rejected', 'Rejected'))
@@ -132,7 +133,7 @@ class Outing(models.Model):
 
 
     def is_upcoming(self):
-        if self.in_outing():
+        if self.in_outing() or (self.type=='Vacation' and self.permission!='Rejected' and self.status!='Closed'):
             return True
         elif self.permission != 'Rejected' and self.status != 'Closed' and self.permission != 'Revoked':
             if self.type == 'Local':
@@ -155,10 +156,10 @@ class Outing(models.Model):
     #     return self.is_upcoming() and self.permission == 'Pending'
 
     def is_extendable(self):
-        return self.type != 'Local' and (self.permission == 'Granted' or self.permission=='Extension Granted' or self.permission=='Extension Rejected') and self.is_upcoming()
+        return self.type not in ['Local', 'Vacation'] and (self.permission == 'Granted' or self.permission=='Extension Granted' or self.permission=='Extension Rejected') and self.is_upcoming()
 
     def can_cancel(self):
-        return self.is_upcoming() and not self.in_outing()
+        return self.is_upcoming() and self.type!='Vacation' and not self.in_outing()
     
     def in_outing(self):
         return self.status == 'In Outing'
@@ -223,3 +224,28 @@ class FeeDetail(models.Model):
 
     def __str__(self) -> str:
         return 'Bank Detail: {} - {}'.format(self.id, self.student.regd_no)
+
+class Vacation(models.Model):
+
+    STATUS_OPTIONS = (('Functioning', 'Functioning'),('Defective', 'Defective'))
+
+    room_detail = models.OneToOneField('students.RoomDetail', on_delete=models.CASCADE, null=False)
+    vacated_on = models.DateTimeField(null=False, blank=False)
+    mode_of_journey = models.CharField(max_length=255, null=False, blank=False)
+    journey_destination = models.CharField(max_length=255, null=False, blank=False)
+    iron_cot_status = models.CharField(max_length=11, choices=STATUS_OPTIONS, null=False)
+    tube_light_status = models.CharField(max_length=11, choices=STATUS_OPTIONS, null=False)
+    fan_status = models.CharField(max_length=11, choices=STATUS_OPTIONS, null=False)
+    fan_regulator_status = models.CharField(max_length=11, choices=STATUS_OPTIONS, null=False)
+    cupboards_status = models.CharField(max_length=11, choices=STATUS_OPTIONS, null=False)
+    switches_status = models.CharField(max_length=11, choices=STATUS_OPTIONS, null=False)
+    amperes_socket_15_status = models.CharField(max_length=11, choices=STATUS_OPTIONS, null=False)
+    iron_cot_remarks = models.CharField(max_length=255, null=True, blank=True)
+    tube_light_remarks = models.CharField(max_length=255, null=True, blank=True)
+    fan_remarks = models.CharField(max_length=255, null=True, blank=True)
+    fan_regulator_remarks = models.CharField(max_length=255, null=True, blank=True)
+    cupboards_remarks = models.CharField(max_length=255, null=True, blank=True)
+    switches_remarks = models.CharField(max_length=255, null=True, blank=True)
+    amperes_socket_15_remarks = models.CharField(max_length=255, null=True, blank=True)
+    submitted = models.BooleanField(default=False)
+    vacation_outing_obj = models.OneToOneField('students.Outing', on_delete=models.SET_NULL, null=True)

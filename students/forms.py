@@ -11,6 +11,7 @@ class OutingForm(forms.ModelForm):
         if 'request' in kwargs.keys():
             self.request = kwargs.pop('request')
         super(OutingForm, self).__init__(*args, **kwargs)
+        self.fields['type'] = forms.ChoiceField(choices=[('','-----------'), ('Local','Local'), ('Non-Local', 'Non-Local'), ('Emergency', 'Emergency')])
     class Meta:
         model = Outing
         fields = ['type', 'fromDate', 'toDate', 'place_of_visit', 'purpose']
@@ -34,7 +35,7 @@ class OutingForm(forms.ModelForm):
         if type == 'Local' and from_date and to_date and from_date.date() != to_date.date():
             raise forms.ValidationError("From date and To date should be same for local outing")
         for out in outings:
-            if self.instance!=None and out.id != self.instance.id and from_date and to_date and out.fromDate <= from_date <= out.toDate:
+            if (out.type == 'Vacation' and to_date and to_date >= out.fromDate) or self.instance!=None and out.id != self.instance.id and from_date and to_date and out.fromDate <= from_date <= out.toDate:
                 raise forms.ValidationError("You already have an outing request in process for the same time period")    
         return cleaned_data
 

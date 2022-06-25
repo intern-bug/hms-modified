@@ -183,9 +183,12 @@ class BlockOutingSheetGenerator:
                         outingInOut.outing.type,
                         outingInOut.outing.fromDate.strftime("%d-%m-%Y, %H:%M:%S"),
                         outingInOut.outTime.strftime("%d-%m-%Y, %H:%M:%S"),
-                        outingInOut.outing.toDate.strftime("%d-%m-%Y, %H:%M:%S"),
                         ]
-            if outingInOut.inTime:
+            if outingInOut.outing.type == 'Vacation':
+                row_data.append('')
+            else:
+                row_data.append(outingInOut.outing.toDate.strftime("%d-%m-%Y, %H:%M:%S"))
+            if outingInOut.inTime and outingInOut.outing.type != 'Vacation':
                 row_data.append(outingInOut.inTime.strftime("%d-%m-%Y, %H:%M:%S"))
             else:
                 row_data.append('')
@@ -197,12 +200,12 @@ class BlockOutingSheetGenerator:
                 
     def get_cell_color(self,outingInOutObj):
         if outingInOutObj.outing.type == 'Local':
-            if outingInOutObj.student.gender == 'Male' and outingInOutObj.inTime != None:
+            if outingInOutObj.outing.student.gender == 'Male' and outingInOutObj.inTime != None:
                 if (outingInOutObj.inTime.hour*100 + outingInOutObj.inTime.minute) > 2115 :
                     return 'DC3545'
                 else:
                     return '28A745'
-            elif outingInOutObj.student.gender == 'Female' and outingInOutObj.inTime != None:
+            elif outingInOutObj.outing.student.gender == 'Female' and outingInOutObj.inTime != None:
                 if (outingInOutObj.inTime.hour*100 + outingInOutObj.inTime.minute) > 2045 :
                     return 'DC3545'
                 else:
@@ -219,7 +222,7 @@ class BlockOutingSheetGenerator:
             else:
                 return '28A745'
 
-class MessRebateBookGenerator:
+class MessReportBookGenerator:
     def __init__(self, rebate_list):
         self.rebate_list = rebate_list
     
@@ -234,19 +237,22 @@ class MessRebateBookGenerator:
     def generate_sheet(self, workbook):
         file = str(timezone.localtime().strftime("%d-%m-%Y_%H-%M-%S"))
         worksheet = workbook.create_sheet(title = "{filename}".format(filename=file))
-        headers = ['Regd. No.', 'Name', 'No. of Days']
+        headers = ['Regd. No.', 'Name', 'From', 'To', 'No. of Days', 'No. of rebate days', 'No. of effective days']
         row_num = 1
         for col_num, column_title in enumerate(headers, 1):
             cell = worksheet.cell(row=row_num, column=col_num)
             cell.font =styles.Font(bold = True)
             cell.value = column_title
-        
         for rebate in self.rebate_list:
             row_num += 1
             row_data = [
                 rebate['outing__student__regd_no'],
                 rebate['outing__student__name'],
-                rebate['no_of_days']
+                rebate['from_date'],
+                rebate['to_date'],
+                rebate['total_days'],
+                rebate['no_of_days'],
+                rebate['effective_days']
             ]
             for col_num, cell_value in enumerate(row_data,1):
                 cell = worksheet.cell(row=row_num, column=col_num)
