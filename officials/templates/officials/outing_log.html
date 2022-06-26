@@ -100,6 +100,7 @@
             <th>Name</th>
             <th>Block</th>
             <th>Room</th>
+            <th>Mode</th>
             <th>Out Time</th>
             <th>In Time</th>
           </tr>
@@ -111,6 +112,7 @@
             <td>{{ outing.outing.student.name }}</td>
             <td>{{ outing.outing.student.roomdetail.block.short_name }}</td>
             <td>{{ outing.outing.student.roomdetail.room }}</td>
+            <td>{{ outing.outing.type }}</td>
             <td>{{ outing.outTime }}</td>
             {% if outing.outing.type != 'Vacation' %}
             <td>{{ outing.inTime }}</td>
