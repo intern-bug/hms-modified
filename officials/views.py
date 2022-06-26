@@ -968,3 +968,25 @@ class AnnouncementCreateView(OfficialTestMixin, SuccessMessageMixin, CreateView)
         context = super().get_context_data(**kwargs)
         context['form_title'] = 'Create New Announcement'
         return context
+
+class AnnouncementsEditView(OfficialTestMixin, SuccessMessageMixin, UpdateView):
+    model =  Announcements
+    template_name = 'officials/announcement_new.html'
+    form_class = AnnouncementCreationForm
+    success_message = 'Announcement Updated successfully.'
+    success_url = reverse_lazy('officials:home')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form_title'] = 'Edit Announcement'
+        return context
+    
+
+@user_passes_test(official_check)
+def announcement_delete(request, pk):
+    if not request.user.official.is_chief():
+        return redirect('officials:home')
+    announcement = get_object_or_404(Announcements, id=pk)
+    announcement.delete()
+    messages.success(request, 'Announcement deleted successfully.')
+    return redirect('officials:home')

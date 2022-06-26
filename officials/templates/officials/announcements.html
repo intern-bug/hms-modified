@@ -6,14 +6,18 @@
 <hr />
 {% for announcement in announce_obj %}
 <div class="row">
-    <div class="col">
-        <p class="text-center">
-            <a href="{{ announcement.document.url }}" target="_blank">
-                {{ announcement.info }}
-            </a>
-        </p>
-        <hr>
+    <div class="col-8 text-center">
+        <a href="{{ announcement.document.url }}" target="_blank">
+            {{ announcement.info }}
+        </a>
+    </div>
+    <div class="col-2 text-end">
+        <a href="{% url 'officials:announcement-edit' announcement.id %}" class="btn btn-primary">Edit</a>
+    </div>
+    <div class="col-2 text-center">
+        <a href="{% url 'officials:announcement-delete' announcement.id %}" class="btn btn-danger" onclick="return confirm('Are you sure to delete announcement {{announcement.id}}?')">Delete</a>
     </div>
 </div>
+<hr>
 {% endfor %}
 {% endblock content %}

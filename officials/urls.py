@@ -49,6 +49,8 @@ urlpatterns = [
     # path('vacation-list', views.vacation_history, name='vacation-list'),
 
     path('announcement_new', views.AnnouncementCreateView.as_view(), name='announcement_new'),
+    path('announcement/<int:pk>/edit', views.AnnouncementsEditView.as_view(), name='announcement-edit'),
+    path('announcement/<int:pk>/delete', views.announcement_delete, name='announcement-delete'),
     path('announcement_list', views.announcements_list, name='announcement_list'),
     # path('water-cans/', views.watercan, name='watercan'),
 ]
