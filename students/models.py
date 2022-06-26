@@ -140,7 +140,7 @@ class Outing(models.Model):
                 if self.fromDate > timezone.now():
                     return True
                 elif self.fromDate.date() == timezone.now().date() and self.toDate > timezone.now() and \
-                    (timezone.now().hour*100+timezone.now().minute) <= 1400:
+                    (timezone.now().hour*100+timezone.now().minute) <= 1300:
                     return True
                 else:
                     return False
