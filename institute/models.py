@@ -260,7 +260,7 @@ class Announcements(models.Model):
 
     def announcement_file_storage(instance, filename):
         extension = filename.split('.')[-1]
-        name = str(instance.id)+'_'+str(instance.created_at.strftime("%d-%m-%Y_%H-%M-%S"))
+        name = str(instance.document.name)+'_'+str(instance.created_at.strftime("%d-%m-%Y_%H-%M-%S"))
         return 'Announcements/Year-{}/{}.{}'.format(timezone.localtime().year, name, extension)
 
 
