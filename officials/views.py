@@ -76,7 +76,7 @@ def announcements_list(request):
         announce_obj = Announcements.objects.all()
     elif request.user.is_student:
         announce_obj = Announcements.objects.all().exclude(officials_only=True)
-    return render(request, 'officials/announcements.html', {'announce_obj':announce_obj})
+    return render(request, 'officials/announcements.html', {'announce_obj':announce_obj, 'user':request.user})
 
 @user_passes_test(official_check)
 @csrf_exempt
