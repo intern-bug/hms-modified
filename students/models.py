@@ -80,16 +80,18 @@ class Attendance(models.Model):
             absent_dates.discard(date)
             self.absent_dates = ','.join(absent_dates)
             if not self.present_dates: 
-                self.present_dates = date
+                self.present_dates = str(date)+"@"+str(timezone.now().strftime('%d-%m-%Y %H:%M:%S'))
             else:
+                date = str(date)+"@"+str(timezone.now().strftime('%d-%m-%Y %H:%M:%S'))
                 self.present_dates = ','.join(set(self.present_dates.split(',') + [date]))
         elif status == 'absent':
             present_dates = self.present_dates and set(self.present_dates.split(',')) or set()
             present_dates.discard(date)
             self.present_dates = ','.join(present_dates)
             if not self.absent_dates: 
-                self.absent_dates = date
+                self.absent_dates = str(date)+"@"+str(timezone.now().strftime('%d-%m-%Y %H:%M:%S'))
             else:
+                date = str(date)+"@"+str(timezone.now().strftime('%d-%m-%Y %H:%M:%S'))
                 self.absent_dates = ','.join(set(self.absent_dates.split(',') + [date]))
         if timezone.now().date() == timezone.datetime.strptime(date, "%Y-%m-%d").date():
                 self.status = status.title()

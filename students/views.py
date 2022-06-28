@@ -110,6 +110,10 @@ def attendance_history(request):
     student = request.user.student
     present_dates = (student.attendance.present_dates and student.attendance.present_dates.split(',')) or None
     absent_dates = (student.attendance.absent_dates and student.attendance.absent_dates.split(',')) or None
+    if absent_dates:
+        absent_dates = [absent_date.split('@')[0] for absent_date in absent_dates]
+    if present_dates:
+        present_dates = [present_date.split('@')[0] for present_date in present_dates]
 
     return render(request, 'students/attendance_history.html', {'student': student, 'present_dates': present_dates, 'absent_dates': absent_dates})
 

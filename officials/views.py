@@ -151,8 +151,12 @@ def attendance_log(request):
     if request.GET.get('by_regd_no'):
         try:
             student = attendance_list.get(student__regd_no = request.GET.get('by_regd_no')).student
-            if student.attendance.present_dates: present_dates = student.attendance.present_dates.split(',') 
-            if student.attendance.absent_dates: absent_dates = student.attendance.absent_dates.split(',')
+            if student.attendance.present_dates: 
+                present_dates = student.attendance.present_dates.split(',')
+                present_dates = [present_date.split('@')[0] for present_date in present_dates]
+            if student.attendance.absent_dates: 
+                absent_dates = student.attendance.absent_dates.split(',')
+                absent_dates = [absent_date.split('@')[0] for absent_date in absent_dates]
         except Attendance.DoesNotExist:
             messages.error(request, "Invalid Student Registration No.")
 

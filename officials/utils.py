@@ -60,15 +60,20 @@ class BlockAttendanceSheetGenerator:
 
     def get_student_attendance(self, attendance):
         present_absent_list = []
+        if attendance.present_dates:
+            present_dates = attendance.present_dates.split(',')
+            present_dates = [present_date.split('@')[0] for present_date in present_dates]
+        if attendance.absent_dates:
+            absent_dates = attendance.absent_dates.split(',')
+            absent_dates = [absent_date.split('@')[0] for absent_date in absent_dates]
         for date in self.generated_dates:
             date_formatted = date.strftime("%Y-%m-%d")
-            if attendance.present_dates and attendance.present_dates.find(date_formatted) != -1:
+            if date_formatted in present_dates:
                 present_absent_list.append('P')
-            elif attendance.absent_dates and attendance.absent_dates.find(date_formatted) != -1:
+            elif date_formatted in absent_dates:
                 present_absent_list.append('A')
             else:
                 present_absent_list.append('-')
-
         return present_absent_list
 
     def generate_dates(self):
@@ -101,9 +106,13 @@ class BlockAttendanceSheetGenerator:
         date_set = set()
         for attendance in self.attendance_list:
             if attendance.present_dates:
-                date_set |= set(attendance.present_dates.split(','))
+                present_dates = attendance.present_dates.split(',')
+                present_dates = [present_date.split('@')[0] for present_date in present_dates]
+                date_set |= set(present_dates)
             if attendance.absent_dates:
-                date_set |= set(attendance.absent_dates.split(','))
+                absent_dates = attendance.absent_dates.split(',')
+                absent_dates = [absent_date.split('@')[0] for absent_date in absent_dates]
+                date_set |= set(absent_dates)
         date_set.discard('')
 
         date_format = "%Y-%m-%d"
