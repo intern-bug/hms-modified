@@ -76,23 +76,43 @@ class Attendance(models.Model):
 
     def mark_attendance(self, date, status):
         if status == 'present':
-            absent_dates = self.absent_dates and set(self.absent_dates.split(',')) or set()
-            absent_dates.discard(date)
+            absent_dates = self.absent_dates and self.absent_dates.split(',') or None
+            if absent_dates:
+                absent_dates_formatted = [absent_date.split('@')[0] for absent_date in absent_dates]
+                if date in absent_dates_formatted:
+                    absent_dates.pop(absent_dates_formatted.index(date))
+            if absent_dates:
+                absent_dates = set(absent_dates)
+            else:
+                absent_dates = set()
             self.absent_dates = ','.join(absent_dates)
             if not self.present_dates: 
                 self.present_dates = str(date)+"@"+str(timezone.now().strftime('%d-%m-%Y %H:%M:%S'))
             else:
-                date = str(date)+"@"+str(timezone.now().strftime('%d-%m-%Y %H:%M:%S'))
-                self.present_dates = ','.join(set(self.present_dates.split(',') + [date]))
+                present_dates_formatted = self.present_dates.split(',')
+                present_dates_formatted = [present_date.split('@')[0] for present_date in present_dates_formatted]
+                if date not in present_dates_formatted:
+                    date_formatted = str(date)+"@"+str(timezone.now().strftime('%d-%m-%Y %H:%M:%S'))
+                    self.present_dates = ','.join(set(self.present_dates.split(',') + [date_formatted]))
         elif status == 'absent':
-            present_dates = self.present_dates and set(self.present_dates.split(',')) or set()
-            present_dates.discard(date)
+            present_dates = self.present_dates and self.present_dates.split(',') or None
+            if present_dates:
+                present_dates_formatted = [present_date.split('@')[0] for present_date in present_dates]
+                if date in present_dates_formatted:
+                    present_dates.pop(present_dates_formatted.index(date))
+            if present_dates:
+                present_dates = set(present_dates)
+            else:
+                present_dates = set()
             self.present_dates = ','.join(present_dates)
             if not self.absent_dates: 
                 self.absent_dates = str(date)+"@"+str(timezone.now().strftime('%d-%m-%Y %H:%M:%S'))
             else:
-                date = str(date)+"@"+str(timezone.now().strftime('%d-%m-%Y %H:%M:%S'))
-                self.absent_dates = ','.join(set(self.absent_dates.split(',') + [date]))
+                absent_dates_formatted = self.absent_dates.split(',')
+                absent_dates_formatted = [absent_date.split('@')[0] for absent_date in absent_dates_formatted]
+                if date not in absent_dates_formatted:
+                    date_formatted = str(date)+"@"+str(timezone.now().strftime('%d-%m-%Y %H:%M:%S'))
+                    self.absent_dates = ','.join(set(self.absent_dates.split(',') + [date_formatted]))
         if timezone.now().date() == timezone.datetime.strptime(date, "%Y-%m-%d").date():
                 self.status = status.title()
 
