@@ -40,13 +40,13 @@ def create_vacation_form(filename, context):
     can.drawString(400, 590, 'Roll No.: {}'.format(context['vac'].room_detail.student.roll_no))
     can.drawString(40, 565, "Personal Email ID: {}".format(context['vac'].room_detail.student.account_email))
     can.drawString(370, 565, 'Contact No.: {}'.format(context['vac'].room_detail.student.phone))
-    iron_cot = context['vac'].iron_cot_status+', '+context['vac'].iron_cot_remarks
-    tube_light = context['vac'].tube_light_status+', '+context['vac'].tube_light_remarks
-    fan = context['vac'].fan_status+', '+context['vac'].fan_remarks
-    fan_regulator = context['vac'].fan_regulator_status+', '+context['vac'].fan_regulator_remarks
-    cupboards = context['vac'].cupboards_status+', '+context['vac'].cupboards_remarks
-    switches = context['vac'].switches_status+', '+context['vac'].switches_remarks
-    amperes_socket_15 = context['vac'].amperes_socket_15_status+', '+context['vac'].amperes_socket_15_remarks
+    iron_cot = context['vac'].iron_cot_status+', '+(context['vac'].iron_cot_remarks or '')
+    tube_light = context['vac'].tube_light_status+', '+(context['vac'].tube_light_remarks or '')
+    fan = context['vac'].fan_status+', '+(context['vac'].fan_remarks or '')
+    fan_regulator = context['vac'].fan_regulator_status+', '+(context['vac'].fan_regulator_remarks or '')
+    cupboards = context['vac'].cupboards_status+', '+(context['vac'].cupboards_remarks or '')
+    switches = context['vac'].switches_status+', '+(context['vac'].switches_remarks or '')
+    amperes_socket_15 = context['vac'].amperes_socket_15_status+', '+(context['vac'].amperes_socket_15_remarks or '')
     data = [
         ('S.No.', 'Name of the Item', 'Quantity', 'Remarks'),
         ('1', 'Iron Cot', 'One', iron_cot),
