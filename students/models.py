@@ -11,7 +11,7 @@ class RoomDetail(models.Model):
     block = models.ForeignKey('institute.Block', on_delete=models.SET_NULL, null=True, blank=True)
     room_no = models.IntegerField(null=True, blank=True)
     floor = models.CharField(max_length=10, choices=list(map(lambda floor: (floor, floor), FLOOR_OPTIONS)), null=True, blank=True)
-    allotted_on = models.DateField(auto_now_add=True)
+    allotted_on = models.DateField(auto_now=True)
 
     def __str__(self):
         if self.floor and self.room_no:
