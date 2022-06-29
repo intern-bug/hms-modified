@@ -48,7 +48,7 @@ class OutingForm(forms.ModelForm):
         if type == 'Local' and from_time < 630:
             raise forms.ValidationError("Local Outing is allowed only after 06:30 hrs")
         if type == 'Local' and from_time > 1930:
-            raise forms.ValidationError("Local Outing is not allowed after 19:30 hrs")
+            raise forms.ValidationError("Local Outing from_time should not be after 19:30 hrs")
         if type == 'Local' and from_date.date() == timezone.now().date() and (timezone.now().hour*100 + timezone.now().minute) >= 1400:
             raise forms.ValidationError("Can't apply for local outing for the current day after 19:30 hrs")
         elif type == 'Non-Local' and from_date.date() == timezone.now().date() and (timezone.now().hour*100 + timezone.now().minute) >= 1130:
