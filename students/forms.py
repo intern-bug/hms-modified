@@ -66,8 +66,8 @@ class OutingForm(forms.ModelForm):
             gender = student.gender
             if gender == 'Male' and to_time > 2100:
                 raise forms.ValidationError("Local Outing is allowed only until 21:00 hrs")
-            elif gender == 'Female' and to_time > 2030:
-                raise forms.ValidationError("Local Outing is allowed only until 20:30 hrs")
+            elif gender == 'Female' and to_time > 2100:
+                raise forms.ValidationError("Local Outing is allowed only until 21:00 hrs")
         return to_date
 
 
