@@ -112,6 +112,9 @@
       
     
     {% endif %}
+    {% if request.user.is_official and request.user.official.is_warden %}
+    <a href="{% url 'officials:announcement_new' %}" class="{% if url_name == 'announcement_new' %}active{% endif %}"><span class="mr-3"><i class="fa fa-pencil"></i></span>Create Announcement</a>
+    {% endif %}
     {% if request.user.is_student %}
       <a href="{% url 'students:home' %}" class="{% if url_name == 'home' %}active{% endif %}"><span span class="mr-3"><i class="fa fa-tachometer"></i></span> Dashboard</a>
       <a href="{% url 'officials:announcement_list' %}" class="{% if url_name == 'announcement_list' %}active{% endif %}"><span class="mr-3"><i class="fa fa-bullhorn"></i></span>Announcements</a>
@@ -122,7 +125,10 @@
       <a href="{% url 'students:vacation_history' %}" class="{% if url_name == 'vacation_history' %}active{% endif %}"><span span class="mr-3"><i class="fa fa-plane"></i></span> Vacation History</a>
 
     {% endif %}
-
+    
+    {% if request.user.is_worker %}
+    <a href="{% url 'workers:home' %}" class="{% if url_name == 'home' %}active{% endif %}"><span span class="mr-3"><i class="fa fa-tachometer"></i></span> Dashboard</a>
+    {% endif %}
     <a href="{% url 'complaints:registerMedical' %}"><span class="mr-3"><i class="fa fa-medkit"></i></span> Medical Issue</a>
     <a href="{% url 'complaints:registerComplaint' %}"><span class="mr-3"><i class="fa fa-commenting"></i></span>Register Complaint</a>
     {% else %}
