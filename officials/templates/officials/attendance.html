@@ -18,7 +18,9 @@
         <option value="S-">Second</option>
       </select>
     </div>
-    <div class="col-12 col-md-3 mt-3 text-center">Date: {{ date }}</div>
+    <div class="col-12 col-md-3 mt-3 text-center">Date: {{ date }}
+      <input type="hidden" name="for_date" value="{{ date }}">
+    </div>
   </div>
   <div class="overflow-auto p-3">
     <table class="table table-hover table-muted table-striped">

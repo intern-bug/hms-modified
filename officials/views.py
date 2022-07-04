@@ -85,24 +85,37 @@ def attendance(request):
     official = user.official
     block = official.block
     attendance_list  = Attendance.objects.filter(student__in=block.students())
-    date = (timezone.localtime() - timedelta(hours=1)).date()
+    date_format = (timezone.localtime() - timedelta(hours=1)).date()
 
+    date = date_format.strftime('%Y-%m-%d')
+
+    for item in attendance_list:
+        if item.present_dates:
+            present_dates = set(item.present_dates.split(','))
+            present_dates = [row.split('@')[0] for row in present_dates]
+            if date in present_dates: item.present_on_date = True
+        if item.absent_dates:
+            absent_dates = set(item.absent_dates.split(','))
+            absent_dates = [row.split('@')[0] for row in absent_dates]
+            if date in absent_dates: item.absent_on_date = True
     if request.method == 'POST' and request.POST.get('submit'):
-        # date = request.POST.get('date')
-        date = date.strftime('%Y-%m-%d')
         for attendance in attendance_list:
             if request.POST.get(str(attendance.id)) and request.POST.get(str(attendance.id))!='not_marked': attendance.mark_attendance(date, request.POST.get(str(attendance.id)))
+        attendance_list  = Attendance.objects.filter(student__in=block.students())
+        for item in attendance_list:
+            if item.present_dates:
+                present_dates = set(item.present_dates.split(','))
+                present_dates = [row.split('@')[0] for row in present_dates]
+                if date in present_dates: item.present_on_date = True
+            if item.absent_dates:
+                absent_dates = set(item.absent_dates.split(','))
+                absent_dates = [row.split('@')[0] for row in absent_dates]
+                if date in absent_dates: item.absent_on_date = True
 
         messages.success(request, f'Attendance marked for date: {date}')
 
-    if request.GET.get('for_date'):
-        # date = request.GET.get('for_date')
-        messages.info(request, f'Selected date: {date}')
-        for item in attendance_list:
-            if item.present_dates and date in set(item.present_dates.split(',')): item.present_on_date = True
-            if item.absent_dates and date in set(item.absent_dates.split(',')): item.absent_on_date = True
 
-    return render(request, 'officials/attendance.html', {'official': official, 'attendance_list': attendance_list, 'date': date})
+    return render(request, 'officials/attendance.html', {'official': official, 'attendance_list': attendance_list, 'date': date_format})
 
 
 @user_passes_test(official_check)
@@ -114,20 +127,25 @@ def attendance_workers(request):
     attendance_list  = AttendanceWorker.objects.filter(worker__in=block.worker_set.all())
     date = (timezone.localtime() - timedelta(hours=1)).date()
 
-    if request.method == 'POST' and request.POST.get('submit'):
-        # date = request.POST.get('date')
-        date = date.strftime('%Y-%m-%d')
+    date_format = (timezone.localtime() - timedelta(hours=1)).date()
 
+    date = date_format.strftime('%Y-%m-%d')
+
+    for item in attendance_list:
+        if item.present_dates:
+            present_dates = set(item.present_dates.split(','))
+            present_dates = [row.split('@')[0] for row in present_dates]
+            if date in present_dates: item.present_on_date = True
+        if item.absent_dates:
+            absent_dates = set(item.absent_dates.split(','))
+            absent_dates = [row.split('@')[0] for row in absent_dates]
+            if date in absent_dates: item.absent_on_date = True
+
+    if request.method == 'POST' and request.POST.get('submit'):
         for attendance in attendance_list:
             if request.POST.get(str(attendance.id)): attendance.mark_attendance(date, request.POST.get(str(attendance.id)))
 
         messages.success(request, f'Staff Attendance marked for date: {date}')
-
-    if request.GET.get('for_date'):
-        messages.info(request, f'Selected date: {date}')
-        for item in attendance_list:
-            if item.present_dates and  date in set(item.present_dates.split(',')): item.present_on_date = True
-            if item.absent_dates and date in set(item.absent_dates.split(',')): item.absent_on_date = True
 
     return render(request, 'officials/attendance_workers.html', {'official': official, 'attendance_list': attendance_list, \
         'date': date})
@@ -203,7 +221,7 @@ def outing_detail(request, pk):
     outing = get_object_or_404(Outing, id=pk)
     user = request.user
     official = user.official
-    type = outing.type
+    type1 = outing.type
     outingExtendObj = None
     if outing.permission=='Pending Extension' or outing.permission=='Processing Extension':
         outingExtendObj = ExtendOuting.objects.filter(outing=outing).order_by('-id')
@@ -214,13 +232,12 @@ def outing_detail(request, pk):
     if(request.method=='POST'):
         user = request.user
         if(user.official.is_warden()):
-            if(request.POST.get('textarea')):
-                if outing.permission == 'Processing':
-                    outing.remark_by_warden =request.POST.get('textarea')+" @ "+str(timezone.localtime().strftime('%d-%m-%Y -  %H:%M:%S'))
-                elif outing.permission =='Processing Extension':
-                    outing.remark_by_warden = request.POST.get('textarea')+" @ "+str(timezone.localtime().strftime('%d-%m-%Y -  %H:%M:%S'))
-                    # outingExtendObj.remark_by_warden = request.POST.get('textarea')
-                    # outingExtendObj.save()
+            if (request.POST.get('textarea')):
+                if(request.POST.get('textarea').lstrip()!=outing.remark_by_warden):
+                    if outing.permission == 'Processing':
+                        outing.remark_by_warden =request.POST.get('textarea')+" @ "+str(timezone.localtime().strftime('%d-%m-%Y -  %H:%M:%S'))
+                    elif outing.permission =='Processing Extension':
+                        outing.remark_by_warden = request.POST.get('textarea')+" @ "+str(timezone.localtime().strftime('%d-%m-%Y -  %H:%M:%S'))
 
             if request.POST.get('permission'):
                 if request.POST.get('permission') == 'Granted':
@@ -259,12 +276,13 @@ def outing_detail(request, pk):
                 outing.mess_rebate = request.POST.get('mess_rebate')
         elif(user.official.is_caretaker()):
             if(request.POST.get('textarea')):
-                if outing.permission == 'Pending':
-                    outing.remark_by_caretaker = request.POST.get('textarea')+" @ "+str(timezone.localtime().strftime('%d-%m-%Y -  %H:%M:%S'))
-                elif outing.permission == 'Pending Extension':
-                    outing.remark_by_caretaker =request.POST.get('textarea')+" @ "+str(timezone.localtime().strftime('%d-%m-%Y -  %H:%M:%S'))
-                    # outingExtendObj.remark_by_caretaker = request.POST.get('textarea')
-                    outingExtendObj.save()
+                if(request.POST.get('textarea').lstrip()!=outing.remark_by_caretaker):
+                    if outing.permission == 'Pending':
+                        outing.remark_by_caretaker = request.POST.get('textarea')+" @ "+str(timezone.localtime().strftime('%d-%m-%Y -  %H:%M:%S'))
+                    elif outing.permission == 'Pending Extension':
+                        outing.remark_by_caretaker =request.POST.get('textarea')+" @ "+str(timezone.localtime().strftime('%d-%m-%Y -  %H:%M:%S'))
+                        # outingExtendObj.remark_by_caretaker = request.POST.get('textarea')
+                        # outingExtendObj.save()
             if(request.POST.get('parent_consent')):
                 if outing.permission == 'Pending':
                     outing.parent_consent = request.POST.get('parent_consent')
@@ -295,7 +313,7 @@ def outing_detail(request, pk):
         outing.save()
         messages.success(request, f'Outing successfully {outing.permission.lower()} to {outing.student.name}')
         return redirect('officials:grant_outing')
-    return render(request, 'officials/outing_show.html', {'type':type, 'official':official.designation, \
+    return render(request, 'officials/outing_show.html', {'type':type1, 'official':official.designation, \
         'outing': outing, 'extendOuting':outingExtendObj})
 
 
@@ -441,6 +459,7 @@ def get_outing_sheet(request):
 def mess_feedback_analysis(request):
     calendar_feedback = None
     type_feedback = None
+    weekday_feedback = None
     if request.method == 'POST':
         # if request.POST.get('by_date'):
         #     calendar_feedback = MessFeedback.objects.filter(date=request.POST.get('by_date'))
