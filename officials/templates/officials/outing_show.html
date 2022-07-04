@@ -56,6 +56,36 @@
           <td>{{ extendOuting.toDate }}</td>
         </tr>
         <tr>
+          <th>Mode of Journey(From)</th>
+          <td>{{ extendOuting.mode_of_journey_from }}</td>
+        </tr>
+        <tr>
+          <th>Mode of Journey(To)</th>
+          <td>{{ extendOuting.mode_of_journey_to }}</td>
+        </tr>
+        <tr>
+          <th>Emergency Contact Number</th>
+          <td>{{ extendOuting.emergency_contact }}</td>
+        </tr>
+        {% if outing.type == 'Emergency' and outing.purpose == 'Medical Emergency' %}
+        <tr>
+          <th>Medical Issue Id</th>
+          <td>{{ extendOuting.emergency_medical_issue.id }}</td>
+        </tr>
+        <tr>
+          <th>Medical Issue Summary</th>
+          <td>{{ extendOuting.emergency_medical_issue.summary }}</td>
+        </tr>
+        <tr>
+          <th>Medical Issue remark by doctor</th>
+          <td>{{ extendOuting.emergency_medical_issue.remark }}</td>
+        </tr>
+        <tr>
+          <th>Doctor's Consent</th>
+          <td>{{ extendOuting.emergency_medical_issue.emergency_outing_permission }}</td>
+        </tr>
+        {% endif %}
+        <tr>
           <th>Purpose of Visit</th>
           <td>{{ extendOuting.purpose }}</td>
         </tr>
@@ -72,6 +102,38 @@
           <th>Place of Visit</th>
           <td>{{ outing.place_of_visit }}</td>
         </tr>
+        {% if outing.type != 'Local' and outing.type != 'Vacation' %}
+        <tr>
+          <th>Mode of Journey(From)</th>
+          <td>{{ outing.mode_of_journey_from }}</td>
+        </tr>
+        <tr>
+          <th>Mode of Journey(To)</th>
+          <td>{{ outing.mode_of_journey_to }}</td>
+        </tr>
+        <tr>
+          <th>Emergency Contact Number</th>
+          <td>{{ outing.emergency_contact }}</td>
+        </tr>
+        {% if outing.type == 'Emergency' and outing.purpose == 'Medical Emergency' %}
+        <tr>
+          <th>Medical Issue Id</th>
+          <td>{{ outing.emergency_medical_issue.id }}</td>
+        </tr>
+        <tr>
+          <th>Medical Issue Summary</th>
+          <td>{{ outing.emergency_medical_issue.summary }}</td>
+        </tr>
+        <tr>
+          <th>Medical Issue remark by doctor</th>
+          <td>{{ outing.emergency_medical_issue.remark }}</td>
+        </tr>
+        <tr>
+          <th>Doctor's Consent</th>
+          <td>{{ outing.emergency_medical_issue.emergency_outing_permission }}</td>
+        </tr>
+        {% endif %}
+        {% endif %}
         {% endif %}
         <form method="POST" class="d-inline">{% csrf_token %}
         {% if official == 'Caretaker' and type != 'Local' %}

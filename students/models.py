@@ -1,3 +1,4 @@
+from asyncio.windows_events import NULL
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.core.validators import MinLengthValidator
@@ -151,7 +152,7 @@ class Outing(models.Model):
     mode_of_journey_from = models.CharField(max_length=10, default='NA')
     mode_of_journey_to = models.CharField(max_length=10, default='NA')
     emergency_contact = models.CharField(max_length=10, validators=[numeric_only], default=0)
-    emergency_medical_issue = models.ForeignKey('complaints.MedicalIssue', on_delete=models.CASCADE, null=True)
+    emergency_medical_issue = models.ForeignKey('complaints.MedicalIssue', on_delete=models.CASCADE, null=True, blank=True, default=NULL)
     mess_rebate = models.CharField(max_length=9, choices=MESS_REBATE_OPTIONS, default='Disabled', null=False)
     mess_rebate_status = models.CharField(max_length=9, choices=MESS_REBATE_STATUS_OPTIONS, default='NA', null=False)
     mess_rebate_days = models.IntegerField(null=False, default=0)
@@ -227,6 +228,10 @@ class ExtendOuting(models.Model):
     parent_consent = models.CharField(max_length=8, choices=PARENT_CONSENT, default='NA', null=False)
     permission = models.CharField(max_length=20, choices=PERMIT_OPTIONS, default='Pending Extension', null=False)
     place_of_visit = models.CharField(max_length=255,null=False)
+    mode_of_journey_from = models.CharField(max_length=10)
+    mode_of_journey_to = models.CharField(max_length=10)
+    emergency_contact = models.CharField(max_length=10, validators=[numeric_only])
+    emergency_medical_issue = models.ForeignKey('complaints.MedicalIssue', on_delete=models.CASCADE, null=True, blank=True)
     class Meta:
         managed = True 
 

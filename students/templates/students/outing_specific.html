@@ -32,6 +32,14 @@
         <tr><th>Type</th><td>{{ outing.type }}</td></tr>
         <tr><th>Purpose of Visit</th><td>{{ outing.purpose }}</td></tr>
         <tr><th>Parent Consent</th><td>{{ outing.parent_consent }}</td></tr>
+        {% if outing.type != 'Local' and outing.type != 'Vacation' %}
+        <tr><th>Mode of Journey From College</th><td>{{ outing.mode_of_journey_from }}</td></tr>
+        <tr><th>Mode of Journey To College</th><td>{{ outing.mode_of_journey_to }}</td></tr>
+        <tr><th>Emergency Contact Number</th><td>{{ outing.emergency_contact }}</td></tr>
+        {% if outing.type == 'Emergency' and outing.purpose == 'Medical Emergency' %}
+        <tr><th>Medical Issue Id</th><td>{{ outing.emergency_medical_issue.id }}</td></tr>
+        {% endif %}
+        {% endif %}
         <tr><th>Remark by Caretaker</th><td>{{ outing.remark_by_caretaker }}</td></tr>
         <tr><th>Remark by Warden</th><td>{{ outing.remark_by_warden }}</td></tr>
         <tr><th>Remark by Security</th><td>{{ outing.remark_by_security }}</td></tr>

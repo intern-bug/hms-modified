@@ -33,8 +33,7 @@
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
 <script>
-  function addSelectElement(){
-    console.log('Hi');
+  function addSelectElement(value){
     let select_element = document.createElement('select');
     select_element.id = 'id_purpose';
     select_element.className = 'select form-control';
@@ -48,9 +47,15 @@
     option1.selected = true;
     let option2 = document.createElement('option');
     option2.value = 'Family Related';
+    if (value==option2.value){
+      option2.selected = true;
+    }
     option2.innerHTML = 'Family Related';
     let option3 = document.createElement('option');
     option3.value = 'Medical Emergency';
+    if (value == option3.value){
+      option3.selected = true;
+    }
     option3.innerHTML = 'Medical Emergency';
     select_element.appendChild(option1);
     select_element.appendChild(option2);
@@ -73,13 +78,20 @@
     if (document.getElementById('id_type').value == 'Emergency'){
       if (document.getElementById('id_purpose').value == 'Medical Emergency'){
         document.getElementById('div_id_emergency_medical_issue').hidden = false;
+        document.getElementById('id_emergency_medical_issue').required = true;
+        document.querySelector("label[for='id_emergency_medical_issue']").className = ' requiredField'
+        document.querySelector("label[for='id_emergency_medical_issue']").innerHTML += '<span class="asteriskField">*</span>'
       }
       else{
         document.getElementById('div_id_emergency_medical_issue').hidden = true;
+        document.getElementById('id_emergency_medical_issue').required = false;
+        document.querySelector("label[for='id_emergency_medical_issue']").className = ''
       }
     }
     else{
       document.getElementById('div_id_emergency_medical_issue').hidden = true;
+      document.getElementById('id_emergency_medical_issue').required = false;
+      document.querySelector("label[for='id_emergency_medical_issue']").className = ''
     }
   }
 
@@ -88,13 +100,20 @@
   if (document.getElementById('id_type').value == 'Emergency'){
     if (document.getElementById('id_purpose').value == 'Medical Emergency'){
       document.getElementById('div_id_emergency_medical_issue').hidden = false;
+      document.getElementById('id_emergency_medical_issue').required = true;
+      document.querySelector("label[for='id_emergency_medical_issue']").className = ' requiredField'
+        document.querySelector("label[for='id_emergency_medical_issue']").innerHTML += '<span class="asteriskField">*</span>'
     }
     else{
       document.getElementById('div_id_emergency_medical_issue').hidden = true;
+      document.getElementById('id_emergency_medical_issue').required = false;
+      document.querySelector("label[for='id_emergency_medical_issue']").className = ''
     }
   }
   else{
       document.getElementById('div_id_emergency_medical_issue').hidden = true;
+      document.getElementById('id_emergency_medical_issue').required = false;
+      document.querySelector("label[for='id_emergency_medical_issue']").className = ''
   }
   if (document.getElementById('id_type').value=='Local' || document.getElementById('id_type').value==''){
     document.getElementById('div_id_mode_of_journey_from').style['display'] = 'None';
@@ -103,25 +122,38 @@
     document.getElementById('id_mode_of_journey_from').value = 'NA';
     document.getElementById('id_mode_of_journey_to').value = 'NA';
     document.getElementById('id_emergency_contact').value = 0;
-    document.getElementById('id_purpose').remove();
+    if (document.getElementById('id_purpose').type != 'text'){
+      document.getElementById('id_purpose').remove();
+      addTextElement();
+    }
     document.getElementById('div_id_emergency_medical_issue').hidden = true;
-    addTextElement();
   }
   else{
     document.getElementById('div_id_mode_of_journey_from').style['display'] = '';
     document.getElementById('div_id_mode_of_journey_to').style['display'] = '';
     document.getElementById('div_id_emergency_contact').style['display'] = '';
-    document.getElementById('id_mode_of_journey_from').value = '';
-    document.getElementById('id_mode_of_journey_to').value = '';
-    document.getElementById('id_emergency_contact').value = '';
+    if (document.getElementById('id_mode_of_journey_from').value == 'NA'){
+      document.getElementById('id_mode_of_journey_from').value = '';
+    }
+    if(document.getElementById('id_mode_of_journey_to').value == 'NA'){
+      document.getElementById('id_mode_of_journey_to').value = '';
+    }
+    if (document.getElementById('id_emergency_contact').value == 0){
+      document.getElementById('id_emergency_contact').value = '';
+    }
     if (document.getElementById('id_type').value=='Emergency'){
-      document.getElementById('id_purpose').remove();
-      addSelectElement();
+      if (document.getElementById('id_purpose').type != 'select-one'){
+        value = document.getElementById('id_purpose').value;
+        document.getElementById('id_purpose').remove();
+        addSelectElement(value);
+      }
     }
     else if(document.getElementById('id_type').value=='Non-Local'){
-      document.getElementById('id_purpose').remove();
+      if (document.getElementById('id_purpose').type != 'text'){
+        document.getElementById('id_purpose').remove();
+        addTextElement();
+      }
       document.getElementById('div_id_emergency_medical_issue').hidden = true;
-      addTextElement();
     }
   }
 
@@ -150,20 +182,29 @@
       document.getElementById('id_mode_of_journey_to').value = 'NA';
       document.getElementById('id_emergency_contact').value = 0;
       document.getElementById('id_purpose').remove();
-      document.getElementById('div_id_emergency_medical_issue').hidden = true;
+      if (document.getElementById('id_purpose').type != 'text'){
+      document.getElementById('id_purpose').remove();
       addTextElement();
+      }
+      document.getElementById('div_id_emergency_medical_issue').hidden = true;
     }
     else{
       document.getElementById('div_id_mode_of_journey_from').style['display'] = '';
       document.getElementById('div_id_mode_of_journey_to').style['display'] = '';
       document.getElementById('div_id_emergency_contact').style['display'] = '';
-      document.getElementById('id_mode_of_journey_from').value = '';
-      document.getElementById('id_mode_of_journey_to').value = '';
-      document.getElementById('id_emergency_contact').value = '';
+      if (document.getElementById('id_mode_of_journey_from').value == 'NA'){
+        document.getElementById('id_mode_of_journey_from').value = '';
+      }
+      if(document.getElementById('id_mode_of_journey_to').value == 'NA'){
+        document.getElementById('id_mode_of_journey_to').value = '';
+      }
+      if (document.getElementById('id_emergency_contact').value == 0){
+        document.getElementById('id_emergency_contact').value = '';
+      }
       if (document.getElementById('id_type').value=='Emergency'){
+        value = document.getElementById('id_purpose').value;
         document.getElementById('id_purpose').remove();
-        console.log('hello')
-        addSelectElement();
+        addSelectElement(value);
       }
       else if(document.getElementById('id_type').value=='Non-Local'){
         document.getElementById('id_purpose').remove();

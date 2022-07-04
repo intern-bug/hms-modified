@@ -17,6 +17,8 @@ class OutingForm(forms.ModelForm):
         super(OutingForm, self).__init__(*args, **kwargs)
         self.fields['type'] = forms.ChoiceField(choices=[('','-----------'), ('Local','Local'), ('Non-Local', 'Non-Local'), ('Emergency', 'Emergency')])
         self.fields['emergency_medical_issue'] = forms.CharField(label='Medical Issue Id', validators=[numeric_only], widget=forms.TextInput(attrs={'size':5}))
+        self.fields['emergency_medical_issue'].required = False
+        # self.fields['initial'] = 0
     class Meta:
         model = Outing
         fields = ['type', 'fromDate', 'mode_of_journey_from', 'toDate', 'mode_of_journey_to', 'place_of_visit', 'purpose', 'emergency_medical_issue', 'emergency_contact']
@@ -82,10 +84,11 @@ class OutingForm(forms.ModelForm):
     def clean_emergency_medical_issue(self):
         type = self.cleaned_data.get('type')
         missue_id = self.cleaned_data.get('emergency_medical_issue')
-        missue_object = get_object_or_404(MedicalIssue, id=missue_id)
-        if missue_object.user != self.request.user:
-            raise forms.ValidationError("Invalid Emergency Id")
-        return missue_object
+        if missue_id:
+            missue_object = get_object_or_404(MedicalIssue, id=missue_id)
+            if missue_object.user != self.request.user:
+                raise forms.ValidationError("Invalid Medical Issue Id")
+            return missue_object
 
 class OutingExtendForm(forms.ModelForm):
     def __init__(self, initial=None, *args, **kwargs):
@@ -97,17 +100,24 @@ class OutingExtendForm(forms.ModelForm):
         self.fields['type'].initial = self.outing.type
         self.fields['type'].disabled = True
         self.fields['fromDate'].initial = self.outing.fromDate
+        self.fields['mode_of_journey_from'].initial = self.outing.mode_of_journey_from
         if self.outing.status == 'In Outing':
             self.fields['fromDate'].disabled = True
+            self.fields['mode_of_journey_from'].disabled = True
         self.fields['toDate'].initial = self.outing.toDate
+        self.fields['mode_of_journey_to'].initial = self.outing.mode_of_journey_to
         self.fields['place_of_visit'] = forms.CharField(label='Place of Visit', initial=self.outing.place_of_visit)
         self.fields['purpose'] = forms.CharField(label='Purpose', initial=self.outing.purpose)
-        fields_keyOrder = ['type', 'fromDate', 'toDate', 'place_of_visit', 'purpose']
+        self.fields['emergency_contact'].initial = self.outing.emergency_contact
+        self.fields['emergency_medical_issue'] = forms.CharField(label='Medical Issue Id', validators=[numeric_only], widget=forms.TextInput(attrs={'size':5}))
+        self.fields['emergency_medical_issue'].required = False
+        self.fields['emergency_medical_issue'].initial = self.outing.emergency_medical_issue.id
+        fields_keyOrder = ['type', 'fromDate', 'mode_of_journey_from', 'toDate', 'mode_of_journey_to', 'place_of_visit', 'purpose', 'emergency_medical_issue', 'emergency_contact']
         self.fields = {key:self.fields[key] for key in fields_keyOrder}
     
     class Meta:
         model = ExtendOuting
-        fields = ['fromDate', 'toDate', 'place_of_visit', 'purpose']
+        fields = ['fromDate', 'mode_of_journey_from', 'toDate', 'mode_of_journey_to', 'place_of_visit', 'purpose', 'emergency_medical_issue', 'emergency_contact']
 
     def clean(self):
         cleaned_data = super().clean()
