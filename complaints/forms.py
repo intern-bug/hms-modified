@@ -15,6 +15,7 @@ class ComplaintCreationForm(forms.ModelForm):
             ('Civil', 'Civil'),
             ('Room Cleaning','Room Cleaning'),
             ('Restroom Cleaning','Restroom Cleaning'),
+            ('Network Issue', 'Network Issue'),
             ('Indisciplinary','Indisciplinary'),
             ('Discrimination/ Harassment','Discrimination/ Harassment'),
             ('Damage to property','Damage to property')
