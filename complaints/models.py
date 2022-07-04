@@ -61,6 +61,11 @@ class MedicalIssue(models.Model):
         ('Disallow', 'Disallow')
     )
 
+    def medical_issue_file_storage(instance, filename):
+        extension = filename.split('.')[-1]
+        name = str(instance.user_id)+'_'+str((instance.created_at.strftime("%d-%m-%Y_%H-%M-%S")))
+        return 'Medical_Issue/Year-{}/{}.{}'.format(timezone.localtime().year, name, extension)
+
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     status = models.CharField(max_length=20,null=False,default='Registered',choices=STATUS)
     summary = models.CharField(max_length=200,null=False)
@@ -69,6 +74,7 @@ class MedicalIssue(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     remark = models.TextField(null=True, blank=True)
     emergency_outing_permission = models.CharField(max_length=8, choices=EMERGENCY_OUTING_OPTIONS, default='NA')
+    file = models.FileField(null=True, blank=True, upload_to=medical_issue_file_storage)
 
     def entity(self):
         return self.user.entity()

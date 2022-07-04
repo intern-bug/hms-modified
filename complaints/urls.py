@@ -13,7 +13,7 @@ urlpatterns = [
     path('complaint/<int:pk>/', views.ComplaintDetailView.as_view(model = Complaint), name='complaint_detail'),
     path('complaint/<int:pk>/edit', views.ComplaintUpdateView.as_view(model = Complaint, form_class = ComplaintUpdationForm), name='complaint_edit'),
     path('complaint/<int:pk>/delete', views.ComplaintDeleteView.as_view(model = Complaint), name='complaint_delete'),
-    path('medical/new/', views.ComplaintCreateView.as_view(model = MedicalIssue, fields = ['summary', 'detailed']), name='registerMedical'),
+    path('medical/new/', views.ComplaintCreateView.as_view(model = MedicalIssue, fields = ['summary', 'detailed', 'file']), name='registerMedical'),
     path('medical/<int:pk>/', views.ComplaintDetailView.as_view(model = MedicalIssue), name='medicalissue_detail'),
     path('medical/<int:pk>/edit', views.ComplaintUpdateView.as_view(model = MedicalIssue, form_class = MedicalIssueUpdationForm), name='medicalissue_edit'),
     path('medical/<int:pk>/delete', views.ComplaintDeleteView.as_view(model = MedicalIssue), name='medicalissue_delete'),

@@ -1,4 +1,3 @@
-from pprint import pprint
 from django.urls import reverse
 from .models import Complaint, MedicalIssue
 from institute.models import Official, Student
@@ -40,13 +39,7 @@ class ComplaintCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     template_name = 'complaints/new.html'
     
     def get_success_message(self, cleaned_data):
-        # print(self.__dict__)
-        print(self.object.user.student.name)
-
-        print('Type = ----> ',self.__dict__)
-        print('Complaint -> ')
         if self.model == Complaint:
-            print('Type = ----> ',self.object.type)
             if self.object.type== 'Civil':
                 self.send_estate_civil_mail()
             elif self.object.type== 'Electrical':
@@ -144,7 +137,6 @@ class ComplaintCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         model_label = re.sub(r'((?<=[a-z])[A-Z]|(?<!\A)[A-Z](?=[a-z]))', r' \1', self.model.__name__) # CamelCase to Title Case
         context['form_title'] = 'Register {}'.format(model_label)
         context['object_name'] = model_label
-        # print(context['object_name'])
         return context
 
     
