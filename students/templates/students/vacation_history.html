@@ -49,43 +49,43 @@
       <tbody>
         <tr>
             <th>Iron Cot Status</th>
-            <td>{{ vac.iron_cot_status }}</td>
+            <td {% if vac.iron_cot_status == 'Defective' %}style="color:red;"{% endif %}>{{ vac.iron_cot_status }}</td>
             <th>Iron Cot Remarks</th>
             <td>{{ vac.iron_cot_remarks }}</td>
           </tr>
           <tr>
             <th>Tube Light Status</th>
-            <td>{{ vac.tube_light_status }}</td>
+            <td {% if vac.tube_light_status == 'Defective' %}style="color:red;"{% endif %}>{{ vac.tube_light_status }}</td>
             <th>Tube Light Remarks</th>
             <td>{{ vac.tube_light_remarks }}</td>
           </tr>
           <tr>
             <th>Fan Status</th>
-            <td>{{ vac.fan_status }}</td>
+            <td {% if vac.fan_status == 'Defective' %}style="color:red;"{% endif %}>{{ vac.fan_status }}</td>
             <th>Fan Remarks</th>
             <td>{{ vac.fan_remarks }}</td>
           </tr>
           <tr>
             <th>Fan Regulator Status</th>
-            <td>{{ vac.fan_regulator_status }}</td>
+            <td {% if vac.fan_regulator_status == 'Defective' %}style="color:red;"{% endif %}>{{ vac.fan_regulator_status }}</td>
             <th>Fan Regulator Remarks</th>
             <td>{{ vac.fan_regulator_remarks }}</td>
           </tr>
           <tr>
             <th>Cupboards Status</th>
-            <td>{{ vac.cupboards_status }}</td>
+            <td {% if vac.cupboards_status == 'Defective' %}style="color:red;"{% endif %}>{{ vac.cupboards_status }}</td>
             <th>Cupboards Remarks</th>
             <td>{{ vac.cupboards_remarks }}</td>
           </tr>
           <tr>
             <th>Switches Status</th>
-            <td>{{ vac.switches_status }}</td>
+            <td {% if vac.switches_status == 'Defective' %}style="color:red;"{% endif %}>{{ vac.switches_status }}</td>
             <th>Switches Remarks</th>
             <td>{{ vac.switches_remarks }}</td>
           </tr>
           <tr>
             <th>Socket Status</th>
-            <td>{{ vac.amperes_socket_15_status }}</td>
+            <td {% if vac.amperes_socket_15_status == 'Defective' %}style="color:red;"{% endif %}>{{ vac.amperes_socket_15_status }}</td>
             <th>Socket Remarks</th>
             <td>{{ vac.amperes_socket_15_remarks }}</td>
         </tr>

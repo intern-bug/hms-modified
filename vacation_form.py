@@ -57,10 +57,25 @@ def create_vacation_form(filename, context):
         ('6', 'Switches', 'Four', switches),
         ('7', '15 amperes Socket', 'One', amperes_socket_15)
         ]
-    style=[('GRID',(0,0),(-1,-1),1,black),
+    style = []
+    style+=[('GRID',(0,0),(-1,-1),1,black),
             ('ALIGN',(0,0),(-1,-1),'LEFT'),
             ('FONT', (0,0),(-1,-1), 'Times-Roman', 12)
             ]
+    if context['vac'].iron_cot_status == 'Defective':
+        style += [('FONT', (3,1), (-1,-7), 'Times-Bold', 12)]
+    if context['vac'].tube_light_status == 'Defective':
+        style += [('FONT', (3,2), (-1,-6), 'Times-Bold', 12)]
+    if context['vac'].fan_status == 'Defective':
+        style += [('FONT', (3,3), (-1,-5), 'Times-Bold', 12)]
+    if context['vac'].fan_regulator_status == 'Defective':
+        style += [('FONT', (3,4), (-1,-4), 'Times-Bold', 12)]
+    if context['vac'].cupboards_status == 'Defective':
+        style += [('FONT', (3,5), (-1,-3), 'Times-Bold', 12)]
+    if context['vac'].switches_status == 'Defective':
+        style += [('FONT', (3,6), (-1,-2), 'Times-Bold', 12)]
+    if context['vac'].amperes_socket_15_status == 'Defective':
+        style += [('FONT', (3,7), (-1,-1), 'Times-Bold', 12)]
     colWidths=[1.74*cm, 7.22*cm, 2.94*cm, 6.03*cm]
     rowHeights = [0.7*cm for row in data]
     tab = Table(data, colWidths=colWidths, rowHeights=rowHeights, style=style)
