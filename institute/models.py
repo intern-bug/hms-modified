@@ -97,13 +97,11 @@ class Student(models.Model):
                     invalid+=0.5
         else:
             if outingInOutObj.inTime != None and ((outingInOutObj.inTime - outingInOutObj.outing.toDate).total_seconds()/3600) > 24:
-                invalid+=2
-            elif outingInOutObj.inTime != None and ((outingInOutObj.inTime - outingInOutObj.outing.toDate).total_seconds()/3600) > 12:
                 invalid+=1.5
-            elif outingInOutObj.inTime != None and ((outingInOutObj.inTime - outingInOutObj.outing.toDate).total_seconds()/3600) > 6:
+            elif outingInOutObj.inTime != None and ((outingInOutObj.inTime - outingInOutObj.outing.toDate).total_seconds()/3600) > 12:
                 invalid+=1
-            elif outingInOutObj.inTime != None and ((outingInOutObj.inTime - outingInOutObj.outing.toDate).total_seconds()/3600) > 1.5:
-                invalid+=0.5    
+            elif outingInOutObj.inTime != None and ((outingInOutObj.inTime - outingInOutObj.outing.toDate).total_seconds()/3600) > 6:
+                invalid+=0.5
         if len(outingInOutObjs)!=0:
             rating = 5-(invalid/(len(outingInOutObjs)+1))
         elif (len(outingInOutObjs)-invalid) < 0:
