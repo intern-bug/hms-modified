@@ -113,12 +113,12 @@
         {% if official == 'Warden' %}
           <th>Remarks</th>
           <td>
-              <textarea class="form-control" name="textarea"rows="5" cols="20">{% if outing.remark_by_warden %} {{ outing.remark_by_warden }}{% endif %}</textarea>
+              <textarea class="form-control" name="textarea"rows="5" cols="20">{% if outing.remark_by_warden %}{{ outing.remark_by_warden }}{% endif %}</textarea>
           </td>
           {% else %}
           <th>Remarks</th>
           <td>
-              <textarea class="form-control" name="textarea"rows="5" cols="20">{% if outing.remark_by_caretaker %} {{ outing.remark_by_caretaker }}{% endif %}</textarea>
+              <textarea class="form-control" name="textarea"rows="5" cols="20">{% if outing.remark_by_caretaker %}{{ outing.remark_by_caretaker }}{% endif %}</textarea>
           </td>
           {% endif %}
 
