@@ -10,7 +10,10 @@ from institute.constants import FLOOR_OPTIONS
 from students.models import Outing
 from security.models import OutingInOutTimes
 from django.utils import timezone
+from django.contrib.auth import get_user_model
 
+
+User = get_user_model()
 
 # Create your models here.
 class Student(models.Model):
@@ -118,6 +121,13 @@ class Student(models.Model):
         else:
             self.discipline_rating = 0
 
+    def related_announcements(self):
+        warden = (self.block().warden() and self.block().warden().user.id) or None
+        chief = (self.block().chief_warden() and self.block().chief_warden()[0].user.id) or None
+        deputy = (self.block().deputy_chief_warden() and self.block().deputy_chief_warden()[0].user.id) or None
+        return Announcements.objects.filter(created_by__in=[warden, chief, deputy]).exclude(officials_only = True)
+
+
 class Official(models.Model):
     EMP=(
         ('Caretaker','Caretaker'),
@@ -189,7 +199,12 @@ class Official(models.Model):
                 return complaints.models.MedicalIssue.objects.filter(user__in=users, status='Registered') | self.user.medicalissue_set.filter(status='Registered')
             else:
                 return complaints.models.MedicalIssue.objects.filter(user__in=users) | self.user.medicalissue_set.all()
-                
+
+    def related_announcements(self):
+        warden = (self.block.warden() and self.block.warden().user.id) or None
+        chief = (self.block.chief_warden() and self.block.chief_warden()[0].user.id) or None
+        deputy = (self.block.deputy_chief_warden() and self.block.deputy_chief_warden()[0].user.id) or None
+        return Announcements.objects.filter(created_by__in=[warden, chief, deputy])
 
     def __str__(self):
         return str(self.emp_id)
@@ -221,10 +236,14 @@ class Block(models.Model):
         return self.name.split()[0]
 
     def available_floors(self):
-        if self.short_name()!='Vamsadhara-II':
+        if self.short_name()=='Vamsadhara-I':
             return FLOOR_OPTIONS[:self.floor_count]
         elif self.short_name()=='Vamsadhara-II':
             return FLOOR_OPTIONS[3:self.floor_count+3]
+        elif self.short_name()=='Nagavalli-I':
+            return FLOOR_OPTIONS[:self.floor_count]
+        elif self.short_name()=='Nagavalli-II':
+            return FLOOR_OPTIONS[4:self.floor_count+4]
 
     def per_room_capacity(self):
         import re
@@ -255,6 +274,15 @@ class Block(models.Model):
 
     def warden(self):
         return self.official_set.filter(designation='Warden').first()
+    
+    def chief_warden(self):
+        return Official.objects.filter(designation='Chief-Warden')
+    
+    def deputy_chief_warden(self):
+        if self.gender=='Male':
+            return Official.objects.filter(designation='Deputy Chief-Warden Boys')
+        if self.gender == 'Female':
+            return Official.objects.filter(designation='Deputy Chief-Warden Girls')
 
 class Announcements(models.Model):
 
@@ -265,6 +293,7 @@ class Announcements(models.Model):
 
 
     info = models.TextField(null=False)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     document = models.FileField(null=True, upload_to=announcement_file_storage)
     officials_only = models.BooleanField(null=False, default=False)
