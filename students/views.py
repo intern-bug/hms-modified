@@ -221,16 +221,6 @@ def send_birthday_mail():
     from django.core.mail import send_mail
     from django.conf import settings
     for student in bday_fellows:
-        print(student.email)
-
-        # send_mail(
-        # subject='Happy Birthday ',
-        # message='Happy ga undu ',
-        # from_email=settings.EMAIL_HOST_USER,
-        # recipient_list=[student.email],
-        # fail_silently=False,)
-
-
         from django.core.mail import EmailMultiAlternatives
         from django.template.loader import get_template
         from django.template import Context
