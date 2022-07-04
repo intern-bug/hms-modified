@@ -13,13 +13,13 @@ def home(request):
     worker = user.worker    
 
     if worker.designation == 'Electrician':
-        complaints = Complaint.objects.filter(type='Electrical', status__in=['Registered', 'Processing'])
+        complaints = Complaint.objects.filter(type='Electrical', status__in=['Registered', 'Processing', 'Resolved'])
     elif worker.designation == 'Estate Staff':
-        complaints = Complaint.objects.filter(type=['Electrical', 'Civil'], status__in=['Registered', 'Processing'])
+        complaints = Complaint.objects.filter(type__in=['Electrical', 'Civil'], status__in=['Registered', 'Processing', 'Resolved'])
     elif worker.designation == 'Mess Incharge':
-        complaints = Complaint.objects.filter(type='Food Issues', status__in=['Registered', 'Processing'])
+        complaints = Complaint.objects.filter(type='Food Issues', status__in=['Registered', 'Processing', 'Resolved'])
     elif worker.designation == 'Doctor':
-        complaints = MedicalIssue.objects.filter(status='Registered')
+        complaints = MedicalIssue.objects.all()
     else:
         raise PermissionDenied
 
