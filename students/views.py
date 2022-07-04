@@ -37,7 +37,7 @@ def room_allotment_check(user):
 
 # Create your views here.
 
-@user_passes_test(student_check)
+@user_passes_test(room_allotment_check)
 def home(request):
     user = request.user
     student = user.student
@@ -53,7 +53,7 @@ def home(request):
     outing_rating = student.outing_rating
     discipline_rating = student.discipline_rating
     complaints = Complaint.objects.filter(user = user, status="Registered") | Complaint.objects.filter(user = user, status="Processing")
-    announce_obj = Announcements.objects.all().exclude(officials_only=True)[:5]
+    announce_obj = student.related_announcements()[:5]
     return render(request, 'students/home.html', {'student': student, 'present_dates_count':present_dates_count, \
         'absent_dates_count':absent_dates_count, 'outing_count': outing_count, 'complaints':complaints, 'outing_rating':outing_rating, \
             'announce_obj':announce_obj, 'discipline_rating':discipline_rating})
@@ -235,4 +235,3 @@ def send_birthday_mail():
         msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
         msg.attach_alternative(html_content, "text/html")
         msg.send()
-        print("Happy ga undu")

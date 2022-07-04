@@ -39,13 +39,14 @@ def home(request):
     user = request.user
     official = user.official
     outing_requests = ''
-    announce_obj = Announcements.objects.all()[:5]
+    announce_obj = None
     if official.is_chief():
         present_students = Attendance.objects.filter(status='Present')
         absent_students = Attendance.objects.filter(status='Absent')
         complaints = official.related_complaints(pending=False)
         complaints_pending = complaints.filter(status__in = ['Registered', 'Processing'])
         complaints_resolved = complaints.filter(status = 'Resolved')
+        announce_obj = Announcements.objects.all()[:5]
 
     else:
         if not official.block: 
@@ -59,6 +60,7 @@ def home(request):
         complaints_pending = official.related_complaints(pending=False).filter(status__in = ['Registered', 'Processing'])
         complaints_resolved = official.related_complaints(pending=False).filter(status = 'Resolved')
         outing_requests = official.related_outings()
+        announce_obj = official.related_announcements()
 
     return render(request, 'officials/home.html', {'user_details': official, 'present':present_students, \
         'absent':absent_students, 'complaints_pending':complaints_pending, 'complaints_resolved':complaints_resolved, 'outings':outing_requests, 'announce_obj':announce_obj})
@@ -73,9 +75,9 @@ def profile(request):
 
 def announcements_list(request):
     if request.user.is_official:
-        announce_obj = Announcements.objects.all()
+        announce_obj = request.user.official.related_announcements()
     elif request.user.is_student:
-        announce_obj = Announcements.objects.all().exclude(officials_only=True)
+        announce_obj = request.user.student.related_announcements()
     return render(request, 'officials/announcements.html', {'announce_obj':announce_obj, 'user':request.user})
 
 @user_passes_test(official_check)
@@ -219,7 +221,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 def send_outing_mail(outing):
     student=outing.student
-    warden=Official.objects.filter(block=student.block, designation='Warden')[0]
+    warden=Official.objects.filter(block=student.roomdetail.block.id, designation='Warden')[0]
     email = warden.user.email
     send_mail(
     subject='Outing Request Raised',
@@ -259,12 +261,26 @@ def outing_detail(request, pk):
                             outing.permission = 'Granted'
                         elif outing.permission == 'Processing Extension':
                             outing.permission = 'Extension Granted'
+                            prev_fromDate = outing.fromDate
+                            prev_toDate = outing.toDate
+                            prev_place_of_visit = outing.place_of_visit
+                            prev_purpose = outing.purpose
+                            prev_mode_of_journey_from = outing.mode_of_journey_from
+                            prev_mode_of_journey_to = outing.mode_of_journey_to
+                            prev_emergency_contact = outing.emergency_contact
+                            prev_emergency_missue = outing.emergency_medical_issue
                             outing.fromDate = outingExtendObj.fromDate
                             outing.toDate = outingExtendObj.toDate
                             outing.place_of_visit = outingExtendObj.place_of_visit
                             outing.purpose = outingExtendObj.purpose
-                            # outing.remark_by_caretaker = outingExtendObj.remark_by_caretaker
-                            # outing.remark_by_warden = outingExtendObj.remark_by_warden
+                            outingExtendObj.fromDate = prev_fromDate
+                            outingExtendObj.toDate = prev_toDate
+                            outingExtendObj.place_of_visit = prev_place_of_visit
+                            outingExtendObj.purpose = prev_purpose
+                            outingExtendObj.mode_of_journey_from = prev_mode_of_journey_from
+                            outingExtendObj.mode_of_journey_to = prev_mode_of_journey_to
+                            outingExtendObj.emergency_contact = prev_emergency_contact
+                            outingExtendObj.emergency_medical_issue = prev_emergency_missue
                             outingExtendObj.permission = 'Extension Granted'
                             outingExtendObj.save()
                     if outing.type == 'Vacation':
@@ -289,7 +305,7 @@ def outing_detail(request, pk):
                 outing.mess_rebate = request.POST.get('mess_rebate')
         elif(user.official.is_caretaker()):
             if(request.POST.get('textarea')):
-                if(request.POST.get('textarea').lstrip()!=outing.remark_by_caretaker):
+                if(request.POST.get('textarea')!=outing.remark_by_caretaker):
                     if outing.permission == 'Pending':
                         outing.remark_by_caretaker = request.POST.get('textarea')+" @ "+str(timezone.localtime().strftime('%d-%m-%Y -  %H:%M:%S'))
                     elif outing.permission == 'Pending Extension':
@@ -311,7 +327,6 @@ def outing_detail(request, pk):
                         outingExtendObj.save()
                         outing.permission = 'Processing Extension'
                         # send mail to warden here
-                    print('Sending mail')
                     send_outing_mail(outing)
                 elif outing.type != 'Local' and request.POST.get('permission') == 'Rejected':
                     if outing.permission == 'Pending':
@@ -1007,6 +1022,10 @@ class AnnouncementCreateView(OfficialTestMixin, SuccessMessageMixin, CreateView)
         context = super().get_context_data(**kwargs)
         context['form_title'] = 'Create New Announcement'
         return context
+    
+    def form_valid(self, form):
+        form.instance.created_by = self.request.user
+        return super().form_valid(form)
 
 class AnnouncementsEditView(OfficialTestMixin, SuccessMessageMixin, UpdateView):
     model =  Announcements
