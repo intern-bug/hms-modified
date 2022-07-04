@@ -73,7 +73,7 @@
     </div>
   </div>
   <div class="col-md">
-    <div class="card" id="comps">
+    <div class="card" id="absent">
       <div class="row">
         <div class="col-8">
           <span class="row atttext">Number of complaints pending.</span>
@@ -99,7 +99,7 @@
     </div>
   </div>
   <div class="col-md" data-toggle="tooltip" title="Click to get list!">
-    <div class="card" id="present" data-toggle="collapse" data-target="#outing_table" aria-expanded="false"
+    <div class="card" id="{% if outings|length == 0 %}present{% else %}absent{% endif %}" data-toggle="collapse" data-target="#outing_table" aria-expanded="false"
       aria-controls="outing_table">
       <div class="row">
         <div class="col-8">
