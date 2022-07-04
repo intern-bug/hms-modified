@@ -33,6 +33,22 @@
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
 <script>
+  if (document.getElementById('id_type').value=='Local' || document.getElementById('id_type').value==''){
+      document.getElementById('div_id_mode_of_journey_from').style['display'] = 'None';
+      document.getElementById('div_id_mode_of_journey_to').style['display'] = 'None';
+      document.getElementById('div_id_emergency_contact').style['display'] = 'None';
+      document.getElementById('id_mode_of_journey_from').value = 'NA';
+      document.getElementById('id_mode_of_journey_to').value = 'NA';
+      document.getElementById('id_emergency_contact').value = 0;
+    }
+    else{
+      document.getElementById('div_id_mode_of_journey_from').style['display'] = '';
+      document.getElementById('div_id_mode_of_journey_to').style['display'] = '';
+      document.getElementById('div_id_emergency_contact').style['display'] = '';
+      document.getElementById('id_mode_of_journey_from').value = '';
+      document.getElementById('id_mode_of_journey_to').value = '';
+      document.getElementById('id_emergency_contact').value = '';
+    }
   flatpickr('#id_fromDate', {
     altInput: true,
     altFormat: "M j, Y H:i",
@@ -47,6 +63,25 @@
     minDate: "today",
     time_24hr: true
   });
+
+  document.getElementById('id_type').addEventListener('change', function(){
+    if (this.value=='Local' || this.value==''){
+      document.getElementById('div_id_mode_of_journey_from').style['display'] = 'None';
+      document.getElementById('div_id_mode_of_journey_to').style['display'] = 'None';
+      document.getElementById('div_id_emergency_contact').style['display'] = 'None';
+      document.getElementById('id_mode_of_journey_from').value = 'NA';
+      document.getElementById('id_mode_of_journey_to').value = 'NA';
+      document.getElementById('id_emergency_contact').value = 0;
+    }
+    else{
+      document.getElementById('div_id_mode_of_journey_from').style['display'] = '';
+      document.getElementById('div_id_mode_of_journey_to').style['display'] = '';
+      document.getElementById('div_id_emergency_contact').style['display'] = '';
+      document.getElementById('id_mode_of_journey_from').value = '';
+      document.getElementById('id_mode_of_journey_to').value = '';
+      document.getElementById('id_emergency_contact').value = '';
+    }
+  })
 
 </script>
 {% endblock script_links %}

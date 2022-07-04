@@ -1,12 +1,12 @@
-from django.shortcuts import get_object_or_404, render, reverse, redirect
+from audioop import reverse
+from django.shortcuts import get_object_or_404, render, redirect
 from django.http import Http404, HttpResponse, FileResponse
 from institute.models import Announcements, Student
-from security.models import OutingInOutTimes
-from students.models import ExtendOuting, Outing, Vacation
+from students.models import ExtendOuting, Outing, Vacation, Attendance
 from complaints.models import Complaint
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth.decorators import user_passes_test
-from django.views.generic import CreateView, UpdateView, ListView
+from django.views.generic import CreateView, ListView
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.urls import reverse_lazy
 from .forms import OutingExtendForm, OutingForm
@@ -15,6 +15,7 @@ from django.contrib import messages
 from django.utils import timezone
 import io
 from vacation_form import create_vacation_form
+from hosteldb.settings import LOGIN_URL
 
 
 
@@ -22,8 +23,17 @@ class StudentTestMixin(UserPassesTestMixin):
     def test_func(self):
         return self.request.user.is_authenticated and self.request.user.is_student
 
+class RoomAllotmentTestMixin(UserPassesTestMixin):
+    def test_func(self):
+        if self.request.user.is_student and self.request.user.student.roomdetail and self.request.user.student.roomdetail.room()!='-':
+            return True
+        return False
+
 def student_check(user):
     return user.is_authenticated and user.is_student
+
+def room_allotment_check(user):
+    return user.is_authenticated and user.is_student and user.student.roomdetail and user.student.roomdetail.room()!='-'
 
 # Create your views here.
 
@@ -31,8 +41,11 @@ def student_check(user):
 def home(request):
     user = request.user
     student = user.student
-    present_dates_count = (student.attendance.present_dates and len(student.attendance.present_dates.split(','))) or 0
-    absent_dates_count = (student.attendance.absent_dates and len(student.attendance.absent_dates.split(','))) or 0
+    present_dates_count = 0
+    absent_dates_count = 0
+    if Attendance.objects.filter(student=student).exists():
+        present_dates_count = (student.attendance and student.attendance.present_dates and len(student.attendance.present_dates.split(','))) or 0
+        absent_dates_count = (student.attendance and student.attendance.absent_dates and len(student.attendance.absent_dates.split(','))) or 0
     outing_count = 0
     for outing in student.outing_set.all():
         if outing.is_upcoming():

@@ -4,6 +4,7 @@ from django.core.validators import MinLengthValidator
 from django.utils import timezone
 from institute.constants import FLOOR_OPTIONS
 from security.models import OutingInOutTimes
+from institute.validators import numeric_only
 
 # Create your models here.
 class RoomDetail(models.Model):
@@ -147,6 +148,9 @@ class Outing(models.Model):
     parent_consent = models.CharField(max_length=8, choices=PARENT_CONSENT, default='NA', null=False)
     place_of_visit = models.CharField(max_length=255,null=False)
     status = models.CharField(max_length=9, choices=STATUS_OPTIONS, default='NA', null=False)
+    mode_of_journey_from = models.CharField(max_length=10, default='NA')
+    mode_of_journey_to = models.CharField(max_length=10, default='NA')
+    emergency_contact = models.CharField(max_length=10, validators=[numeric_only], default=0)
     mess_rebate = models.CharField(max_length=9, choices=MESS_REBATE_OPTIONS, default='Disabled', null=False)
     mess_rebate_status = models.CharField(max_length=9, choices=MESS_REBATE_STATUS_OPTIONS, default='NA', null=False)
     mess_rebate_days = models.IntegerField(null=False, default=0)

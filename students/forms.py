@@ -14,13 +14,16 @@ class OutingForm(forms.ModelForm):
         self.fields['type'] = forms.ChoiceField(choices=[('','-----------'), ('Local','Local'), ('Non-Local', 'Non-Local'), ('Emergency', 'Emergency')])
     class Meta:
         model = Outing
-        fields = ['type', 'fromDate', 'toDate', 'place_of_visit', 'purpose']
+        fields = ['type', 'fromDate', 'mode_of_journey_from', 'toDate', 'mode_of_journey_to', 'place_of_visit', 'purpose', 'emergency_contact']
 
         labels = {
             'type': 'Outing Mode',
             'fromDate': 'From Date & Time',
             'toDate': 'To Date & Time',
             'place_of_visit': 'Place of Visit',
+            'mode_of_journey_from': 'Mode of Journey From College',
+            'mode_of_journey_to': 'Mode of Journey To College',
+            'emergency_contact': 'Emergency Conatct Number'
         }
     def clean(self):
         cleaned_data = super().clean()
