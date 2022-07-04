@@ -1,0 +1,13 @@
+{% extends 'students/base_birthyday_mail_template.html' %}
+
+{% block title %}Happy Birthday{% endblock title %}
+
+{% block content %}
+<p>Dear <strong>{{student.name}}</strong></p>
+<p> We wish you a <strong>Happy Birthday</strong> . </p>
+{% endblock content %}
+                
+
+{% block footer %}
+You've received this email because it is you birthday.
+{% endblock footer %}

@@ -1,6 +1,7 @@
+from pprint import pprint
 from django.urls import reverse
-from .models import Complaint
-from institute.models import Student
+from .models import Complaint, MedicalIssue
+from institute.models import Official, Student
 from django.http.response import Http404
 from django.views.generic import DetailView, UpdateView, CreateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -39,7 +40,93 @@ class ComplaintCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     template_name = 'complaints/new.html'
     
     def get_success_message(self, cleaned_data):
+        # print(self.__dict__)
+        print(self.object.user.student.name)
+
+        print('Type = ----> ',self.__dict__)
+        print('Complaint -> ')
+        if self.model == Complaint:
+            print('Type = ----> ',self.object.type)
+            if self.object.type== 'Civil':
+                self.send_estate_civil_mail()
+            elif self.object.type== 'Electrical':
+                self.send_estate_electrical_mail()
+            elif self.object.type== 'Food Issues':
+                self.send_mess_mail()
+            elif self.object.type== 'Network Issue':
+                self.send_network_mail()
+        elif self.model== MedicalIssue:
+            self.send_doctor_mail()
+        
         return '{} created successfully!'.format(self.model.__name__)
+
+    def send_estate_civil_mail(self):
+        from django.core.mail import send_mail
+        from django.conf import settings
+        student=self.object.user.student
+        email = ['420237@student.nitandhra.ac.in']
+        send_mail(
+        subject='Civil Issue',
+        message='Civil issue is raised by student',
+        from_email=settings.EMAIL_HOST_USER,
+        recipient_list=email,
+        fail_silently=False,
+        html_message="Civil issue is raised by : "+str(student.name)+"\n "+(student.roll_no) +'\n  Summary: '+str(self.object.summary)+', \n Details: '+str(self.object.detailed)
+        )
+    def send_estate_electrical_mail(self):
+        from django.core.mail import send_mail
+        from django.conf import settings
+        student=self.object.user.student
+        email = ['420237@student.nitandhra.ac.in']
+        send_mail(
+        subject='Electrical Issue',
+        message='Electrical issue is raised by student',
+        from_email=settings.EMAIL_HOST_USER,
+        recipient_list=email,
+        fail_silently=False,
+        html_message="Electrical issue is raised by : "+str(student.name)+"\n "+(student.roll_no) +'\n  Summary: '+str(self.object.summary)+', \n Details: '+str(self.object.detailed)
+        )
+    def send_network_mail(self):
+        from django.core.mail import send_mail
+        from django.conf import settings
+        student=self.object.user.student
+        email = ['420237@student.nitandhra.ac.in']
+        send_mail(
+        subject='Network Issue',
+        message='Network Issue is raised by student',
+        from_email=settings.EMAIL_HOST_USER,
+        recipient_list=email,
+        fail_silently=False,
+        html_message="Network Issue is raised by : "+str(student.name)+"\n "+(student.roll_no) +'\n  Summary: '+str(self.object.summary)+', \n Details: '+str(self.object.detailed)
+        )
+    def send_mess_mail(self):
+        from django.core.mail import send_mail
+        from django.conf import settings
+        student=self.object.user.student
+        email = ['420237@student.nitandhra.ac.in']
+        send_mail(
+        subject='Food Issue',
+        message='Food issue is raised by student',
+        from_email=settings.EMAIL_HOST_USER,
+        recipient_list=email,
+        fail_silently=False,
+        html_message="Food issue is raised by : "+str(student.name)+"\n "+(student.roll_no) +'\n  Summary: '+str(self.object.summary)+', \n Details: '+str(self.object.detailed)
+        )
+    
+    def send_doctor_mail(self):
+        from django.core.mail import send_mail
+        from django.conf import settings
+        student=self.object.user.student
+        email = ['420130@student.nitandhra.ac.in','420230@student.nitandhra.ac.in','420103@student.nitandhra.ac.in','420211@student.nitandhra.ac.in']
+        send_mail(
+        subject='Health Issue',
+        message='Health issue is raised by student',
+        from_email=settings.EMAIL_HOST_USER,
+        recipient_list=email,
+        fail_silently=False,
+        html_message="Health issue is raised by : "+str(student.name)+"\n "+(student.roll_no) +'\n  Summary: '+str(self.object.summary)+', \n Details: '+str(self.object.detailed)
+        )
+
 
     def get_success_url(self):
         return self.request.user.home_url()
@@ -59,6 +146,7 @@ class ComplaintCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         context['object_name'] = model_label
         # print(context['object_name'])
         return context
+
     
 class ComplaintUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     def get_success_message(self, cleaned_data):

@@ -211,3 +211,28 @@ def vacation_form_download(request):
     buf.seek(0)
     file = 'Vacation_form-{}/{}.{}'.format(vac.room_detail.__str__(), timezone.localtime().strftime('%d-%m-%Y_%H-%M-%S'),'pdf')
     return FileResponse(buf, as_attachment=True, filename=file)
+
+def send_birthday_mail():
+    # search the query set for birthday and send him email
+    from datetime import datetime
+    query_set=Student.objects.all()
+    bday_fellows=query_set.filter(dob=datetime.today().date())
+
+    from django.core.mail import send_mail
+    from django.conf import settings
+    for student in bday_fellows:
+        from django.core.mail import EmailMultiAlternatives
+        from django.template.loader import get_template
+        from django.template import Context
+
+        subject, from_email, to = 'Happy Birthday',settings.EMAIL_HOST_USER, student.user.email
+
+        variables = {
+        'student':student
+        }
+        html_content = get_template('students/birthyday_mail_template_html.html').render(variables)
+        text_content = get_template('students/birthyday_mail_template_text.html').render(variables)
+        msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
+        msg.attach_alternative(html_content, "text/html")
+        msg.send()
+        print("Happy ga undu")

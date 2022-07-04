@@ -215,7 +215,20 @@ def grant_outing(request):
     outings = official.related_outings()
     return render(request, 'officials/grant_outing.html', {'official': official, 'outings': outings})
 
-
+from django.core.mail import send_mail
+from django.conf import settings
+def send_outing_mail(outing):
+    student=outing.student
+    warden=Official.objects.filter(block=student.block, designation='Warden')[0]
+    email = warden.user.email
+    send_mail(
+    subject='Outing Request Raised',
+    message='Outing request is raised by Student',
+    from_email=settings.EMAIL_HOST_USER,
+    recipient_list=[email],
+    fail_silently=False,
+    html_message="Outing request is raised by : "+str(student.name)+" "+(student.roll_no)
+    )
 @user_passes_test(official_check)
 def outing_detail(request, pk):
     outing = get_object_or_404(Outing, id=pk)
@@ -297,6 +310,9 @@ def outing_detail(request, pk):
                         outingExtendObj.permission = 'Processing Extension'
                         outingExtendObj.save()
                         outing.permission = 'Processing Extension'
+                        # send mail to warden here
+                    print('Sending mail')
+                    send_outing_mail(outing)
                 elif outing.type != 'Local' and request.POST.get('permission') == 'Rejected':
                     if outing.permission == 'Pending':
                         outing.permission = 'Rejected'
