@@ -100,10 +100,7 @@
     <div class="col-11 mt-4 border p-3">
       {% if object.model_name == 'Complaint' %}
         <form action="{% url 'complaints:complaint_edit' object.id %}" method="post">
-      {% else %}
-        <form action="{% url 'complaints:medicalissue_edit' object.id %}" method="post">
-      {% endif %}
-        {% csrf_token %}
+          {% csrf_token %}
         {% load crispy_forms_tags %}
         {{form|as_crispy_errors}}
         <div class="row">
@@ -124,6 +121,27 @@
           </div>
         </div>
       </form>
+      {% else %}
+        <form action="{% url 'complaints:medicalissue_edit' object.id %}" method="post">
+          {% csrf_token %}
+          {% load crispy_forms_tags %}
+          {{form|as_crispy_errors}}
+          <div class="row">
+            <div class="col-md-10">
+              {{form.status|as_crispy_field}}
+            </div>
+            <div class="col-md-10">
+              {{form.emergency_outing_permission|as_crispy_field}}
+            </div>
+            <div class="col-12 order-2 order-md-3">
+              {{form.remark|as_crispy_field}}
+            </div>
+            <div class="col-md-2 d-flex align-items-end py-3 order-3 order-md-2 justify-content-center">
+              <input type="submit" value="Update" class="btn btn-primary">
+            </div>
+          </div>
+        </form>
+      {% endif %}
     </div>
   {% endif %}
 </div>

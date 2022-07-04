@@ -51,7 +51,14 @@ class Complaint(models.Model):
 class MedicalIssue(models.Model):
     STATUS = (
         ('Registered','Registered'),
+        ('Processing','Processing'),
         ('Resolved','Resolved')
+    )
+
+    EMERGENCY_OUTING_OPTIONS = (
+        ('NA', '----------'),
+        ('Allow', 'Allow'),
+        ('Disallow', 'Disallow')
     )
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -61,6 +68,7 @@ class MedicalIssue(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     remark = models.TextField(null=True, blank=True)
+    emergency_outing_permission = models.CharField(max_length=8, choices=EMERGENCY_OUTING_OPTIONS, default='NA')
 
     def entity(self):
         return self.user.entity()

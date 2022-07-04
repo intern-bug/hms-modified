@@ -1,10 +1,14 @@
 from random import choices
 from django import forms
+from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from .models import ExtendOuting, Outing
 from django_auth.models import User
 from institute.models import Student
 from django.db.models import Q
+from institute.validators import numeric_only
+from complaints.models import MedicalIssue
+
 
 class OutingForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -12,9 +16,10 @@ class OutingForm(forms.ModelForm):
             self.request = kwargs.pop('request')
         super(OutingForm, self).__init__(*args, **kwargs)
         self.fields['type'] = forms.ChoiceField(choices=[('','-----------'), ('Local','Local'), ('Non-Local', 'Non-Local'), ('Emergency', 'Emergency')])
+        self.fields['emergency_medical_issue'] = forms.CharField(label='Medical Issue Id', validators=[numeric_only], widget=forms.TextInput(attrs={'size':5}))
     class Meta:
         model = Outing
-        fields = ['type', 'fromDate', 'mode_of_journey_from', 'toDate', 'mode_of_journey_to', 'place_of_visit', 'purpose', 'emergency_contact']
+        fields = ['type', 'fromDate', 'mode_of_journey_from', 'toDate', 'mode_of_journey_to', 'place_of_visit', 'purpose', 'emergency_medical_issue', 'emergency_contact']
 
         labels = {
             'type': 'Outing Mode',
@@ -23,7 +28,8 @@ class OutingForm(forms.ModelForm):
             'place_of_visit': 'Place of Visit',
             'mode_of_journey_from': 'Mode of Journey From College',
             'mode_of_journey_to': 'Mode of Journey To College',
-            'emergency_contact': 'Emergency Conatct Number'
+            'emergency_contact': 'Emergency Conatct Number',
+            'emergency_medical_issue': 'Medical Issue Id',
         }
     def clean(self):
         cleaned_data = super().clean()
@@ -73,6 +79,13 @@ class OutingForm(forms.ModelForm):
                 raise forms.ValidationError("Local Outing is allowed only until 21:00 hrs")
         return to_date
 
+    def clean_emergency_medical_issue(self):
+        type = self.cleaned_data.get('type')
+        missue_id = self.cleaned_data.get('emergency_medical_issue')
+        missue_object = get_object_or_404(MedicalIssue, id=missue_id)
+        if missue_object.user != self.request.user:
+            raise forms.ValidationError("Invalid Emergency Id")
+        return missue_object
 
 class OutingExtendForm(forms.ModelForm):
     def __init__(self, initial=None, *args, **kwargs):

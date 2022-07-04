@@ -70,7 +70,7 @@ class ComplaintUpdationForm(forms.ModelForm):
 class MedicalIssueUpdationForm(forms.ModelForm):
     class Meta:
         model = MedicalIssue
-        fields = ['status', 'remark', ]
+        fields = ['status', 'emergency_outing_permission', 'remark', ]
 
         widgets = {
             'remark': forms.Textarea(attrs={'rows': 4})
