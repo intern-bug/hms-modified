@@ -128,7 +128,6 @@ def outing_log(request):
             calendar_outing_list = (outDate_outing_list|inDate_outing_list)
         
         if request.GET.get('by_regd_no') and (request.GET.get('by_date') or request.GET.get('by_month') or request.GET.get('by_year')):
-            print(student_outing_list, calendar_outing_list)
             outing_list = student_outing_list & calendar_outing_list
         elif request.GET.get('by_regd_no'):
             outing_list = student_outing_list
