@@ -750,11 +750,20 @@ def vacation_mess_report(request):
 
 @user_passes_test(official_check)
 def vacation_student_details(request):
-    is_chief = request.user.official.is_chief()
     applied_students = None
     unapplied_students = None
     if request.user.official.is_chief(): 
         applied_students = Vacation.objects.all().order_by('submitted')
+    elif request.user.official.is_boys_deputy_chief():
+        students =  Student.objects.filter(roomdetail__block__gender='Male')
+        applied_students = Vacation.objects.filter(room_detail__block__gender = 'Male').order_by('-submitted')
+        applied_students_room_detail = applied_students.values('room_detail__student__id')
+        unapplied_students = students.exclude(id__in=applied_students_room_detail)
+    elif request.user.official.is_girls_deputy_chief():
+        students =  Student.objects.filter(roomdetail__block__gender='Female')
+        applied_students = Vacation.objects.filter(room_detail__block__gender = 'Female').order_by('-submitted')
+        applied_students_room_detail = applied_students.values('room_detail__student__id')
+        unapplied_students = students.exclude(id__in=applied_students_room_detail)
     else: 
         students =  request.user.official.block.students()
         applied_students = Vacation.objects.filter(room_detail__block = request.user.official.block).order_by('-submitted')
@@ -872,12 +881,19 @@ class ChiefWardenTestMixin(OfficialTestMixin):
         is_official = super().test_func() 
         return is_official and self.request.user.official.is_chief()
 
+class ChiefTestMixin(OfficialTestMixin):
+    def test_func(self):
+        is_official = super().test_func()
+        return is_official and (self.request.user.official.is_boys_deputy_chief() or self.request.user.official.is_girls_deputy_chief())
+
 class StudentListView(OfficialTestMixin, ListView):
     model = Student
     template_name = 'officials/student_list.html'
 
     def get_queryset(self):
         if self.request.user.official.is_chief(): return Student.objects.all()
+        elif self.request.user.official.is_boys_deputy_chief(): return Student.objects.filter(roomdetail__block__gender='Male')
+        elif self.request.user.official.is_girls_deputy_chief(): return Student.objects.filter(roomdetail__block__gender='Female')
         else: return Student.objects.filter(roomdetail__block=self.request.user.official.block) 
 
 class StudentDetailView(OfficialTestMixin, DetailView):
@@ -886,7 +902,8 @@ class StudentDetailView(OfficialTestMixin, DetailView):
 
     def get(self, request, *args, **kwargs):
         response =  super().get(request, *args, **kwargs)
-        if not self.request.user.official.is_chief() and (self.object.roomdetail.block != self.request.user.official.block): 
+        if not (self.request.user.official.is_chief() or self.request.user.official.is_boys_deputy_chief() or \
+            self.request.user.official.is_girls_deputy_chief()) and (self.object.roomdetail.block != self.request.user.official.block): 
             return HttpResponseForbidden()
         return response
 
@@ -917,9 +934,17 @@ class StudentDeleteView(ChiefWardenTestMixin, LoginRequiredMixin, DeleteView):
     model = Student
     success_url = reverse_lazy('officials:student_list')
 
-class OfficialListView(ChiefWardenTestMixin, ListView):
+class OfficialListView(ChiefTestMixin, ListView):
     model = Official
     template_name = 'officials/official_list.html'
+
+    def get_queryset(self):
+        if self.request.user.official.is_chief():
+            return Official.objects.all()
+        elif self.request.user.official.is_boys_deputy_chief():
+            return Official.objects.filter(block__gender='Male')
+        elif self.request.user.official.is_girls_deputy_chief():
+            return Official.objects.filter(block__gender='Female')
 
 class OfficialRegisterView(ChiefWardenTestMixin, CreateView):
     template_name = 'officials/official-register-form.html'
@@ -947,9 +972,17 @@ class OfficialDeleteView(ChiefWardenTestMixin, LoginRequiredMixin, DeleteView):
     model = Official
     success_url = reverse_lazy('officials:emp_list')
 
-class WorkerListView(ChiefWardenTestMixin, ListView):
+class WorkerListView(ChiefTestMixin, ListView):
     model = Worker
     template_name = 'officials/workers_list.html'
+
+    def get_queryset(self):
+        if self.request.user.official.is_chief():
+            return Worker.objects.all()
+        elif self.request.user.official.is_boys_deputy_chief():
+            return Worker.objects.filter(block__gender='Male')
+        elif self.request.user.official.is_girls_deputy_chief():
+            return Worker.objects.filter(block__gender='Female')
 
 class WorkerRegisterView(ChiefWardenTestMixin, CreateView):
     template_name = 'officials/official-register-form.html'
@@ -1070,9 +1103,10 @@ class AnnouncementsEditView(OfficialTestMixin, SuccessMessageMixin, UpdateView):
 
 @user_passes_test(official_check)
 def announcement_delete(request, pk):
-    if not request.user.official.is_chief():
+    if not (request.user.official.is_chief() or request.user.official.is_boys_deputy_chief() or request.user.official.is_girls_deputy_chief()):
         return redirect('officials:home')
     announcement = get_object_or_404(Announcements, id=pk)
-    announcement.delete()
-    messages.success(request, 'Announcement deleted successfully.')
+    if request.user == announcement.created_by:
+        announcement.delete()
+        messages.success(request, 'Announcement deleted successfully.')
     return redirect('officials:home')

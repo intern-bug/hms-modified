@@ -11,7 +11,7 @@
             {{ announcement.info }}
         </a>
     </div>
-    {% if user.is_official and user.official.is_chief %}
+    {% if user.is_official and user == announcement.created_by %}
     <div class="col-2 text-end">
         <a href="{% url 'officials:announcement-edit' announcement.id %}" class="btn btn-primary">Edit</a>
     </div>

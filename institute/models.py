@@ -156,10 +156,10 @@ class Official(models.Model):
         return self.designation == 'Warden'
     
     def is_boys_deputy_chief(self):
-        return self.designation == 'Deputy Chief Warden Boys'
+        return self.designation == 'Deputy Chief-Warden Boys'
     
     def is_girls_deputy_chief(self):
-        return self.designation == 'Deputy Chief Warden Girls'
+        return self.designation == 'Deputy Chief-Warden Girls'
 
     def clean(self):
         if (self.is_chief() or self.is_boys_deputy_chief() or self.is_girls_deputy_chief()) and self.block != None:
@@ -232,10 +232,13 @@ class Official(models.Model):
                 return complaints.models.MedicalIssue.objects.filter(user__in=users) | self.user.medicalissue_set.all()
 
     def related_announcements(self):
-        warden = (self.block.warden() and self.block.warden().user.id) or None
-        chief = (self.block.chief_warden() and self.block.chief_warden()[0].user.id) or None
-        deputy = (self.block.deputy_chief_warden() and self.block.deputy_chief_warden()[0].user.id) or None
-        return Announcements.objects.filter(created_by__in=[warden, chief, deputy])
+        if self.is_chief() or self.is_boys_deputy_chief() or self.is_girls_deputy_chief():
+            return Announcements.objects.all()
+        else:
+            warden = (self.block.warden() and self.block.warden().user.id) or None
+            chief = (self.block.chief_warden() and self.block.chief_warden()[0].user.id) or None
+            deputy = (self.block.deputy_chief_warden() and self.block.deputy_chief_warden()[0].user.id) or None
+            return Announcements.objects.filter(created_by__in=[warden, chief, deputy])
 
     def __str__(self):
         return str(self.emp_id)

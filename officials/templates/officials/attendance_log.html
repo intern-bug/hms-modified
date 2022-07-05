@@ -46,7 +46,7 @@
         <input type="hidden" name="block_id" value="boys">
         <button type="submit" class="btn btn-primary">Selected Month</a>
       </form>
-      {% if official.is_girls_deputy_chief %}
+      {% elif official.is_girls_deputy_chief %}
       <form action="{% url 'officials:generate_attendance_sheet' %}" method="GET">
         <input type="month" name="year_month" class="form-control d-inline w-50" required>
         <input type="hidden" name="block_id" value="girls">

@@ -2,7 +2,7 @@
 {% block title %}Vacation List{% endblock title %}
 
 {% block content %}
-{% if user.official.is_caretaker and user.official.is_warden %}
+{% if user.official.is_caretaker or user.official.is_warden %}
 <h2 class="text-center">Unapplied Students List</h2>
 <hr>
 
@@ -13,7 +13,7 @@
                 <th>Regd. No.</th>
                 <th>Name</th>
                 <th>Year</th>
-                {% if is_chief %}
+                {% if not user.official.is_warden and not user.official.is_caretaker %}
                 <th>Block</th>
                 {% endif %}
                 <th>Room No.</th>
@@ -25,7 +25,7 @@
                 <td>{{ student.regd_no }}</td>
                 <td>{{ student.name }}</td>
                 <td>{{ student.year }}</td>
-                {% if is_chief %}
+                {% if not user.official.is_warden and not user.official.is_caretaker %}
                 <td>{{ student.roomdetail.block.short_name }}</td>
                 {% endif %}
                 <td>{{ student.roomdetail.room_no }}</td>
@@ -47,13 +47,13 @@
                 <th>ID</th>
                 <th>Regd. No.</th>
                 <th>Name</th>
-                {% if is_chief %}
+                {% if not user.official.is_warden and not user.official.is_caretaker %}
                 <th>Block</th>
                 {% endif %}
                 <th>Room No.</th>
                 <th>Vacation Date</th>
                 <th>Submitted</th>
-                {% if not is_chief %}
+                {% if user.official.is_caretaker or user.official.is_warden %}
                 <th>Action</th>
                 {% endif %}
             </tr>
@@ -61,19 +61,19 @@
         <tbody>
             {% for vac in vacation_list %}
             {% if not vac.submitted %}
-            <tr {% if is_chief %}data-row-href="{% url 'officials:vacation_detail' vac.id %}"{% endif %}>
+            <tr {% if user.official.is_chief %}data-row-href="{% url 'officials:vacation_detail' vac.id %}"{% endif %}>
                 <td>{{ vac.id }}</td>
                 <td>{{ vac.room_detail.student.regd_no }}</td>
                 <td>{{ vac.room_detail.student.name }}</td>
-                {% if is_chief %}
+                {% if not user.official.is_caretaker and not user.official.is_warden %}
                 <td>{{ vac.room_detail.block.short_name }}</td>
                 {% endif %}
                 <td>{{ vac.room_detail.room_no }}</td>
                 <td>{{ vac.vacated_on }}</td>
                 <td>{{ vac.submitted }}</td>
-                {% if not is_chief %}
+                {% if user.official.is_caretaker or user.official.is_warden %}
                 <td>
-                    {% if not vac.submitted %}
+                    {% if user.official.is_caretaker or user.official.is_warden %}
                     <a href="{% url 'officials:vacation-form-edit' vac.id %}" class="btn btn-primary">Edit</a>
                     {% endif %}
                 </td>
@@ -94,13 +94,13 @@
                 <th>ID</th>
                 <th>Regd. No.</th>
                 <th>Name</th>
-                {% if is_chief %}
+                {% if not user.official.is_warden and not user.official.is_caretaker %}
                 <th>Block</th>
                 {% endif %}
                 <th>Room No.</th>
                 <th>Vacation Date</th>
                 <th>Submitted</th>
-                {% if not is_chief %}
+                {% if user.official.is_warden or user.official.is_caretaker %}
                 <th>Action</th>
                 {% endif %}
             </tr>
@@ -108,17 +108,17 @@
         <tbody>
             {% for vac in vacation_list %}
             {% if vac.submitted %}
-            <tr {% if is_chief %}data-row-href="{% url 'officials:vacation_detail' vac.id %}"{% endif %}>
+            <tr {% if user.official.is_chief %}data-row-href="{% url 'officials:vacation_detail' vac.id %}"{% endif %}>
                 <td>{{ vac.id }}</td>
                 <td>{{ vac.room_detail.student.regd_no }}</td>
                 <td>{{ vac.room_detail.student.name }}</td>
-                {% if is_chief %}
+                {% if not user.official.is_warden and not user.official.is_caretaker %}
                 <td>{{ vac.room_detail.block.short_name }}</td>
                 {% endif %}
                 <td>{{ vac.room_detail.room_no }}</td>
                 <td>{{ vac.vacated_on }}</td>
                 <td>{{ vac.submitted }}</td>
-                {% if not is_chief %}
+                {% if user.official.is_warden or user.official.is_caretaker %}
                 <td>
                     {% if not vac.submitted %}
                     <a href="{% url 'officials:vacation-form-edit' vac.id %}" class="btn btn-primary">Edit</a>
