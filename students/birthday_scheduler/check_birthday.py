@@ -6,7 +6,7 @@ def start():
     scheduler=BackgroundScheduler()
     # scheduler.add_job(send_birthday_mail,"cron",second='*',replace_existing=True)
 
-    scheduler.add_job(send_birthday_mail,"cron",hour='12',minute='26',replace_existing=True)
+    scheduler.add_job(send_birthday_mail,"cron",hour='0',minute='0',replace_existing=True)
     
     # scheduler.add_job(send_birthday_mail,"interval",seconds=20,replace_existing=True)
     scheduler.start()
