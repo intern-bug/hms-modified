@@ -37,12 +37,14 @@ def room_allotment_check(user):
 
 # Create your views here.
 
-@user_passes_test(room_allotment_check)
+@user_passes_test(student_check)
 def home(request):
     user = request.user
     student = user.student
     present_dates_count = 0
     absent_dates_count = 0
+    if user.student.roomdetail and user.student.roomdetail.room()=='-':
+        raise Http404('You are not allocated any room yet')
     if Attendance.objects.filter(student=student).exists():
         present_dates_count = (student.attendance and student.attendance.present_dates and len(student.attendance.present_dates.split(','))) or 0
         absent_dates_count = (student.attendance and student.attendance.absent_dates and len(student.attendance.absent_dates.split(','))) or 0
