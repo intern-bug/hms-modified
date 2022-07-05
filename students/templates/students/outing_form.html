@@ -181,7 +181,6 @@
       document.getElementById('id_mode_of_journey_from').value = 'NA';
       document.getElementById('id_mode_of_journey_to').value = 'NA';
       document.getElementById('id_emergency_contact').value = 0;
-      document.getElementById('id_purpose').remove();
       if (document.getElementById('id_purpose').type != 'text'){
       document.getElementById('id_purpose').remove();
       addTextElement();
@@ -202,14 +201,18 @@
         document.getElementById('id_emergency_contact').value = '';
       }
       if (document.getElementById('id_type').value=='Emergency'){
-        value = document.getElementById('id_purpose').value;
-        document.getElementById('id_purpose').remove();
-        addSelectElement(value);
+        if (document.getElementById('id_purpose').type != 'select-one'){
+          value = document.getElementById('id_purpose').value;
+          document.getElementById('id_purpose').remove();
+          addSelectElement(value);
+        }
       }
       else if(document.getElementById('id_type').value=='Non-Local'){
-        document.getElementById('id_purpose').remove();
+        if (document.getElementById('id_purpose').type != 'text'){
+          document.getElementById('id_purpose').remove();
+          addTextElement();
+        }
         document.getElementById('div_id_emergency_medical_issue').hidden = true;
-        addTextElement();
       }
     }
   });

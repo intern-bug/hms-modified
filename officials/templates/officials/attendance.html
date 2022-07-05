@@ -29,6 +29,7 @@
           <th>Regd No.</th>
           <th>Name</th>
           <th>Room</th>
+          <th>Status</th>
           <th>Attendance</th>
         </tr>
       </thead>
@@ -38,6 +39,7 @@
             <td>{{ attendance.student.regd_no }}</td>
             <td>{{ attendance.student.name }}</td>
             <td>{{ attendance.student.roomdetail.room }}</td>
+            <td {% if attendance.outing_status == 'In Outing' %}style="color:red"{% else %}style="color:green"{% endif %}>{{ attendance.outing_status }}</td>
             <td>
               <select name="{{ attendance.id }}" class="form-control {% if attendance.present_on_date  %} is-valid {% endif %} {% if attendance.absent_on_date %} is-invalid {% endif %}" style="width: 130px;">
                 <option value="not_marked" {% if attendance.present_on_date  %} selected {% endif %} >------</option>

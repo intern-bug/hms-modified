@@ -108,6 +108,11 @@ def attendance(request):
     date = date_format.strftime('%Y-%m-%d')
 
     for item in attendance_list:
+        outingInOutTimes_obj = OutingInOutTimes.objects.filter(outing__student=item.student)[0]
+        if outingInOutTimes_obj.outing.status == 'In Outing':
+            item.outing_status = 'In Outing'
+        else:
+            item.outing_status = 'In College'
         if item.present_dates:
             present_dates = set(item.present_dates.split(','))
             present_dates = [row.split('@')[0] for row in present_dates]
