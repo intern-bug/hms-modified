@@ -18,6 +18,14 @@ class AttendanceBookGenerator:
             for block in Block.objects.all():
                 SheetGenerator = BlockAttendanceSheetGenerator(block.id, self.year_month)
                 SheetGenerator.generate_block_sheet(workbook)
+        elif self.block_id == 'boys':
+            for block in Block.objects.filter(gender='Male'):
+                SheetGenerator = BlockAttendanceSheetGenerator(block.id, self.year_month)
+                SheetGenerator.generate_block_sheet(workbook)
+        elif self.block_id == 'girls':
+            for block in Block.objects.filter(gender='Female'):
+                SheetGenerator = BlockAttendanceSheetGenerator(block.id, self.year_month)
+                SheetGenerator.generate_block_sheet(workbook)
         else:
             SheetGenerator = BlockAttendanceSheetGenerator(self.block_id, self.year_month)
             SheetGenerator.generate_block_sheet(workbook)
@@ -136,6 +144,14 @@ class OutingBookGenerator:
 
         if self.block_id == 'all':
             for block in Block.objects.all():
+                SheetGenerator = BlockOutingSheetGenerator(block.id, self.year_month_day)
+                SheetGenerator.generate_block_sheet(workbook)
+        elif self.block_id == 'boys':
+            for block in Block.objects.filter(gender='Male'):
+                SheetGenerator = BlockOutingSheetGenerator(block.id, self.year_month_day)
+                SheetGenerator.generate_block_sheet(workbook)
+        elif self.block_id == 'girls':
+            for block in Block.objects.filter(gender='Female'):
                 SheetGenerator = BlockOutingSheetGenerator(block.id, self.year_month_day)
                 SheetGenerator.generate_block_sheet(workbook)
         else:

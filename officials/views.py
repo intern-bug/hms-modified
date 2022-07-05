@@ -48,6 +48,22 @@ def home(request):
         complaints_resolved = complaints.filter(status = 'Resolved')
         announce_obj = Announcements.objects.all()[:5]
 
+    elif official.is_boys_deputy_chief():
+        present_students = Attendance.objects.filter(status="Present", student__roomdetail__block__gender='Male')
+        absent_students = Attendance.objects.filter(status="Absent", student__roomdetail__block__gender='Male')
+        complaints = official.related_complaints(pending=False)
+        complaints_pending = complaints.filter(status__in = ['Registered', 'Processing'])
+        complaints_resolved = complaints.filter(status = 'Resolved')
+        announce_obj = official.related_announcements()[:5]
+    
+    elif official.is_girls_deputy_chief():
+        present_students = Attendance.objects.filter(status="Present", student__roomdetail__block__gender='Female')
+        absent_students = Attendance.objects.filter(status="Absent", student__roomdetail__block__gender='Female')
+        complaints = official.related_complaints(pending=False)
+        complaints_pending = complaints.filter(status__in = ['Registered', 'Processing'])
+        complaints_resolved = complaints.filter(status = 'Resolved')
+        announce_obj = official.related_announcements()[:5]
+
     else:
         if not official.block: 
             raise Http404('You are currently not appointed any block! Please contact Admin')
@@ -165,6 +181,10 @@ def attendance_log(request):
 
     if official.is_chief():
         attendance_list = Attendance.objects.all()
+    elif official.is_boys_deputy_chief():
+        attendance_list = Attendance.objects.filter(student__roomdetail__block__gender='Male')
+    elif official.is_girls_deputy_chief():
+        attendance_list = Attendance.objects.filter(student__roomdetail__block__gender='Female')
     else:
         attendance_list = Attendance.objects.filter(student__in = official.block.students())
 
@@ -408,6 +428,10 @@ def outing_log(request):
     outing_list=None
     if official.is_chief():
         valid_outing_list = OutingInOutTimes.objects.all()
+    elif official.is_boys_deputy_chief():
+        valid_outing_list = OutingInOutTimes.objects.filter(outing__student__roomdetail__block__gender = 'Male')
+    elif official.is_girls_deputy_chief():
+        valid_outing_list = OutingInOutTimes.objects.filter(outing__student__roomdetail__block__gender = 'Female')
     else:
         valid_outing_list = OutingInOutTimes.objects.filter(outing__student__in = official.block.students())
     if request.method == 'GET':
@@ -474,6 +498,10 @@ def get_outing_sheet(request):
         year_month_day = 'all'
     if official.is_chief():
         block_id = 'all'
+    elif official.is_boys_deputy_chief():
+        block_id = 'boys'
+    elif official.is_girls_deputy_chief():
+        block_id = 'girls'
     else:
         block_id = official.block.id
 
@@ -733,7 +761,7 @@ def vacation_student_details(request):
         applied_students_room_detail = applied_students.values('room_detail__student__id')
         unapplied_students = students.exclude(id__in=applied_students_room_detail)
     return render(request, 'officials/vacation_list.html', {'unapplied_students': unapplied_students, \
-        'vacation_list':applied_students, 'is_chief':is_chief})
+        'vacation_list':applied_students, 'user':request.user})
 
 @user_passes_test(official_check)
 def vacation_detail(request, pk):

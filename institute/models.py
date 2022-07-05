@@ -132,7 +132,8 @@ class Official(models.Model):
     EMP=(
         ('Caretaker','Caretaker'),
         ('Warden','Warden'),
-        ('Deputy Chief-Warden', 'Deputy Chief-Warden'),
+        ('Deputy Chief-Warden Boys', 'Deputy Chief-Warden Boys'),
+        ('Deputy Chief-Warden Girls', 'Deputy Chief-Warden Girls'),
         ('Chief-Warden','Chief-Warden'),
     )
 
@@ -140,7 +141,7 @@ class Official(models.Model):
     account_email = models.EmailField(unique=True, null=False)
     emp_id = models.CharField(unique=True,null=False, max_length=20)
     name = models.CharField(max_length=100)
-    designation = models.CharField(max_length=20,choices=EMP)
+    designation = models.CharField(max_length=25,choices=EMP)
     phone = models.CharField(max_length=10, null=False, validators=[numeric_only])
     email = models.EmailField(null=True, blank=True)
     block = models.ForeignKey('institute.Block', on_delete=models.SET_NULL, null=True, blank=True)
@@ -153,9 +154,15 @@ class Official(models.Model):
 
     def is_warden(self):
         return self.designation == 'Warden'
+    
+    def is_boys_deputy_chief(self):
+        return self.designation == 'Deputy Chief Warden Boys'
+    
+    def is_girls_deputy_chief(self):
+        return self.designation == 'Deputy Chief Warden Girls'
 
     def clean(self):
-        if self.is_chief() and self.block != None:
+        if (self.is_chief() or self.is_boys_deputy_chief() or self.is_girls_deputy_chief()) and self.block != None:
             raise ValidationError('Chief Warden and Deputy Chief Warden cannot be assigned a block.')
     
     def related_outings(self):
@@ -174,6 +181,18 @@ class Official(models.Model):
                 return complaints.models.Complaint.objects.filter(status__in=['Registered', 'Processing']) # | complaints.models.Complaint.objects.filter(status='Processing')
             else:
                 return complaints.models.Complaint.objects.all()
+        elif self.is_boys_deputy_chief():
+            users = User.objects.filter(Q(official__block__gender='Male') | Q(student__roomdetail__block__gender='Male'))
+            if pending:
+                return complaints.models.Complaint.objects.filter(user__in=users, status__in=['Registered', 'Processing'])
+            else:
+                return complaints.models.Complaint.objects.filter(user__in=users)
+        elif self.is_girls_deputy_chief():
+            users = User.objects.filter(Q(official__block__gender='Female') | Q(student__roomdetail__block__gender='Female'))
+            if pending:
+                return complaints.models.Complaint.objects.filter(user__in=users, status__in=['Registered', 'Processing'])
+            else:
+                return complaints.models.Complaint.objects.filter(user__in=users)
         else:
             students = self.block.students()
             users = list(students.values_list('user', flat=True))
@@ -192,6 +211,18 @@ class Official(models.Model):
                 return complaints.models.MedicalIssue.objects.filter(status='Registered')
             else:
                 return complaints.models.MedicalIssue.objects.all()
+        elif self.is_boys_deputy_chief():
+            users = User.objects.filter(Q(official__block__gender='Male') | Q(student__roomdetail__block__gender='Male'))
+            if pending:
+                return complaints.models.MedicalIssue.objects.filter(user__in=users, status='Registered')
+            else:
+                return complaints.models.MedicalIssue.objects.filter(user__in=users)
+        elif self.is_girls_deputy_chief():
+            users = User.objects.filter(Q(official__block__gender='Female') | Q(student__roomdetail__block__gender='Female'))
+            if pending:
+                return complaints.models.MedicalIssue.objects.filter(user__in=users, status='Registered')
+            else:
+                return complaints.models.MedicalIssue.objects.filter(user__in=users)
         else:
             students = self.block.students()
             users = students.values_list('user', flat=True)

@@ -2,7 +2,7 @@
 {% block title %}Vacation List{% endblock title %}
 
 {% block content %}
-{% if not is_chief %}
+{% if user.official.is_caretaker and user.official.is_warden %}
 <h2 class="text-center">Unapplied Students List</h2>
 <hr>
 
