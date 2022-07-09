@@ -152,7 +152,7 @@ class Outing(models.Model):
     mode_of_journey_from = models.CharField(max_length=10, default='NA')
     mode_of_journey_to = models.CharField(max_length=10, default='NA')
     emergency_contact = models.CharField(max_length=10, validators=[numeric_only], default=0)
-    emergency_medical_issue = models.ForeignKey('complaints.MedicalIssue', on_delete=models.CASCADE, null=True, blank=True, default=NULL)
+    emergency_medical_issue = models.ForeignKey('complaints.MedicalIssue', on_delete=models.CASCADE, null=True, blank=True)
     mess_rebate = models.CharField(max_length=9, choices=MESS_REBATE_OPTIONS, default='Disabled', null=False)
     mess_rebate_status = models.CharField(max_length=9, choices=MESS_REBATE_STATUS_OPTIONS, default='NA', null=False)
     mess_rebate_days = models.IntegerField(null=False, default=0)

@@ -19,9 +19,10 @@
       <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 justify-content-center">
         {% for block in blocks %}
           {% if block.gender == 'Female' %}
+            {% if block.short_name == 'Tungabhadra' %}
             <div class="col p-3 d-flex justify-content-center">
               <div class="card" style="width: 18rem;">
-                <img class="card-img-top" src="{% static 'institute/img2.jpg' %}" alt="Block Image" style="width: auto; height: 250px;">
+                <img class="card-img-top" src="{% static 'institute/Tungabhadra.jpg' %}" alt="Card image cap" style="width: auto; height: 250px;">
                 <div class="card-body">
                   <h4 class="card-title">{{ block.name }}</h4>
                   <div class="card-text">
@@ -32,22 +33,172 @@
                     <h4>{{ block.name }}</h4>
                     <p>Room Type: {{ block.room_type }}</p>
                     <p>{{ block.capacity }} rooms | {{ block.student_capacity }} students</p>
-                    {% if block.caretaker %}
+                    <h5>Warden Contact</h5>
+                    <p class="font-weight-bold">Dr.V.Sudharshana Deepa</p>
+                    <p>Email: warden_thr@nitandhra.ac.in</p>
+                    <p>Phone: +91-9944904249</p>
+                    
                       <h5>Caretaker Contact</h5>
-                      <p class="font-weight-bold">{{ block.caretaker.name }}</p>
-                      <p>Email: {{ block.caretaker.email }}</p>
-                      <p>Phone: {{ block.caretaker.phone }}</p>
-                    {% endif %}
-                    {% if block.warden %}
-                      <h5>Warden Contact</h5>
-                      <p class="font-weight-bold">{{ block.caretaker.name }}</p>
-                      <p>Email: {{ block.warden.email }}</p>
-                      <p>Phone: {{ block.warden.phone }}</p>
-                    {% endif %}
+                                            
+                      <p class="font-weight-bold">Alle Rajani</p>
+                      <p>Email: rajanikodari1990@gmail.com</p>
+                      <p>Phone: +91-9989551223</p>
+
+                      <h5>Caretaker Contact</h5>
+
+                      <p class="font-weight-bold">Badampudi Someswari</p>
+                      <p>Email: badampudisomeswari050@gmail.com</p>
+                      <p>Phone: +91-8019698938</p>
+
+                    
+                    
                   </div>
                 </div>
               </div>
             </div>
+            {% endif %}
+            {% if block.short_name == 'Ghataprabha' %}
+            <div class="col p-3 d-flex justify-content-center">
+              <div class="card" style="width: 18rem;">
+                <img class="card-img-top" src="{% static 'institute/Ghataprabha.jpg' %}" alt="Card image cap" style="width: auto; height: 250px;">
+                <div class="card-body">
+                  <h4 class="card-title">{{ block.name }}</h4>
+                  <div class="card-text">
+                    <p>Room Type: {{ block.room_type }}</p>
+                    <p>{{ block.capacity }} rooms | {{ block.student_capacity }} students</p>
+                  </div>
+                  <div class="card-reveal">
+                    <h4>{{ block.name }}</h4>
+                    <p>Room Type: {{ block.room_type }}</p>
+                    <p>{{ block.capacity }} rooms | {{ block.student_capacity }} students</p>
+                    <h5>Warden Contact</h5>
+                    <p class="font-weight-bold">Dr.Soumya Jose</p>
+                    <p>Email: residentwarden_ghr@nitandhra.ac.in</p>
+                    <p>Phone: +91-9585932324</p>
+                    
+                      <h5>Caretaker Contact</h5>
+
+                      <p class="font-weight-bold">Tammisetti Venkata Madhavi</p>
+                      <p>Email: tvmadhavi4187@gmail.com</p>
+                      <p>Phone: +91-9010703003</p>
+
+                      <h5>Caretaker Contact</h5>
+
+                      <p class="font-weight-bold">Veeravattula Vara Lakshmi Devi</p>
+                      <p>Email: patsanandadevi@gmail.com</p>
+                      <p>Phone: +91-9490353438</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+            {% if block.short_name == 'Krishnaveni' %}
+            <div class="col p-3 d-flex justify-content-center">
+              <div class="card" style="width: 18rem;">
+                <img class="card-img-top" src="{% static 'institute/Krishnaveni.jpg' %}" alt="Card image cap" style="width: auto; height: 250px;">
+                <div class="card-body">
+                  <h4 class="card-title">{{ block.name }}</h4>
+                  <div class="card-text">
+                    <p>Room Type: {{ block.room_type }}</p>
+                    <p>{{ block.capacity }} rooms | {{ block.student_capacity }} students</p>
+                  </div>
+                  <div class="card-reveal">
+                    <h4>{{ block.name }}</h4>
+                    <p>Room Type: {{ block.room_type }}</p>
+                    <p>{{ block.capacity }} rooms | {{ block.student_capacity }} students</p>
+                    <h5>Warden Contact</h5>
+                    <p class="font-weight-bold">Dr. Srilatha Chebrolu</p>
+                    <p>Email: srilatha.chebrolu@nitandhra.ac.in</p>
+                    <p>Phone: +91-8330967036</p>
+                    
+                      <h5>Caretaker Contact</h5>
+                      
+                      <p class="font-weight-bold">Sanga Durga Devi</p>
+                      <p>Email: rachamalladurgadevi@gmail.com</p>
+                      <p>Phone: +91-9346658966</p>
+                    
+                      <h5>Caretaker Contact</h5>
+                      <p class="font-weight-bold">Not Yet Assigned</p>
+                      <p>Email: @gmail.com</p>
+                      <p>Phone: +91-</p>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+            {% if block.short_name == 'Bhima' %}
+            <div class="col p-3 d-flex justify-content-center">
+              <div class="card" style="width: 18rem;">
+                <img class="card-img-top" src="{% static 'institute/Bhima.jpg' %}" alt="Card image cap" style="width: auto; height: 250px;">
+                <div class="card-body">
+                  <h4 class="card-title">{{ block.name }}</h4>
+                  <div class="card-text">
+                    <p>Room Type: {{ block.room_type }}</p>
+                    <p>{{ block.capacity }} rooms | {{ block.student_capacity }} students</p>
+                  </div>
+                  <div class="card-reveal">
+                    <h4>{{ block.name }}</h4>
+                    <p>Room Type: {{ block.room_type }}</p>
+                    <p>{{ block.capacity }} rooms | {{ block.student_capacity }} students</p>
+                    <h5>Warden Contact</h5>
+                    <p class="font-weight-bold">Dr.Reshma</p>
+                    <p>Email: warden_bmhr@nitandhra.ac.in</p>
+                    <p>Phone: +91-8985813933</p>
+                    
+                      <h5>Caretaker Contact</h5>
+                      
+                      <p class="font-weight-bold">Datti Madhuri</p>
+                      <p>Email: madhurivannemreddy@yahoo.com</p>
+                      <p>Phone: +91-9182876998</p>
+
+                    
+                      <h5>Caretaker Contact</h5>
+                                         
+                      <p class="font-weight-bold">Dulapalli Venkata Lakshmi</p>
+                      <p>Email: dulapallivenkatalakshmi@gmail.com</p>
+                      <p>Phone: +91-9177675883</p>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+            {% if block.short_name == 'Munneru' %}
+            <div class="col p-3 d-flex justify-content-center">
+              <div class="card" style="width: 18rem;">
+                <img class="card-img-top" src="{% static 'institute/Munneru.jpg' %}" alt="Card image cap" style="width: auto; height: 250px;">
+                <div class="card-body">
+                  <h4 class="card-title">{{ block.name }}</h4>
+                  <div class="card-text">
+                    <p>Room Type: {{ block.room_type }}</p>
+                    <p>{{ block.capacity }} rooms | {{ block.student_capacity }} students</p>
+                  </div>
+                  <div class="card-reveal">
+                    <h4>{{ block.name }}</h4>
+                    <p>Room Type: {{ block.room_type }}</p>
+                    <p>{{ block.capacity }} rooms | {{ block.student_capacity }} students</p>
+                    <h5>Warden Contact</h5>
+                    <p class="font-weight-bold">Ms.Kamala Mohanty</p>
+                    <p>Email: warden_mhr@nitandhra.ac.in</p>
+                    <p>Phone: +91-8439072427</p>
+                    
+                      <h5>Caretaker Contact</h5>
+                      <p class="font-weight-bold">Korapati Lakshmi Durga</p>
+                      <p>Email: lakshmidurgak31@gmail.com</p>
+                      <p>Phone: +91-8185908669</p>
+                    
+                      <h5>Caretaker Contact</h5>
+                                            
+                      <p class="font-weight-bold">Pillelli Prasanna Kumari</p>
+                      <p>Email: munnamanojprasanna@gmail.com</p>
+                      <p>Phone: +91-7702382687</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+
           {% endif %}
         {% endfor %}
       </div>
@@ -57,12 +208,13 @@
       <div class="">
         <h4 class="text-center">Boys Hostels</h4>
       </div>
-      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 justify-content-center">
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-4 justify-content-center">
         {% for block in blocks %}
           {% if block.gender == 'Male' %}
+            {% if block.short_name == 'Swarnamukhi' %}
             <div class="col p-3 d-flex justify-content-center">
               <div class="card" style="width: 18rem;">
-                <img class="card-img-top" src="{% static 'institute/img2.jpg' %}" alt="Card image cap" style="width: auto; height: 250px;">
+                <img class="card-img-top" src="{% static 'institute/Swarnamukhi.jpg' %}" alt="Card image cap" style="width: auto; height: 250px;">
                 <div class="card-body">
                   <h4 class="card-title">{{ block.name }}</h4>
                   <div class="card-text">
@@ -73,22 +225,392 @@
                     <h4>{{ block.name }}</h4>
                     <p>Room Type: {{ block.room_type }}</p>
                     <p>{{ block.capacity }} rooms | {{ block.student_capacity }} students</p>
-                    {% if block.caretaker %}
+                    <h5>Warden Contact</h5>
+                    <p class="font-weight-bold">Dr.Narasimha Rao</p>
+                    <p>Email: warden_shr@nitandhra.ac.in</p>
+                    <p>Phone: +91-7989935826</p>
+                    
                       <h5>Caretaker Contact</h5>
-                      <p class="font-weight-bold">{{ block.caretaker.name }}</p>
-                      <p>Email: {{ block.caretaker.email }}</p>
-                      <p>Phone: {{ block.caretaker.phone }}</p>
-                    {% endif %}
-                    {% if block.warden %}
-                      <h5>Warden Contact</h5>
-                      <p class="font-weight-bold">{{ block.caretaker.name }}</p>
-                      <p>Email: {{ block.warden.email }}</p>
-                      <p>Phone: {{ block.warden.phone }}</p>
-                    {% endif %}
+                      <p class="font-weight-bold">Dulapalli Girija Raju</p>
+                      <p>Email: likefamilylaxmi@gmail.com</p>
+                      <p>Phone: +91-7702248061</p>
+
+                      <h5>Caretaker Contact</h5>
+                      <p class="font-weight-bold">Marisetti J Venkata Satyanarayana</p>
+                      <p>Email: marisettisatyam@gmail.com</p>
+                      <p>Phone: +91-9848419666</p>
                   </div>
                 </div>
               </div>
             </div>
+            {% endif %}
+            {% if block.short_name == 'Nagavalli-I' %}
+            <div class="col p-3 d-flex justify-content-center">
+              <div class="card" style="width: 18rem;">
+                <img class="card-img-top" src="{% static 'institute/nagavali.jpg' %}" alt="Card image cap" style="width: auto; height: 250px;">
+                <div class="card-body">
+                  <h4 class="card-title">Nagavali-I Hall of Residency</h4>
+                  <div class="card-text">
+                    <p>Room Type: {{ block.room_type }}</p>
+                    <p>{{ block.capacity }} rooms | {{ block.student_capacity }} students</p>
+                  </div>
+                  <div class="card-reveal">
+                    <h4>{{ block.name }}</h4>
+                    <p>Room Type: {{ block.room_type }}</p>
+                    <p>{{ block.capacity }} rooms | {{ block.student_capacity }} students</p>
+                    <h5>Warden Contact</h5>
+                    <p class="font-weight-bold">Dr. K Satyanarayana</p>
+                    <p>Email: warden_prhr@nitandhra.ac.in</p>
+                    <p>Phone: +91-9232397804</p>
+                    
+                      <h5>Caretaker Contact</h5>
+                      <p class="font-weight-bold">Karri krishna </p>
+                      <p>Email: krisnakarri@gmail.com</p>
+                      <p>Phone: +91-9515332021</p>
+                    
+                      <h5>Caretaker Contact</h5>
+                      <p class="font-weight-bold">Korasikha Mohan Manikanta</p>
+                      <p>Email: korasikamani1234@gmail.com</p>
+                      <p>Phone: +91-9398231347</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+            {% if block.short_name == 'Nagavalli-II' %}
+            <div class="col p-3 d-flex justify-content-center">
+              <div class="card" style="width: 18rem;">
+                <img class="card-img-top" src="{% static 'institute/nagavali.jpg' %}" alt="Card image cap" style="width: auto; height: 250px;">
+                <div class="card-body">
+                  <h4 class="card-title">Nagavali-II Hall of Residency</h4>
+                  <div class="card-text">
+                    <p>Room Type: {{ block.room_type }}</p>
+                    <p>{{ block.capacity }} rooms | {{ block.student_capacity }} students</p>
+                  </div>
+                  <div class="card-reveal">
+                    <h4>{{ block.name }}</h4>
+                    <p>Room Type: {{ block.room_type }}</p>
+                    <p>{{ block.capacity }} rooms | {{ block.student_capacity }} students</p>
+                    <h5>Warden Contact</h5>
+                    <p class="font-weight-bold">Dr. K Satyanarayana</p>
+                    <p>Email: warden_prhr@nitandhra.ac.in</p>
+                    <p>Phone: +91-9232397804</p>
+                    
+                      <h5>Caretaker Contact</h5>
+                      <p class="font-weight-bold">Dulapalli Girija Raju</p>
+                      <p>Email: likefamilylaxmi@gmail.com</p>
+                      <p>Phone: +91-7702248061</p>
+
+                      <h5>Caretaker Contact</h5>
+                      <p class="font-weight-bold">Marisetti J Venkata Satyanarayana</p>
+                      <p>Email: marisettisatyam@gmail.com</p>
+                      <p>Phone: +91-9848419666</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+            {% if block.short_name == 'Vamsadhara-I' %}
+            <div class="col p-3 d-flex justify-content-center">
+              <div class="card" style="width: 18rem;">
+                <img class="card-img-top" src="{% static 'institute/Vamsadhara.jpg' %}" alt="Card image cap" style="width: auto; height: 250px;">
+                <div class="card-body">
+                  <h4 class="card-title">{{ block.name }}</h4>
+                  <div class="card-text">
+                    <p>Room Type: {{ block.room_type }}</p>
+                    <p>{{ block.capacity }} rooms | {{ block.student_capacity }} students</p>
+                  </div>
+                  <div class="card-reveal">
+                    <h4>{{ block.name }}</h4>
+                    <p>Room Type: {{ block.room_type }}</p>
+                    <p>{{ block.capacity }} rooms | {{ block.student_capacity }} students</p>
+                    <h5>Warden Contact</h5>
+                    <p class="font-weight-bold">Dr. K Satyanarayana</p>
+                    <p>Email: warden_prhr@nitandhra.ac.in</p>
+                    <p>Phone: +91-9232397804</p>
+                    
+                      <h5>Caretaker Contact</h5>
+                      <p class="font-weight-bold">Gudla Srinivasa Rao</p>
+                      <p>Email: srinugudlas534@gmail.com</p>
+                      <p>Phone: +91-9490499806</p>
+                    
+                      <h5>Caretaker Contact</h5>
+                      <p class="font-weight-bold">Chandrasekhar Geddam</p>
+                      <p>Email: chandrasekhargeddam01@gmail.com</p>
+                    <p>Phone: +91-9705958802</p> 
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+            {% if block.short_name == 'Vamsadhara-II' %}
+            <div class="col p-3 d-flex justify-content-center">
+              <div class="card" style="width: 18rem;">
+                <img class="card-img-top" src="{% static 'institute/Vamsadhara.jpg' %}" alt="Card image cap" style="width: auto; height: 250px;">
+                <div class="card-body">
+                  <h4 class="card-title">{{ block.name }}</h4>
+                  <div class="card-text">
+                    <p>Room Type: {{ block.room_type }}</p>
+                    <p>{{ block.capacity }} rooms | {{ block.student_capacity }} students</p>
+                  </div>
+                  <div class="card-reveal">
+                    <h4>{{ block.name }}</h4>
+                    <p>Room Type: {{ block.room_type }}</p>
+                    <p>{{ block.capacity }} rooms | {{ block.student_capacity }} students</p>
+                    <h5>Warden Contact</h5>
+                    <p class="font-weight-bold">Dr. K Satyanarayana</p>
+                    <p>Email: warden_prhr@nitandhra.ac.in</p>
+                    <p>Phone: +91-9232397804</p>
+                    
+                      <h5>Caretaker Contact</h5>
+                      <p class="font-weight-bold">Ganta Chandra Sekhar</p>
+                      <p>Email: gantasekhar1989@gmail.com  </p>
+                      <p>Phone: +91- 8885231218</p>
+                    
+                      <h5>Caretaker Contact</h5>
+                      <p class="font-weight-bold">Nalla Sivakrishna</p>
+                      <p>Email: sivanalla88@gmail.com</p>
+                      <p>Phone: +91-8985987850</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+            {% if block.short_name == 'Godavari' %}
+            <div class="col p-3 d-flex justify-content-center">
+              <div class="card" style="width: 18rem;">
+                <img class="card-img-top" src="{% static 'institute/Godavari.jpg' %}" alt="Card image cap" style="width: auto; height: 250px;">
+                <div class="card-body">
+                  <h4 class="card-title">{{ block.name }}</h4>
+                  <div class="card-text">
+                    <p>Room Type: {{ block.room_type }}</p>
+                    <p>{{ block.capacity }} rooms | {{ block.student_capacity }} students</p>
+                  </div>
+                  <div class="card-reveal">
+                    <h4>{{ block.name }}</h4>
+                    <p>Room Type: {{ block.room_type }}</p>
+                    <p>{{ block.capacity }} rooms | {{ block.student_capacity }} students</p>
+                    <h5>Warden Contact</h5>
+                    <p class="font-weight-bold">Not Yet Assigned</p>
+                    <p>Email: .@nitandhra.ac.in</p>
+                    <p>Phone: +91-</p>
+                    
+                    <h5>Caretaker Contact</h5>
+                                            
+                    <p class="font-weight-bold">Rapaka Mohana Kumar</p>
+                    <p>Email: rapakamohana56@gmail.com</p>
+                    <p>Phone: +91-7013952537</p> 
+
+                    <h5>Caretaker Contact</h5>
+                                          
+                    <p class="font-weight-bold">Chandrasekhar Geddam</p>
+                    <p>Email: chandrasekhargeddam01@gmail.com</p>
+                    <p>Phone: +91-9705958802</p> 
+                    
+                       
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+            {% if block.short_name == 'Sabari' %}
+            <div class="col p-3 d-flex justify-content-center">
+              <div class="card" style="width: 18rem;">
+                <img class="card-img-top" src="{% static 'institute/Sabari.jpg' %}" alt="Card image cap" style="width: auto; height: 250px;">
+                <div class="card-body">
+                  <h4 class="card-title">{{ block.name }}</h4>
+                  <div class="card-text">
+                    <p>Room Type: {{ block.room_type }}</p>
+                    <p>{{ block.capacity }} rooms | {{ block.student_capacity }} students</p>
+                  </div>
+                  <div class="card-reveal">
+                    <h4>{{ block.name }}</h4>
+                    <p>Room Type: {{ block.room_type }}</p>
+                    <p>{{ block.capacity }} rooms | {{ block.student_capacity }} students</p>
+                    <h5>Warden Contact</h5>
+                    <p class="font-weight-bold">Dr.H.Surendra H M</p>
+                    <p>Email: warden_ghr@nitandhra.ac.in</p>
+                    <p>Phone: +91-6366638618</p>
+                    
+                      <h5>Caretaker Contact</h5>
+                      <p class="font-weight-bold">Chakravadhanula Ramji</p>
+                      <p>Email: ramji595156@gmail. com</p>
+                      <p>Phone: +91-8977595156</p>
+                    
+                      <h5>Caretaker Contact</h5>
+                      <p class="font-weight-bold">Not Yet Assigned</p>
+                      <p>Email: @gmail.com</p>
+                      <p>Phone: +91-</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+            {% if block.short_name == 'Purna' %}
+            <div class="col p-3 d-flex justify-content-center">
+              <div class="card" style="width: 18rem;">
+                <img class="card-img-top" src="{% static 'institute/Purna.jpg' %}" alt="Card image cap" style="width: auto; height: 250px;">
+                <div class="card-body">
+                  <h4 class="card-title">{{ block.name }}</h4>
+                  <div class="card-text">
+                    <p>Room Type: {{ block.room_type }}</p>
+                    <p>{{ block.capacity }} rooms | {{ block.student_capacity }} students</p>
+                  </div>
+                  <div class="card-reveal">
+                    <h4>{{ block.name }}</h4>
+                    <p>Room Type: {{ block.room_type }}</p>
+                    <p>{{ block.capacity }} rooms | {{ block.student_capacity }} students</p>
+                    <h5>Warden Contact</h5>
+                    <p class="font-weight-bold">Dr.Sharad Dwevedi</p>
+                    <p>Email: warden_phr@nitandhra.ac.in</p>
+                    <p>Phone: +91-8076079681</p>
+                    
+                      <h5>Caretaker Contact</h5>
+                      <p class="font-weight-bold">M.Subhash</p>
+                      <p>Email: msubhash511@gmail.com</p>
+                      <p>Phone: +91-7893777661</p>
+                    
+                      <h5>Caretaker Contact</h5>
+                      <p class="font-weight-bold">Dasari balajiramu</p>
+                      <p>Email:  dasaribalajiram@gmail.com</p>
+                      <p>Phone: +91-8142991991</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+            {% if block.short_name == 'Banganga' %}
+            <div class="col p-3 d-flex justify-content-center">
+              <div class="card" style="width: 18rem;">
+                <img class="card-img-top" src="{% static 'institute/Banganga.jpg' %}" alt="Card image cap" style="width: auto; height: 250px;">
+                <div class="card-body">
+                  <h4 class="card-title">{{ block.name }}</h4>
+                  <div class="card-text">
+                    <p>Room Type: {{ block.room_type }}</p>
+                    <p>{{ block.capacity }} rooms | {{ block.student_capacity }} students</p>
+                  </div>
+                  <div class="card-reveal">
+                    <h4>{{ block.name }}</h4>
+                    <p>Room Type: {{ block.room_type }}</p>
+                    <p>{{ block.capacity }} rooms | {{ block.student_capacity }} students</p>
+                    <h5>Warden Contact</h5>
+                    <p class="font-weight-bold">Dr.S.Yuvaraj</p>
+                    <p>Email: warden_bhr@nitandhra.ac.in</p>
+                    <p>Phone: +91-8090673100</p>
+                    
+                      <h5>Caretaker Contact</h5>
+                      <p class="font-weight-bold">Korasikha Mohan Manikanta</p>
+                      <p>Email: korasikamani1234@gmail.com</p>
+                      <p>Phone: +91-9398231347</p>
+                    
+                      <h5>Caretaker Contact</h5>
+                      <p class="font-weight-bold">Dulapalli Girija Raju</p>
+                      <p>Email: likefamilylaxmi@gmail.com</p>
+                      <p>Phone: +91-7702248061</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+            {% if block.short_name == 'Indravathi' %}
+            <div class="col p-3 d-flex justify-content-center">
+              <div class="card" style="width: 18rem;">
+                <img class="card-img-top" src="{% static 'institute/Indravathi.jpg' %}" alt="Card image cap" style="width: auto; height: 250px;">
+                <div class="card-body">
+                  <h4 class="card-title">{{ block.name }}</h4>
+                  <div class="card-text">
+                    <p>Room Type: {{ block.room_type }}</p>
+                    <p>{{ block.capacity }} rooms | {{ block.student_capacity }} students</p>
+                  </div>
+                  <div class="card-reveal">
+                    <h4>{{ block.name }}</h4>
+                    <p>Room Type: {{ block.room_type }}</p>
+                    <p>{{ block.capacity }} rooms | {{ block.student_capacity }} students</p>
+                    <h5>Warden Contact</h5>
+                    <p class="font-weight-bold">Dr. P.SubbaRao</p>
+                    <p>Email: warden_ihr@nitandhra.ac.in</p>
+                    <p>Phone:+91-7585965850 </p>
+                    
+                      <h5>Caretaker Contact</h5>
+                      <p class="font-weight-bold">Gudla Srinivasa Rao</p>
+                      <p>Email: srinugudlas534@gmail.com</p>
+                      <p>Phone: +91-9490499806</p>
+                    
+                      <h5>Caretaker Contact</h5>
+                      <p class="font-weight-bold">Karri krishna </p>
+                      <p>Email: krisnakarri@gmail.com</p>
+                      <p>Phone: +91-9515332021</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+            {% if block.short_name == 'Pranahitha' %}
+            <div class="col p-3 d-flex justify-content-center">
+              <div class="card" style="width: 18rem;">
+                <img class="card-img-top" src="{% static 'institute/Pranahitha.jpg' %}" alt="Card image cap" style="width: auto; height: 250px;">
+                <div class="card-body">
+                  <h4 class="card-title">{{ block.name }}</h4>
+                  <div class="card-text">
+                    <p>Room Type: {{ block.room_type }}</p>
+                    <p>{{ block.capacity }} rooms | {{ block.student_capacity }} students</p>
+                  </div>
+                  <div class="card-reveal">
+                    <h4>{{ block.name }}</h4>
+                    <p>Room Type: {{ block.room_type }}</p>
+                    <p>{{ block.capacity }} rooms | {{ block.student_capacity }} students</p>
+                    <h5>Warden Contact</h5>
+                    <p class="font-weight-bold">Dr. K Satyanarayana</p>
+                    <p>Email: warden_prhr@nitandhra.ac.in</p>
+                    <p>Phone: +91-9232397804</p>
+                    
+                      <h5>Caretaker Contact</h5>
+                      <p class="font-weight-bold">Agraharapu Narasimha Durgarao</p>
+                      <p>Email: durganarasimha90@gmail.com</p>
+                      <p>Phone: +91-9666717902</p>
+                    
+                      <h5>Caretaker Contact</h5>
+                      <p class="font-weight-bold">Nalla Sivakrishna</p>
+                      <p>Email: sivanalla88@gmail.com</p>
+                      <p>Phone: +91-8985987850</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+            {% if block.short_name == 'Manjeera' %}
+            <div class="col p-3 d-flex justify-content-center">
+              <div class="card" style="width: 18rem;">
+                <img class="card-img-top" src="{% static 'institute/Manjeera.jpg' %}" alt="Card image cap" style="width: auto; height: 250px;">
+                <div class="card-body">
+                  <h4 class="card-title">{{ block.name }}</h4>
+                  <div class="card-text">
+                    <p>Room Type: {{ block.room_type }}</p>
+                    <p>{{ block.capacity }} rooms | {{ block.student_capacity }} students</p>
+                  </div>
+                  <div class="card-reveal">
+                    <h4>{{ block.name }}</h4>
+                    <p>Room Type: {{ block.room_type }}</p>
+                    <p>{{ block.capacity }} rooms | {{ block.student_capacity }} students</p>
+                    <h5>Warden Contact</h5>
+                    <p class="font-weight-bold">Dr.M.Amarendar Reddy</p>
+                    <p>Email: warden_mjhr@nitandhra.ac.in</p>
+                    <p>Phone: +91-7893702344</p>
+                    
+                      <h5>Caretaker Contact</h5>
+                      <p class="font-weight-bold">Ganta Chandra Sekhar</p>
+                      <p>Email: gantasekhar1989@gmail.com  </p>
+                      <p>Phone: +91- 8885231218</p>
+                    
+                      <h5>Caretaker Contact</h5>
+                      <p class="font-weight-bold">Not Yet Assigned</p>
+                      <p>Email: @gmail.com</p>
+                      <p>Phone: +91-</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endif %}
           {% endif %}
         {% endfor %}
       </div>

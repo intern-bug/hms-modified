@@ -126,6 +126,11 @@ def attendance(request):
             if request.POST.get(str(attendance.id)) and request.POST.get(str(attendance.id))!='not_marked': attendance.mark_attendance(date, request.POST.get(str(attendance.id)))
         attendance_list  = Attendance.objects.filter(student__in=block.students())
         for item in attendance_list:
+            outingInOutTimes_obj = OutingInOutTimes.objects.filter(outing__student=item.student)[0]
+            if outingInOutTimes_obj.outing.status == 'In Outing':
+                item.outing_status = 'In Outing'
+            else:
+                item.outing_status = 'In College'
             if item.present_dates:
                 present_dates = set(item.present_dates.split(','))
                 present_dates = [row.split('@')[0] for row in present_dates]
@@ -148,8 +153,6 @@ def attendance_workers(request):
     official = user.official
     block = official.block
     attendance_list  = AttendanceWorker.objects.filter(worker__in=block.worker_set.all())
-    date = (timezone.localtime() - timedelta(hours=1)).date()
-
     date_format = (timezone.localtime() - timedelta(hours=1)).date()
 
     date = date_format.strftime('%Y-%m-%d')
@@ -166,8 +169,17 @@ def attendance_workers(request):
 
     if request.method == 'POST' and request.POST.get('submit'):
         for attendance in attendance_list:
-            if request.POST.get(str(attendance.id)): attendance.mark_attendance(date, request.POST.get(str(attendance.id)))
-
+            if request.POST.get(str(attendance.id)) and request.POST.get(str(attendance.id))!='not_marked': attendance.mark_attendance(date, request.POST.get(str(attendance.id)))
+        attendance_list  = AttendanceWorker.objects.filter(worker__in=block.worker_set.all())
+        for item in attendance_list:
+            if item.present_dates:
+                present_dates = set(item.present_dates.split(','))
+                present_dates = [row.split('@')[0] for row in present_dates]
+                if date in present_dates: item.present_on_date = True
+            if item.absent_dates:
+                absent_dates = set(item.absent_dates.split(','))
+                absent_dates = [row.split('@')[0] for row in absent_dates]
+                if date in absent_dates: item.absent_on_date = True
         messages.success(request, f'Staff Attendance marked for date: {date}')
 
     return render(request, 'officials/attendance_workers.html', {'official': official, 'attendance_list': attendance_list, \
@@ -790,6 +802,7 @@ def vacation_detail(request, pk):
                 purpose = 'vacation',
                 type = 'Vacation',
                 place_of_visit = vac.journey_destination,
+                mode_of_journey_from = vac.mode_of_journey,
             )
             vacation_outing.save()
             vac.vacation_outing_obj = vacation_outing
@@ -889,7 +902,7 @@ class ChiefWardenTestMixin(OfficialTestMixin):
 class ChiefTestMixin(OfficialTestMixin):
     def test_func(self):
         is_official = super().test_func()
-        return is_official and (self.request.user.official.is_boys_deputy_chief() or self.request.user.official.is_girls_deputy_chief())
+        return is_official and (self.request.user.official.is_chief() or self.request.user.official.is_boys_deputy_chief() or self.request.user.official.is_girls_deputy_chief())
 
 class StudentListView(OfficialTestMixin, ListView):
     model = Student

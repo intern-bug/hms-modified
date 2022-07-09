@@ -278,6 +278,7 @@ class Block(models.Model):
             return FLOOR_OPTIONS[:self.floor_count]
         elif self.short_name()=='Nagavalli-II':
             return FLOOR_OPTIONS[4:self.floor_count+4]
+        return FLOOR_OPTIONS[:self.floor_count]
 
     def per_room_capacity(self):
         import re

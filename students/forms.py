@@ -85,7 +85,9 @@ class OutingForm(forms.ModelForm):
         type = self.cleaned_data.get('type')
         missue_id = self.cleaned_data.get('emergency_medical_issue')
         if missue_id:
-            missue_object = get_object_or_404(MedicalIssue, id=missue_id)
+            missue_object = MedicalIssue.objects.filter(id=missue_id).first()
+            if not missue_object:
+                raise forms.ValidationError("Inavlid Medical Issue Id")
             if missue_object.user != self.request.user:
                 raise forms.ValidationError("Invalid Medical Issue Id")
             return missue_object
@@ -111,7 +113,8 @@ class OutingExtendForm(forms.ModelForm):
         self.fields['emergency_contact'].initial = self.outing.emergency_contact
         self.fields['emergency_medical_issue'] = forms.CharField(label='Medical Issue Id', validators=[numeric_only], widget=forms.TextInput(attrs={'size':5}))
         self.fields['emergency_medical_issue'].required = False
-        self.fields['emergency_medical_issue'].initial = self.outing.emergency_medical_issue.id
+        if self.outing.emergency_medical_issue:
+            self.fields['emergency_medical_issue'].initial = self.outing.emergency_medical_issue.id
         fields_keyOrder = ['type', 'fromDate', 'mode_of_journey_from', 'toDate', 'mode_of_journey_to', 'place_of_visit', 'purpose', 'emergency_medical_issue', 'emergency_contact']
         self.fields = {key:self.fields[key] for key in fields_keyOrder}
     
@@ -152,6 +155,17 @@ class OutingExtendForm(forms.ModelForm):
     def clean_toDate(self):
         to_date = self.cleaned_data.get('toDate')
         return to_date
+
+    def clean_emergency_medical_issue(self):
+        type = self.cleaned_data.get('type')
+        missue_id = self.cleaned_data.get('emergency_medical_issue')
+        if missue_id:
+            missue_object = MedicalIssue.objects.filter(id=missue_id).first()
+            if not missue_object:
+                raise forms.ValidationError("Invalid Medical Issue Id")
+            if missue_object.user != self.request.user:
+                raise forms.ValidationError("Invalid Medical Issue Id")
+            return missue_object
 
     
     

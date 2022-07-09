@@ -54,7 +54,7 @@ def home(request):
             outing_count+=1
     outing_rating = student.outing_rating
     discipline_rating = student.discipline_rating
-    complaints = Complaint.objects.filter(user = user, status="Registered") | Complaint.objects.filter(user = user, status="Processing")
+    complaints = Complaint.objects.filter(user = user)
     announce_obj = student.related_announcements()[:5]
     return render(request, 'students/home.html', {'student': student, 'present_dates_count':present_dates_count, \
         'absent_dates_count':absent_dates_count, 'outing_count': outing_count, 'complaints':complaints, 'outing_rating':outing_rating, \

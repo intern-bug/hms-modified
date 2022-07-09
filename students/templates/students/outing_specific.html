@@ -32,7 +32,7 @@
         <tr><th>Type</th><td>{{ outing.type }}</td></tr>
         <tr><th>Purpose of Visit</th><td>{{ outing.purpose }}</td></tr>
         <tr><th>Parent Consent</th><td>{{ outing.parent_consent }}</td></tr>
-        {% if outing.type != 'Local' and outing.type != 'Vacation' %}
+        {% if outing.type != 'Local' %}
         <tr><th>Mode of Journey From College</th><td>{{ outing.mode_of_journey_from }}</td></tr>
         <tr><th>Mode of Journey To College</th><td>{{ outing.mode_of_journey_to }}</td></tr>
         <tr><th>Emergency Contact Number</th><td>{{ outing.emergency_contact }}</td></tr>
