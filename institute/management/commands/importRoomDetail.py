@@ -12,7 +12,7 @@ class Command(BaseCommand):
         return os.path.join(settings.BASE_DIR, "data", file_name)
 
     def convert_date(self, date):
-        month, day, year = list(map(lambda x: int(x), date.split("/")))
+        month, day, year = list(map(lambda x: int(x), date.split("-")))
         return timezone.datetime(year=year, month=month, day=day)
 
     def add_arguments(self, parser):
@@ -65,7 +65,7 @@ class Command(BaseCommand):
 
                     except Exception as e:
                         if data["RegNo"]:
-                            print("Error while inserting room-detail {}".format(data["regd_no"]))
+                            print("Error while inserting room-detail {}".format(data["RegNo"]))
                             traceback.print_exc()
                             print()
                         else:
