@@ -60,7 +60,7 @@ class Command(BaseCommand):
                         room.block = block
                         room.room_no = data["RoomNo"]
                         room.floor = data["Floor"]
-                        room.allotted_on = data["AllottedOn"]
+                        room.allotted_on = self.convert_date(data["AllottedOn"])
                         created += 1
 
                     except Exception as e:
