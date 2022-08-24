@@ -12,7 +12,7 @@ class Command(BaseCommand):
         return os.path.join(settings.BASE_DIR, "data", file_name)
 
     def convert_date(self, date):
-        month, day, year = list(map(lambda x: int(x), date.split("/")))
+        month, day, year = list(map(lambda x: int(x), date.split("-")))
         return timezone.datetime(year=year, month=month, day=day)
 
     def add_arguments(self, parser):
@@ -41,12 +41,18 @@ class Command(BaseCommand):
                         student.address = data["Address"]
                         student.phone = data["StudentMobile"]
                         student.parents_phone = data["ParentMobile"]
-                        student.emergency_phone = data["ParentMobile"]
+                        student.emergency_phone = data["EmergencyMobile"]
                         student.gender = data["Gender"]
                         student.community = data["Caste"]
                         student.dob = self.convert_date(data["BirthDate"])
                         student.blood_group = data["Bgroup"]
                         student.pwd = data["Disability"] == "1"
+                        student.aadhar_number = data["AadharNumber"]
+                        student.father_name = data["FatherName"]
+                        student.mother_name = data['MotherName']
+                        student.specialization = 'B.Tech.'
+                        student.is_hosteller = True
+                        student.photo = data['photo']
                         student.save()
                         created += 1
 
