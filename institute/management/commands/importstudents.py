@@ -12,7 +12,7 @@ class Command(BaseCommand):
         return os.path.join(settings.BASE_DIR, "data", file_name)
 
     def convert_date(self, date):
-        month, day, year = list(map(lambda x: int(x), date.split("-")))
+        day, month, year = list(map(lambda x: int(x), date.split("-")))
         return timezone.datetime(year=year, month=month, day=day)
 
     def add_arguments(self, parser):
