@@ -112,7 +112,9 @@ class User(AbstractBaseUser, PermissionsMixin):
         self.email_user(subject, email_context, email_template, html_email_template)
 
 
-    def email_user(self, subject, context, email_template, html_email_template, from_email=None, **kwargs):
+    def email_user(self, subject, context, email_template, html_email_template, **kwargs):
+        from django.conf import settings
+        from_email = settings.EMAIL_HOST_USER
         body = render_to_string(email_template, context)
         email_message = EmailMultiAlternatives(subject, body, from_email, [self.email])
         html_email = render_to_string(html_email_template, context)
