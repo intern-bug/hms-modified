@@ -66,13 +66,15 @@
                     </div>
                   </div>
                   {{ form.account_email|as_crispy_field}}
+                  {{ form.specialization|as_crispy_field }}
                   {{ form.branch|as_crispy_field}}
                   {{ form.email|as_crispy_field}}
                   {{ form.phone|as_crispy_field}}
-                  {{ form.dob|as_crispy_field}}
-                  {{ form.is_hosteller|as_crispy_field}}
+                  {{ form.aadhar_number|as_crispy_field}}
                 </div>
                 <div class="col-12 col-lg-6 text-capitalize">
+                  {{ form.dob|as_crispy_field}}
+                  {{ form.is_hosteller|as_crispy_field}}
                   {{ form.pwd|as_crispy_field}}
                   {{ form.father_name|as_crispy_field}}
                   {{ form.mother_name|as_crispy_field}}

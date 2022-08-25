@@ -926,7 +926,7 @@ class StudentDetailView(OfficialTestMixin, DetailView):
         return response
 
 
-class StudentRegisterView(CreateView):
+class StudentRegisterView(ChiefWardenTestMixin, CreateView):
     template_name = 'officials/student-register-form.html'
     model = Student
     form_class = StudentForm

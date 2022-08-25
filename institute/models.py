@@ -54,7 +54,7 @@ class Student(models.Model):
     gender = models.CharField(max_length=7,choices=GENDER,null=False)
     pwd = models.BooleanField(null=False, default=False)
     community = models.CharField(max_length=25, null=True, blank=True)
-    aadhar_number = models.CharField(max_length=15, null=True, blank=True)
+    aadhar_number = models.CharField(max_length=12, null=False, blank=True, validators=[MinLengthValidator(4)])
     dob = models.DateField(null=False, validators=[date_no_future])
     blood_group = models.CharField(max_length=25, null=True, blank=True)
     father_name = models.CharField(max_length=100, null=True, blank=True)
@@ -65,8 +65,8 @@ class Student(models.Model):
     address = models.TextField(null=False)
     photo = models.ImageField(null=True, blank=True, upload_to=photo_storage_path)
     is_hosteller = models.BooleanField(null=False, default=True)
-    outing_rating = models.DecimalField(null=False, default=5.0, max_digits=3, decimal_places=2)
-    discipline_rating = models.DecimalField(null=False, default=5.0, max_digits=3, decimal_places=2)
+    outing_rating = models.DecimalField(null=False,blank=True, default=5.0, max_digits=3, decimal_places=2)
+    discipline_rating = models.DecimalField(null=False, blank=True, default=5.0, max_digits=3, decimal_places=2)
     specialization = models.CharField(max_length=15, choices=PROGRAMME_OPTIONS, null=False)
 
     def __str__(self):
