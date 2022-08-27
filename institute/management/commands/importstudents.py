@@ -18,6 +18,40 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument("file_name", nargs="+", type=str)
 
+    def get_branch(self, branch):
+        import re
+        BRANCH_DICT = {
+            'bio[-]*(t|tech)[nology]?' : 'BIOT',
+            '(chemical(-| )*(engg|Engineering)|chem)': 'CHEM',
+            '(civil(-| )*(engg|Engineering)|civil)': 'CIVIL',
+            '(computer[ ]*science[ ]*(and|&)?[ ]*(Engineering|engg)|CSE)': 'CSE',
+            '(electrical([ ]*(and|&)?[ ]*electronics)?[ ]*(Engineering|engg)|EEE)': 'EEE',
+            '(electronics[ ]*(and|&)?[ ]*(communication|comm)[ ]*(Engineering|engg)|ECE)': 'ECE',
+            'mech([anical]?[ ]*(Engineering|engg))?': 'MECH',
+            '(metallurgical[ ]*(and|&)?[ ]*materials[ ]*(Engineering|engg)|MME)': 'MME'
+        }
+        for key in BRANCH_DICT.keys():
+            if re.search(key, branch, re.IGNORECASE):
+                return  BRANCH_DICT[key]
+        raise Exception("Invalid Branch Name")
+
+    def get_blood_group(self, bgroup):
+        import re
+        BGROUP_DICT = {
+            '[\'\"]?a[\'\"]?[ ]*(\(?\+\)?[ ]*(ve)?[ ]*|po(s|ss)itive)': 'A+',
+            '[\'\"]?a[\'\"]?[ ]*(\(?-\)?[ ]*(ve)?[ ]*|negative)': 'A-',
+            '[\'\"]?b[\'\"]?[ ]*(\(?\+\)?[ ]*(ve)?[ ]*|po(s|ss)itive)': 'B+',
+            '[\'\"]?b[\'\"]?[ ]*(\(?-\)?[ ]*(ve)?[ ]*|negative)': 'B-',
+            '[\'\"]?(o|0)?[\'\"]?[ ]*(\(?\+\)?[ ]*(ve)?[ ]*|po(s|ss)itive)': 'O+',
+            '[\'\"]?(o|0)?[\'\"]?[ ]*(\(?-\)?[ ]*(ve)?[ ]*|negative)': 'O-',
+            '[\'\"]?ab[\'\"]?[ ]*(\(?\+\)?[ ]*(ve)?[ ]*|po(s|ss)itive)': 'AB+',
+            '[\'\"]?ab[\'\"]?[ ]*(\(?-\)?[ ]*(ve)?[ ]*|negative)': 'AB-',
+        }
+        for key in BGROUP_DICT.keys():
+            if re.search(key, bgroup, re.IGNORECASE):
+                return BGROUP_DICT[key]
+        raise Exception("Invalid Blood Group")            
+
     def handle(self, *args, **options):
         file_path = self.get_file_path(options["file_name"][0])
         try:
@@ -33,9 +67,9 @@ class Command(BaseCommand):
                         student = Student()
                         student.regd_no = data["StudentID"]
                         student.roll_no = data["roll_no"]
-                        student.name = data["FullName"]
+                        student.name = ' '.join([n.capitalize() for n in data["FullName"].lower().split()])
                         student.year = data["year"]
-                        student.branch = data["branch"]
+                        student.branch = self.get_branch(data["branch"])
                         student.account_email = "{}@student.nitandhra.ac.in".format(student.roll_no)
                         student.email = data["StudentEmail"]
                         student.address = data["Address"]
@@ -43,13 +77,13 @@ class Command(BaseCommand):
                         student.parents_phone = data["ParentMobile"]
                         student.emergency_phone = data["EmergencyMobile"]
                         student.gender = data["Gender"]
-                        student.community = data["Caste"]
+                        student.community = data["Caste"].upper()
                         student.dob = self.convert_date(data["BirthDate"])
-                        student.blood_group = data["Bgroup"]
+                        student.blood_group = self.get_blood_group(data["Bgroup"])
                         student.pwd = data["Disability"] == "1"
                         student.aadhar_number = data["AadharNumber"]
-                        student.father_name = data["FatherName"]
-                        student.mother_name = data['MotherName']
+                        student.father_name = ' '.join([n.capitalize() for n in data["FatherName"].lower().split()])
+                        student.mother_name = ' '.join([n.capitalize() for n in data["MotherName"].lower().split()])
                         student.specialization = 'B.Tech.'
                         student.is_hosteller = True
                         student.photo = data['photo']
