@@ -274,9 +274,9 @@ class Block(models.Model):
             return FLOOR_OPTIONS[:self.floor_count]
         elif self.short_name()=='Vamsadhara-II':
             return FLOOR_OPTIONS[3:self.floor_count+3]
-        elif self.short_name()=='Nagavalli-I':
+        elif self.short_name()=='Nagavali-I':
             return FLOOR_OPTIONS[:self.floor_count]
-        elif self.short_name()=='Nagavalli-II':
+        elif self.short_name()=='Nagavali-II':
             return FLOOR_OPTIONS[4:self.floor_count+4]
         return FLOOR_OPTIONS[:self.floor_count]
 

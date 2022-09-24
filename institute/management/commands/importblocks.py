@@ -24,8 +24,8 @@ class Command(BaseCommand):
         
         {"name": "Vamsadhara-I Hall of Residency",          "block_id": "4S-B1", "gender": "Male", "room_type": "4S", "floor_count": 3, "capacity": 69},
         {"name": "Vamsadhara-II Hall of Residency",         "block_id": "4S-B2", "gender": "Male", "room_type": "4S", "floor_count": 2, "capacity": 46},
-        {"name": "Nagavalli-I Hall of Residency",          "block_id": "2S-D1", "gender": "Male", "room_type": "2S", "floor_count": 4, "capacity": 140},
-        {"name": "Nagavalli-II Hall of Residency",          "block_id": "2S-D2", "gender": "Male", "room_type": "2S", "floor_count": 1, "capacity": 35},
+        {"name": "Nagavali-I Hall of Residency",          "block_id": "2S-D1", "gender": "Male", "room_type": "2S", "floor_count": 4, "capacity": 140},
+        {"name": "Nagavali-II Hall of Residency",          "block_id": "2S-D2", "gender": "Male", "room_type": "2S", "floor_count": 1, "capacity": 35},
         {"name": "Swarnamukhi Hall of Residency",        "block_id": "1S-D", "gender": "Male", "room_type": "1S", "floor_count": 5, "capacity": 175},
     ]
 

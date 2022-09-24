@@ -31,7 +31,7 @@ class Command(BaseCommand):
                                'Banganga':'1S-A', 'Purna':'1S-B', 'Manjeera':'1S-C',
                                'Krishnaveni': '4S-FA', 'Bhima':'2S-FA', 'Tungabhadra':'2S-FB',
                                'Ghataprabha': '1S-FA', 'Munneru':'1S-FB',
-                               'Vamsadhara-I': '4S-B1', 'Vamsadhara-II':'4S-B2', 'Nagavalli-I':'2S-D1', 'Nagavalli-II':'2S-D2',
+                               'Vamsadhara-I': '4S-B1', 'Vamsadhara-II':'4S-B2', 'Nagavali-I':'2S-D1', 'Nagavali-II':'2S-D2',
                                'Swarnamukhi':'1S-D'
                             }
                 for data in csv_reader:
@@ -48,11 +48,11 @@ class Command(BaseCommand):
                                 block_id = BLOCKS_DICT["Vamsadhara-I"]
                             else:
                                 block_id = BLOCKS_DICT["Vamsadhara-II"]
-                        elif data['Block'] == 'Nagavalli':
+                        elif data['Block'] == 'Nagavali':
                             if data["Floor"] in ["Ground", "First", "Second", 'Third']:
-                                block_id = BLOCKS_DICT["Nagavalli-I"]
+                                block_id = BLOCKS_DICT["Nagavali-I"]
                             else:
-                                block_id = BLOCKS_DICT["Nagavalli-II"]
+                                block_id = BLOCKS_DICT["Nagavali-II"]
                         else:
                             block_id = BLOCKS_DICT[data["Block"]]
                         
