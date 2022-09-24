@@ -46,6 +46,7 @@ class Command(BaseCommand):
             '[\'\"]?(o|0)?[\'\"]?[ ]*(\(?-\)?[ ]*(ve)?[ ]*|negative)': 'O-',
             '[\'\"]?ab[\'\"]?[ ]*(\(?\+\)?[ ]*(ve)?[ ]*|po(s|ss)itive)': 'AB+',
             '[\'\"]?ab[\'\"]?[ ]*(\(?-\)?[ ]*(ve)?[ ]*|negative)': 'AB-',
+            '-':'-'
         }
         for key in BGROUP_DICT.keys():
             if re.search(key, bgroup, re.IGNORECASE):
@@ -64,7 +65,11 @@ class Command(BaseCommand):
                     try:
                         # TODO: Modify Model to hold null data for blood group, community, 
                         # Required values for roll_no, year, branch, institute email, 
-                        student = Student()
+                        if Student.objects.filter(regd_no=data['StudentID']).exists():
+                            student = Student.objects.filter(regd_no=data['StudentID']).first()
+                        else:
+                            student = Student()
+
                         student.regd_no = data["StudentID"]
                         student.roll_no = data["roll_no"]
                         student.name = ' '.join([n.capitalize() for n in data["FullName"].lower().split()])
@@ -73,7 +78,7 @@ class Command(BaseCommand):
                         student.account_email = "{}@student.nitandhra.ac.in".format(student.roll_no)
                         student.email = data["StudentEmail"]
                         student.address = data["Address"]
-                        student.phone = data["StudentMobile"]
+                        student.phone = data["StudentMobile"].strip().replace(' ','')
                         student.parents_phone = data["ParentMobile"]
                         student.emergency_phone = data["EmergencyMobile"]
                         student.gender = data["Gender"]
@@ -86,7 +91,7 @@ class Command(BaseCommand):
                         student.mother_name = ' '.join([n.capitalize() for n in data["MotherName"].lower().split()])
                         student.specialization = 'B.Tech.'
                         student.is_hosteller = True
-                        student.photo = data['photo']
+                        student.photo = 'Student-Photos/Year-{}/placeholder.jpg'.format(data["year"])
                         student.save()
                         created += 1
 

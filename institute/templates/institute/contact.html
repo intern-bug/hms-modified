@@ -19,7 +19,7 @@
     </div>
     <div class="col-12 col-md-6 col-lg-4 col-xl-3 p-3 d-flex justify-content-center">
       <div class="card" style="width: 18rem;">
-        <img class="card-img-top" src="{% static 'institute/veeresh.jpg' %}" alt="Block Image"
+        <img class="card-img-top" src="{% static 'institute/veeresh.jpg' %}" alt="Warden Image"
           style="width: auto; height: 250px;">
         <div class="card-body">
           <h5 class="card-title">Dr. Veeresh Kumar G B</h5>
@@ -38,7 +38,7 @@
     </div>
     <div class="col-12 col-md-6 col-lg-4 col-xl-3 p-3 d-flex justify-content-center">
       <div class="card" style="width: 18rem;">
-        <img class="card-img-top" src="{% static 'institute/JKM.jpg' %}" alt="Block Image"
+        <img class="card-img-top" src="{% static 'institute/JKM.jpg' %}" alt="Warden Image"
           style="width: auto; height: 250px;">
         <div class="card-body">
           <h5 class="card-title">Dr. J. Krishnamurthy</h5>
@@ -57,7 +57,7 @@
     </div>
     <div class="col-12 col-md-6 col-lg-4 col-xl-3 p-3 d-flex justify-content-center">
       <div class="card" style="width: 18rem;">
-        <img class="card-img-top" src="{% static 'institute/srilatha.jpg' %}" alt="Block Image"
+        <img class="card-img-top" src="{% static 'institute/srilatha.jpg' %}" alt="Warden Image"
           style="width: auto; height: 250px;">
         <div class="card-body">
           <h5 class="card-title">Dr. Srilatha Chebrolu</h5>
@@ -77,7 +77,7 @@
 
     <div class="col-12 col-md-6 col-lg-4 col-xl-3 p-3 d-flex justify-content-center">
       <div class="card" style="width: 18rem;">
-        <img class="card-img-top" src="{% static 'institute/RMD.jpg' %}" alt="Block Image"
+        <img class="card-img-top" src="{% static 'institute/RMD.jpg' %}" alt="Warden Image"
           style="width: auto; height: 250px;">
         <div class="card-body">
           <h5 class="card-title">Dr. M. Ramudu</h5>
@@ -96,7 +96,7 @@
     </div>
     <!-- <div class="col-12 col-md-6 col-lg-4 col-xl-2 p-3 d-flex justify-content-center">
       <div class="card" style="width: 18rem;">
-        <img class="card-img-top" src="{% static 'institute/surendra.jpeg' %}" alt="Block Image"
+        <img class="card-img-top" src="{% static 'institute/surendra.jpeg' %}" alt="Warden Image"
           style="width: auto; height: 250px;">
         <div class="card-body">
           <h5 class="card-title">Dr. Surendra H M</h5>
@@ -115,17 +115,78 @@
     </div> -->
   </div>
 
-
+  {% for block in boys_blocks %}
+  {% if forloop.counter0 == 0 %}
   <div class="row justify-content-center mx-md-3 p-3">
-    <!-- <div class="col-12 text-center">
-      <h2 class="d-inline border-bottom border-info">NIT Andhra Pradesh Hostel Wardens</h2>
-    </div> -->
     <div class="col-12 mt-3">
       <h4 class="text-center">Boys Hostel Wardens</h4>
     </div>
+  {% elif forloop.counter0|divisibleby:5 %}
+  </div>
+  <div class="row justify-content-center mx-md-3 p-3">
+  {% endif %}
+  <div class="col-12 col-md-6 col-lg-4 col-xl-2 p-3 d-flex justify-content-center">
+    <div class="card" style="width: 18rem;">
+      <img class="card-img-top" src="{% static 'institute/block.warden.name.jpg' %}" alt="Warden Image"
+        style="width: auto; height: 250px;">
+      <div class="card-body">
+        <h5 class="card-title">{% if block.warden %}{{block.warden.name}}{% else %}Not yet assigned{% endif %}</h5>
+        <div class="card-text">
+          <p>Warden-{{block.short_name}} Hall of Residence</p>
+        </div>
+        <div class="card-reveal">
+          <h4>{% if block.warden %}{{block.warden.name}}{% else %}Not yet assigned{% endif %}</h4>
+          <span>Warden-{{block.short_name}} Hall of Residence</span>
+          <h5 class="mt-4">Contact:</h5>
+          <p>Phone: +91-{% if block.warden %}{{block.warden.phone}}{% endif %}</p>
+          <p>eMail ID: <a href="mailto:">{% if block.warden %}{{block.warden.account_email}}{% endif %}</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+  </div>
+
+  {% for block in girls_blocks %}
+  {% if forloop.counter0 == 0 %}
+  <div class="row justify-content-center mx-md-3 p-3">
+    <div class="col-12 mt-3">
+      <h4 class="text-center">Girls Hostel Wardens</h4>
+    </div>
+  {% elif forloop.counter0|divisibleby:5 %}
+  </div>
+  <div class="row justify-content-center mx-md-3 p-3">
+  {% endif %}
+  <div class="col-12 col-md-6 col-lg-4 col-xl-2 p-3 d-flex justify-content-center">
+    <div class="card" style="width: 18rem;">
+      <img class="card-img-top" src="{% static 'institute/block.warden.name.jpg' %}" alt="Warden Image"
+        style="width: auto; height: 250px;">
+      <div class="card-body">
+        <h5 class="card-title">{% if block.warden %}{{block.warden.name}}{% else %}Not yet assigned{% endif %}</h5>
+        <div class="card-text">
+          <p>Warden-{{block.short_name}} Hall of Residence</p>
+        </div>
+        <div class="card-reveal">
+          <h4>{% if block.warden %}{{block.warden.name}}{% else %}Not yet assigned{% endif %}</h4>
+          <span>Warden-{{block.short_name}} Hall of Residence</span>
+          <h5 class="mt-4">Contact:</h5>
+          <p>Phone: +91-{% if block.warden %}{{block.warden.phone}}{% endif %}</p>
+          <p>eMail ID: <a href="mailto:">{% if block.warden %}{{block.warden.account_email}}{% endif %}</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+  </div>
+
+  <!-- <div class="row justify-content-center mx-md-3 p-3">
+    <div class="col-12 mt-3">
+      <h4 class="text-center">Boys Hostel Wardens</h4>
+    </div>
+
     <div class="col-12 col-md-6 col-lg-4 col-xl-2 p-3 d-flex justify-content-center">
       <div class="card" style="width: 18rem;">
-        <img class="card-img-top" src="{% static 'institute/placeholder.jpg' %}" alt="Block Image"
+        <img class="card-img-top" src="{% static 'institute/placeholder.jpg' %}" alt="Warden Image"
           style="width: auto; height: 250px;">
         <div class="card-body">
           <h5 class="card-title">Not yet assigned</h5>
@@ -146,7 +207,7 @@
     
     <div class="col-12 col-md-6 col-lg-4 col-xl-2 p-3 d-flex justify-content-center">
       <div class="card" style="width: 18rem;">
-        <img class="card-img-top" src="{% static 'institute/Satyanarayana.jpg' %}" alt="Block Image"
+        <img class="card-img-top" src="{% static 'institute/Satyanarayana.jpg' %}" alt="Warden Image"
           style="width: auto; height: 250px;">
         <div class="card-body">
           <h5 class="card-title">Dr. K Satyanarayana</h5>
@@ -167,7 +228,7 @@
     
     <div class="col-12 col-md-6 col-lg-4 col-xl-2 p-3 d-flex justify-content-center">
       <div class="card" style="width: 18rem;">
-        <img class="card-img-top" src="{% static 'institute/Satyanarayana.jpg' %}" alt="Block Image"
+        <img class="card-img-top" src="{% static 'institute/Satyanarayana.jpg' %}" alt="Warden Image"
           style="width: auto; height: 250px;">
         <div class="card-body">
           <h5 class="card-title">Dr. K Satyanarayana</h5>
@@ -187,7 +248,7 @@
     
     <div class="col-12 col-md-6 col-lg-4 col-xl-2 p-3 d-flex justify-content-center">
       <div class="card" style="width: 18rem;">
-        <img class="card-img-top" src="{% static 'institute/surendra.jpg' %}" alt="Block Image"
+        <img class="card-img-top" src="{% static 'institute/surendra.jpg' %}" alt="Warden Image"
           style="width: auto; height: 250px;">
         <div class="card-body">
           <h5 class="card-title">Dr.H.Surendra H M</h5>
@@ -208,7 +269,7 @@
     
     <div class="col-12 col-md-6 col-lg-4 col-xl-2 p-3 d-flex justify-content-center">
       <div class="card" style="width: 18rem;">
-        <img class="card-img-top" src="{% static 'institute/subbarao.jpg' %}" alt="Block Image"
+        <img class="card-img-top" src="{% static 'institute/subbarao.jpg' %}" alt="Warden Image"
           style="width: auto; height: 250px;">
         <div class="card-body">
           <h5 class="card-title">Dr. P.SubbaRao </h5>
@@ -231,7 +292,7 @@
   <div class="row justify-content-center mx-md-3 p-3">
     <div class="col-12 col-md-6 col-lg-4 col-xl-2 p-3 d-flex justify-content-center">
       <div class="card" style="width: 18rem;">
-        <img class="card-img-top" src="{% static 'institute/Satyanarayana.jpg' %}" alt="Block Image"
+        <img class="card-img-top" src="{% static 'institute/Satyanarayana.jpg' %}" alt="Warden Image"
           style="width: auto; height: 250px;">
         <div class="card-body">
           <h5 class="card-title">Dr K Satyanarayana</h5>
@@ -256,7 +317,7 @@
     
     <div class="col-12 col-md-6 col-lg-4 col-xl-2 p-3 d-flex justify-content-center">
       <div class="card" style="width: 18rem;">
-        <img class="card-img-top" src="{% static 'institute/sharad.jpg' %}" alt="Block Image"
+        <img class="card-img-top" src="{% static 'institute/sharad.jpg' %}" alt="Warden Image"
           style="width: auto; height: 250px;">
         <div class="card-body">
           <h5 class="card-title">Dr.Sharad Dwevedi</h5>
@@ -281,7 +342,7 @@
     
     <div class="col-12 col-md-6 col-lg-4 col-xl-2 p-3 d-flex justify-content-center">
       <div class="card" style="width: 18rem;">
-        <img class="card-img-top" src="{% static 'institute/amarendar.jpg' %}" alt="Block Image"
+        <img class="card-img-top" src="{% static 'institute/amarendar.jpg' %}" alt="Warden Image"
           style="width: auto; height: 250px;">
         <div class="card-body">
           <h5 class="card-title">Dr.M.Amarendar Reddy</h5>
@@ -305,7 +366,7 @@
     
     <div class="col-12 col-md-6 col-lg-4 col-xl-2 p-3 d-flex justify-content-center">
       <div class="card" style="width: 18rem;">
-        <img class="card-img-top" src="{% static 'institute/yuvaraj.jpg' %}" alt="Block Image"
+        <img class="card-img-top" src="{% static 'institute/yuvaraj.jpg' %}" alt="Warden Image"
           style="width: auto; height: 250px;">
         <div class="card-body">
           <h5 class="card-title">Dr.S.Yuvaraj</h5>
@@ -329,7 +390,7 @@
     
     <div class="col-12 col-md-6 col-lg-4 col-xl-2 p-3 d-flex justify-content-center">
       <div class="card" style="width: 18rem;">
-        <img class="card-img-top" src="{% static 'institute/narasimharao.jpg' %}" alt="Block Image"
+        <img class="card-img-top" src="{% static 'institute/narasimharao.jpg' %}" alt="Warden Image"
           style="width: auto; height: 250px;">
         <div class="card-body">
           <h5 class="card-title">Dr.Narasimha Rao</h5>
@@ -347,18 +408,15 @@
       </div>
     </div>
     
-  </div>
-
+  </div> -->
+<!-- 
   <div class="row justify-content-center mx-md-3 p-3">
-    <!-- <div class="col-12 text-center">
-      <h2 class="d-inline border-bottom border-info">NIT Andhra Pradesh Hostel Wardens</h2>
-    </div> -->
     <div class="col-12 mt-3">
       <h4 class="text-center">Girls Hostel Wardens</h4>
     </div>
     <div class="col-12 col-md-6 col-lg-4 col-xl-2 p-3 d-flex justify-content-center">
       <div class="card" style="width: 18rem;">
-        <img class="card-img-top" src="{% static 'institute/srilatha.jpg' %}" alt="Block Image"
+        <img class="card-img-top" src="{% static 'institute/srilatha.jpg' %}" alt="Warden Image"
           style="width: auto; height: 250px;">
         <div class="card-body">
           <h5 class="card-title">Dr.Ch.Srilatha</h5>
@@ -379,7 +437,7 @@
     
     <div class="col-12 col-md-6 col-lg-4 col-xl-2 p-3 d-flex justify-content-center">
       <div class="card" style="width: 18rem;">
-        <img class="card-img-top" src="{% static 'institute/reshma.jpg' %}" alt="Block Image"
+        <img class="card-img-top" src="{% static 'institute/reshma.jpg' %}" alt="Warden Image"
           style="width: auto; height: 250px;">
         <div class="card-body">
           <h5 class="card-title">Dr.Reshma</h5>
@@ -402,7 +460,7 @@
     
     <div class="col-12 col-md-6 col-lg-4 col-xl-2 p-3 d-flex justify-content-center">
       <div class="card" style="width: 18rem;">
-        <img class="card-img-top" src="{% static 'institute/sudarshana.jpg' %}" alt="Block Image"
+        <img class="card-img-top" src="{% static 'institute/sudarshana.jpg' %}" alt="Warden Image"
           style="width: auto; height: 250px;">
         <div class="card-body">
           <h5 class="card-title">Dr.V.Sudharshana Deepa</h5>
@@ -427,7 +485,7 @@
     
     <div class="col-12 col-md-6 col-lg-4 col-xl-2 p-3 d-flex justify-content-center">
       <div class="card" style="width: 18rem;">
-        <img class="card-img-top" src="{% static 'institute/soumya.jpg' %}" alt="Block Image"
+        <img class="card-img-top" src="{% static 'institute/soumya.jpg' %}" alt="Warden Image"
           style="width: auto; height: 250px;">
         <div class="card-body">
           <h5 class="card-title">Dr.Soumya Jose</h5>
@@ -451,7 +509,7 @@
     
     <div class="col-12 col-md-6 col-lg-4 col-xl-2 p-3 d-flex justify-content-center">
       <div class="card" style="width: 18rem;">
-        <img class="card-img-top" src="{% static 'institute/kamala.jpeg' %}" alt="Block Image"
+        <img class="card-img-top" src="{% static 'institute/kamala.jpeg' %}" alt="Warden Image"
           style="width: auto; height: 250px;">
         <div class="card-body">
           <h5 class="card-title">Ms.Kamala Mohanty</h5>
@@ -468,7 +526,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </div> -->
     
 
 
@@ -482,7 +540,7 @@
     </div>
     <div class="col-12 col-md-6 col-lg-4 col-xl-2 p-3 d-flex justify-content-center">
       <div class="card" style="width: 18rem;">
-        <img class="card-img-top" src="{% static 'institute/placeholder.jpg' %}" alt="Block Image"
+        <img class="card-img-top" src="{% static 'institute/placeholder.jpg' %}" alt="Warden Image"
           style="width: auto; height: 250px;">
         <div class="card-body">
           <h5 class="card-title">Dr. Dharma Teja</h5>
@@ -507,7 +565,7 @@
     </div>
     <div class="col-12 col-md-6 col-lg-4 col-xl-2 p-3 d-flex justify-content-center">
       <div class="card" style="width: 18rem;">
-        <img class="card-img-top" src="{% static 'institute/sateesh.jpeg' %}" alt="Block Image"
+        <img class="card-img-top" src="{% static 'institute/sateesh.jpeg' %}" alt="Warden Image"
           style="width: auto; height: 250px;">
         <div class="card-body">
           <h5 class="card-title">Mandrajula Tarakarama Sateesh</h5>
@@ -527,7 +585,7 @@
 
     <div class="col-12 col-md-6 col-lg-4 col-xl-2 p-3 d-flex justify-content-center">
       <div class="card" style="width: 18rem;">
-        <img class="card-img-top" src="{% static 'institute/pothuraju.jpeg' %}" alt="Block Image"
+        <img class="card-img-top" src="{% static 'institute/pothuraju.jpeg' %}" alt="Warden Image"
           style="width: auto; height: 250px;">
         <div class="card-body">
           <h5 class="card-title">Rakurti Pothu Raju</h5>
@@ -548,7 +606,7 @@
 
     <div class="col-12 col-md-6 col-lg-4 col-xl-2 p-3 d-flex justify-content-center">
       <div class="card" style="width: 18rem;">
-        <img class="card-img-top" src="{% static 'institute/radhakrishna.jpeg' %}" alt="Block Image"
+        <img class="card-img-top" src="{% static 'institute/radhakrishna.jpeg' %}" alt="Warden Image"
           style="width: auto; height: 250px;">
         <div class="card-body">
           <h5 class="card-title">Gonaboina Radha Krishna</h5>
@@ -568,7 +626,7 @@
 
     <div class="col-12 col-md-6 col-lg-4 col-xl-2 p-3 d-flex justify-content-center">
       <div class="card" style="width: 18rem;">
-        <img class="card-img-top" src="{% static 'institute/mohanrao.jpeg' %}" alt="Block Image"
+        <img class="card-img-top" src="{% static 'institute/mohanrao.jpeg' %}" alt="Warden Image"
           style="width: auto; height: 250px;">
         <div class="card-body">
           <h5 class="card-title">Korasika Mohan Rao</h5>
@@ -588,7 +646,7 @@
 
     <div class="col-12 col-md-6 col-lg-4 col-xl-2 p-3 d-flex justify-content-center">
       <div class="card" style="width: 18rem;">
-        <img class="card-img-top" src="{% static 'institute/IS_narayana.jpeg' %}" alt="Block Image"
+        <img class="card-img-top" src="{% static 'institute/IS_narayana.jpeg' %}" alt="Warden Image"
           style="width: auto; height: 250px;">
         <div class="card-body">
           <h5 class="card-title">Inti Satyanarayana</h5>
@@ -608,7 +666,7 @@
 
     <div class="col-12 col-md-6 col-lg-4 col-xl-2 p-3 d-flex justify-content-center">
       <div class="card" style="width: 18rem;">
-        <img class="card-img-top" src="{% static 'institute/srinivasu.jpeg' %}" alt="Block Image"
+        <img class="card-img-top" src="{% static 'institute/srinivasu.jpeg' %}" alt="Warden Image"
           style="width: auto; height: 250px;">
         <div class="card-body">
           <h5 class="card-title">Karinki Srinivasu </h5>

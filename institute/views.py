@@ -13,7 +13,9 @@ def hostels(request):
     return render (request,'institute/hostels.html',{'blocks': blocks})
 
 def contact(request):
-    return render (request,'institute/contact.html')
+    boys_blocks = Block.objects.filter(gender='Male')
+    girls_blocks = Block.objects.filter(gender='Female') 
+    return render (request,'institute/contact.html', {'boys_blocks':boys_blocks, 'girls_blocks':girls_blocks})
 
 def developers(request):
     return render(request,'institute/developers.html')
