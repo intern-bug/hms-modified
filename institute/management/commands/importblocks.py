@@ -10,7 +10,7 @@ class Command(BaseCommand):
         {"name": "Godavari Hall of Residency",      "block_id": "4S-A", "gender": "Male", "room_type": "4S", "floor_count": 3, "capacity": 76},
         {"name": "Sabari Hall of Residency",        "block_id": "2S-A", "gender": "Male", "room_type": "2S", "floor_count": 3, "capacity": 100},
         {"name": "Indravathi Hall of Residency",    "block_id": "2S-B", "gender": "Male", "room_type": "2S", "floor_count": 3, "capacity": 100},
-        {"name": "Pranahitha Hall of Residency",    "block_id": "2S-C", "gender": "Male", "room_type": "2S", "floor_count": 3, "capacity": 100},
+        {"name": "Pranahita Hall of Residency",    "block_id": "2S-C", "gender": "Male", "room_type": "2S", "floor_count": 3, "capacity": 100},
         {"name": "Banganga Hall of Residency",      "block_id": "1S-A", "gender": "Male", "room_type": "1S", "floor_count": 3, "capacity": 100},
         {"name": "Purna Hall of Residency",         "block_id": "1S-B", "gender": "Male", "room_type": "1S", "floor_count": 3, "capacity": 100},
         {"name": "Manjeera Hall of Residency",      "block_id": "1S-C", "gender": "Male", "room_type": "1S", "floor_count": 3, "capacity": 100},
