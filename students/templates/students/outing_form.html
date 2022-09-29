@@ -83,15 +83,19 @@
         document.querySelector("label[for='id_emergency_medical_issue']").innerHTML += '<span class="asteriskField">*</span>'
       }
       else{
+        if (document.getElementById('div_id_emergency_medical_issue')!=null){
+          document.getElementById('div_id_emergency_medical_issue').hidden = true;
+          document.getElementById('id_emergency_medical_issue').required = false;
+          document.querySelector("label[for='id_emergency_medical_issue']").className = ''
+        }
+      }
+    }
+    else{
+      if (document.getElementById('div_id_emergency_medical_issue')!=null){
         document.getElementById('div_id_emergency_medical_issue').hidden = true;
         document.getElementById('id_emergency_medical_issue').required = false;
         document.querySelector("label[for='id_emergency_medical_issue']").className = ''
       }
-    }
-    else{
-      document.getElementById('div_id_emergency_medical_issue').hidden = true;
-      document.getElementById('id_emergency_medical_issue').required = false;
-      document.querySelector("label[for='id_emergency_medical_issue']").className = ''
     }
   }
 
@@ -105,15 +109,19 @@
         document.querySelector("label[for='id_emergency_medical_issue']").innerHTML += '<span class="asteriskField">*</span>'
     }
     else{
+      if (document.getElementById('div_id_emergency_medical_issue')!=null){
+        document.getElementById('div_id_emergency_medical_issue').hidden = true;
+        document.getElementById('id_emergency_medical_issue').required = false;
+        document.querySelector("label[for='id_emergency_medical_issue']").className = ''
+      }
+    }
+  }
+  else{
+    if (document.getElementById('div_id_emergency_medical_issue')!=null){
       document.getElementById('div_id_emergency_medical_issue').hidden = true;
       document.getElementById('id_emergency_medical_issue').required = false;
       document.querySelector("label[for='id_emergency_medical_issue']").className = ''
     }
-  }
-  else{
-      document.getElementById('div_id_emergency_medical_issue').hidden = true;
-      document.getElementById('id_emergency_medical_issue').required = false;
-      document.querySelector("label[for='id_emergency_medical_issue']").className = ''
   }
   if (document.getElementById('id_type').value=='Local' || document.getElementById('id_type').value==''){
     document.getElementById('div_id_mode_of_journey_from').style['display'] = 'None';
@@ -126,7 +134,9 @@
       document.getElementById('id_purpose').remove();
       addTextElement();
     }
-    document.getElementById('div_id_emergency_medical_issue').hidden = true;
+    if (document.getElementById('div_id_emergency_medical_issue')!=null){
+      document.getElementById('div_id_emergency_medical_issue').hidden = true;
+    }
   }
   else{
     document.getElementById('div_id_mode_of_journey_from').style['display'] = '';
@@ -153,7 +163,9 @@
         document.getElementById('id_purpose').remove();
         addTextElement();
       }
-      document.getElementById('div_id_emergency_medical_issue').hidden = true;
+      if (document.getElementById('div_id_emergency_medical_issue')!=null){
+        document.getElementById('div_id_emergency_medical_issue').hidden = true;
+      }
     }
   }
 
@@ -185,7 +197,9 @@
       document.getElementById('id_purpose').remove();
       addTextElement();
       }
-      document.getElementById('div_id_emergency_medical_issue').hidden = true;
+      if (document.getElementById('div_id_emergency_medical_issue')!=null){
+        document.getElementById('div_id_emergency_medical_issue').hidden = true;
+      }
     }
     else{
       document.getElementById('div_id_mode_of_journey_from').style['display'] = '';
@@ -212,7 +226,9 @@
           document.getElementById('id_purpose').remove();
           addTextElement();
         }
-        document.getElementById('div_id_emergency_medical_issue').hidden = true;
+        if (document.getElementById('div_id_emergency_medical_issue')!=null){
+          document.getElementById('div_id_emergency_medical_issue').hidden = true;
+        }
       }
     }
   });

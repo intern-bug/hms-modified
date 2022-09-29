@@ -1,8 +1,5 @@
 from calendar import weekday
 from datetime import datetime, timedelta
-from email import message
-from ssl import Purpose
-from unittest.mock import CallableMixin
 from django.forms import CharField
 from django.urls import reverse_lazy
 from django.utils import timezone

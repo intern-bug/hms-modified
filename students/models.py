@@ -208,6 +208,17 @@ class Outing(models.Model):
 
     def mess_rebate_action_status(self):
         return self.mess_rebate=='Enabled' and self.mess_rebate_status=='NA'
+    
+    def save(self, *args, **kwargs):
+        import uuid
+        if self.student.gender == 'Male':
+            if not self.id: 
+                self.permission = 'Granted'
+            days = (self.toDate-self.fromDate).days - 1
+            if days >= 5:
+                self.mess_rebate = 'Enabled'
+            self.uuid = uuid.uuid4()
+        super(Outing, self).save(*args, **kwargs)
 
     class Meta:
         ordering = ['-fromDate']
@@ -232,6 +243,35 @@ class ExtendOuting(models.Model):
     mode_of_journey_to = models.CharField(max_length=10)
     emergency_contact = models.CharField(max_length=10, validators=[numeric_only])
     emergency_medical_issue = models.ForeignKey('complaints.MedicalIssue', on_delete=models.CASCADE, null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        if self.outing.student.gender == 'Male':
+            outing = self.outing
+            outing.permission = 'Extension Granted'
+            prev_fromDate = outing.fromDate
+            prev_toDate = outing.toDate
+            prev_place_of_visit = outing.place_of_visit
+            prev_purpose = outing.purpose
+            prev_mode_of_journey_from = outing.mode_of_journey_from
+            prev_mode_of_journey_to = outing.mode_of_journey_to
+            prev_emergency_contact = outing.emergency_contact
+            prev_emergency_missue = outing.emergency_medical_issue
+            outing.fromDate = self.fromDate
+            outing.toDate = self.toDate
+            outing.place_of_visit = self.place_of_visit
+            outing.purpose = self.purpose
+            self.fromDate = prev_fromDate
+            self.toDate = prev_toDate
+            self.place_of_visit = prev_place_of_visit
+            self.purpose = prev_purpose
+            self.mode_of_journey_from = prev_mode_of_journey_from
+            self.mode_of_journey_to = prev_mode_of_journey_to
+            self.emergency_contact = prev_emergency_contact
+            self.emergency_medical_issue = prev_emergency_missue
+            self.permission = 'Extension Granted'
+            outing.save()
+        super(ExtendOuting, self).save(*args, **kwargs)
+
     class Meta:
         managed = True 
 
