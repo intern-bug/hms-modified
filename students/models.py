@@ -210,12 +210,12 @@ class Outing(models.Model):
         return self.mess_rebate=='Enabled' and self.mess_rebate_status=='NA'
     
     def save(self, *args, **kwargs):
-        import uuid
+        import uuid, math
         if self.student.gender == 'Male':
             if not self.id: 
                 self.permission = 'Granted'
                 self.uuid = uuid.uuid4()
-            days = (self.toDate-self.fromDate).days - 1
+            days = math.ceil((self.toDate-self.fromDate).total_seconds()/(3600*24))-1
             if days >= 4:
                 self.mess_rebate = 'Enabled'
         super(Outing, self).save(*args, **kwargs)
