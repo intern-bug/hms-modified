@@ -1,6 +1,4 @@
-from random import choices
 from django import forms
-from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from .models import ExtendOuting, Outing
 from django_auth.models import User

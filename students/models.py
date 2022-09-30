@@ -214,10 +214,10 @@ class Outing(models.Model):
         if self.student.gender == 'Male':
             if not self.id: 
                 self.permission = 'Granted'
+                self.uuid = uuid.uuid4()
             days = (self.toDate-self.fromDate).days - 1
-            if days >= 5:
+            if days >= 4:
                 self.mess_rebate = 'Enabled'
-            self.uuid = uuid.uuid4()
         super(Outing, self).save(*args, **kwargs)
 
     class Meta:
