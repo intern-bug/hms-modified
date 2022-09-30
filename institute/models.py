@@ -92,7 +92,7 @@ class Student(models.Model):
                 elif ((outingInOutObj.inTime - outingInOutObj.outing.toDate).total_seconds()/60) > 15.0:
                     invalid+=0.5
             elif outingInOutObj.outing.student.gender == 'Female' and outingInOutObj.inTime != None:
-                if (outingInOutObj.inTime.date()!=outingInOutObj.toDate.date()) or (outingInOutObj.inTime.hour*100 + outingInOutObj.inTime.minute) > 2145 :
+                if (outingInOutObj.inTime.date()!=outingInOutObj.outing.toDate.date()) or (outingInOutObj.inTime.hour*100 + outingInOutObj.inTime.minute) > 2145 :
                     invalid+=1.5
                 elif ((outingInOutObj.inTime - outingInOutObj.outing.toDate).total_seconds()/60) > 60.0:
                     invalid+=1
