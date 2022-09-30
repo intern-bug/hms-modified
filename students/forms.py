@@ -160,8 +160,8 @@ class OutingExtendForm(forms.ModelForm):
         if from_date <= timezone.now():
             if self.outing.status != 'In Outing':
                 raise forms.ValidationError("From Date should be later than the moment!")
-        if self.request.user.student.gender == 'Female' and  type != 'Emergency' and from_date.date() == timezone.now().date() and (timezone.now().hour*100 + timezone.now().minute) >= 1030:
-            raise forms.ValidationError("Can't apply for outing for the current day after 16:00 hrs")
+        if self.request.user.student.gender == 'Female' and  type != 'Emergency' and from_date.date() == timezone.now().date() and (timezone.now().hour*100 + timezone.now().minute) >= 1130:
+            raise forms.ValidationError("Can't apply for extension of outing for the current day after 17:00 hrs")
         return from_date
     
     def clean_toDate(self):
