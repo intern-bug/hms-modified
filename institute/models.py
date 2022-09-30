@@ -85,14 +85,14 @@ class Student(models.Model):
         invalid = round((5-self.outing_rating)*len(outingInOutObjs))
         if outingInOutObj.outing.type == 'Local':
             if outingInOutObj.outing.student.gender == 'Male' and outingInOutObj.inTime != None:
-                if (outingInOutObj.inTime.date()!=outingInOutObj.outing.toDate.date()) or (outingInOutObj.inTime.hour*100 + outingInOutObj.inTime.minute) > 2115 :
+                if (outingInOutObj.inTime.date()!=outingInOutObj.outing.toDate.date()) or ((outingInOutObj.inTime - outingInOutObj.outing.toDate).total_seconds()/3600) > 6 :
                     invalid+=1.5
                 elif ((outingInOutObj.inTime - outingInOutObj.outing.toDate).total_seconds()/60) > 60.0:
                     invalid+=1
                 elif ((outingInOutObj.inTime - outingInOutObj.outing.toDate).total_seconds()/60) > 15.0:
                     invalid+=0.5
             elif outingInOutObj.outing.student.gender == 'Female' and outingInOutObj.inTime != None:
-                if (outingInOutObj.inTime.date()!=outingInOutObj.toDate.date()) or (outingInOutObj.inTime.hour*100 + outingInOutObj.inTime.minute) > 2045 :
+                if (outingInOutObj.inTime.date()!=outingInOutObj.toDate.date()) or (outingInOutObj.inTime.hour*100 + outingInOutObj.inTime.minute) > 2145 :
                     invalid+=1.5
                 elif ((outingInOutObj.inTime - outingInOutObj.outing.toDate).total_seconds()/60) > 60.0:
                     invalid+=1
