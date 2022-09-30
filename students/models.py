@@ -215,7 +215,7 @@ class Outing(models.Model):
             if not self.id: 
                 self.permission = 'Granted'
                 self.uuid = uuid.uuid4()
-            days = (self.toDate.date()-self.fromDate.date())-1
+            days = (self.toDate.date()-self.fromDate.date()).days-1
             if days >= 4:
                 self.mess_rebate = 'Enabled'
         super(Outing, self).save(*args, **kwargs)
