@@ -35,8 +35,8 @@ def create_acknowledge_form(filename, context):
     can.drawString(400, 590, 'Reg No: {}'.format(context['room'].student.regd_no))
     can.drawString(40, 565, 'Contact No.: {}'.format(context['room'].student.phone))
     can.drawString(400, 565, "B.Tech Year: {}".format(context['room'].student.year))
-    can.drawString(40, 540, "Mode Of Payment: {}".format(context['room'].student.year))
-    can.drawString(400, 540, "Amount Paid: {}".format(context['room'].student.year))
+    can.drawString(40, 540, "Mode Of Payment: {}".format(context['fee'].mode_of_payment))
+    can.drawString(400, 540, "Amount Paid: {}".format(context['fee'].amount_paid))
 
     
    
@@ -85,8 +85,8 @@ def create_acknowledge_form(filename, context):
     can.drawString(400, 190, 'Reg No: {}'.format(context['room'].student.regd_no))
     can.drawString(40, 165, 'Contact No.: {}'.format(context['room'].student.phone))
     can.drawString(400, 165, "B.Tech Year: {}".format(context['room'].student.year))
-    can.drawString(40, 140, "Mode Of Payment: {}".format(context['room'].student.year))
-    can.drawString(400, 140, "Amount Paid: {}".format(context['room'].student.year))
+    can.drawString(40, 140, "Mode Of Payment: {}".format(context['fee'].mode_of_payment))
+    can.drawString(400, 140, "Amount Paid: {}".format(context['fee'].amount_paid))
 
     
    
