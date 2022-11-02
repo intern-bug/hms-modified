@@ -27,10 +27,10 @@ class StudentForm(forms.ModelForm):
         ('AB-', 'AB-'),
     )
 
-    blood_group = forms.CharField(max_length=25, required=True, widget=forms.Select(choices=BLOOD_GROUP_CHOICES))
-    father_name = forms.CharField(max_length=100, required=True)
-    mother_name = forms.CharField(max_length=100, required=True)
-    community = forms.CharField(max_length=25, required=True, widget=forms.Select(choices=COMMUNITY_CHOICES),)
+    blood_group = forms.CharField(max_length=25, required=False, widget=forms.Select(choices=BLOOD_GROUP_CHOICES))
+    father_name = forms.CharField(max_length=100, required=False)
+    mother_name = forms.CharField(max_length=100, required=False)
+    community = forms.CharField(max_length=25, required=False, widget=forms.Select(choices=COMMUNITY_CHOICES),)
 
     class Meta:
         model = Student
