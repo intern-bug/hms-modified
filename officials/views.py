@@ -11,7 +11,7 @@ from django.views.generic.detail import DetailView
 from acknowledgementform import create_acknowledge_form
 from institute.models import Announcements, Block, Student, Official
 from security.models import OutingInOutTimes
-from students.models import Attendance, FeeDetail, RoomDetail, Outing, ExtendOuting, Vacation
+from students.models import Attendance, RoomDetail, Outing, ExtendOuting, Vacation, FeeDetail
 from django.contrib import messages
 from django.http.response import Http404, HttpResponseForbidden
 from complaints.models import Complaint
@@ -463,6 +463,7 @@ def blockSearch(request):
     if request.GET.get('block'):
         from django.core.serializers import serialize
         block = Block.objects.get(id=request.GET.get('block'))
+        print(block)
         block_json = serialize('json', [block])
         return render(request, 'officials/block_layout.html',{'blocks':blocks, 'current_block': block, 'current_block_json': block_json})
 
