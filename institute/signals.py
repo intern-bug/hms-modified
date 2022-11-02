@@ -13,4 +13,5 @@ def create_student_dependencies(sender, instance, created, **kwargs):
         if not Document.objects.filter(student = instance).exists():
             Document.objects.create(student = instance)
         if not FeeDetail.objects.filter(student = instance).exists():
-            FeeDetail.objects.create(student = instance)
+            room = RoomDetail.objects.filter(student=instance).first()
+            FeeDetail.objects.create(student = instance, room_detail=room)

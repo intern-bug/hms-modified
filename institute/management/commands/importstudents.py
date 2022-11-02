@@ -67,6 +67,8 @@ class Command(BaseCommand):
                         # Required values for roll_no, year, branch, institute email, 
                         if Student.objects.filter(regd_no=data['StudentID']).exists():
                             student = Student.objects.filter(regd_no=data['StudentID']).first()
+                        elif Student.objects.filter(roll_no=data['roll_no']).exists():
+                            student = Student.objects.filter(roll_no=data['roll_no']).first()
                         else:
                             student = Student()
 

@@ -8,9 +8,10 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.decorators import user_passes_test
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.detail import DetailView
+from acknowledgementform import create_acknowledge_form
 from institute.models import Announcements, Block, Student, Official
 from security.models import OutingInOutTimes
-from students.models import Attendance, RoomDetail, Outing, ExtendOuting, Vacation
+from students.models import Attendance, FeeDetail, RoomDetail, Outing, ExtendOuting, Vacation
 from django.contrib import messages
 from django.http.response import Http404, HttpResponseForbidden
 from complaints.models import Complaint
@@ -20,6 +21,10 @@ import uuid
 from django.db.models import IntegerField, F, Q, Sum, Value, CharField
 from django.db.models.functions import Cast, ExtractDay, TruncDate
 from django.contrib.messages.views import SuccessMessageMixin
+import io
+from acknowledgementform import create_acknowledge_form
+from django.http import Http404, FileResponse
+
 
 
 
@@ -390,6 +395,7 @@ def blockSearch(request):
     blocks = Block.objects.all()
 
     if request.POST:
+        print(request.POST)
         block_id = request.GET.get('block')
         if request.POST.get('Add'):
             block = Block.objects.get(id = request.POST.get('block_id'))
@@ -404,9 +410,22 @@ def blockSearch(request):
                     room_detail.block = block
                     room_detail.floor = request.POST.get('floor')
                     room_detail.room_no = request.POST.get('room_no')
+                    room_detail.bed = request.POST.get('bed') 
                     room_detail.full_clean()
                     room_detail.save()
+                    # fee_detail = FeeDetail.objects.filter(student=student, room_detail=room_detail)
+                    fee_detail = FeeDetail.objects.filter(student=student, room_detail=room_detail).first()
+                    fee_detail.mode_of_payment = request.POST.get('payment_mode')
+                    fee_detail.amount_paid = request.POST.get('amount_paid')
+                    fee_detail.dop = request.POST.get('date_of_payment')
+                    fee_detail.save()
+                    buf = io.BytesIO()
+                    context = {'room':room_detail}
+                    create_acknowledge_form(buf, context)
+                    buf.seek(0)
+                    file = 'Acknowledgement_form-{}/{}.{}'.format(room_detail.__str__(), room_detail.student.regd_no,'pdf')
                     messages.success(request, f'Student {student.regd_no} successfully alloted room in {room_detail.block.name} {room_detail.room()}!')
+                    return FileResponse(buf, as_attachment=True, filename=file)
             except RoomDetail.DoesNotExist as error:
                 # Day Scholars have no room detail.
                 messages.error(request, "Cannot assign room to day scholars.")
@@ -422,9 +441,24 @@ def blockSearch(request):
             room_detail.floor = None
             room_detail.room_no = None
             room_detail.save()
+            fee_detail = FeeDetail.objects.filter(student=room_detail.student, room_detail=room_detail).first()
+            fee_detail.amount_paid = 0
+            fee_detail.mode_of_payment = None
+            fee_detail.dop = None
+            fee_detail.save()
             messages.success(request, f'Student {room_detail.student.regd_no} removed from room.')
+        
+        if request.POST.get('download'):
+            room_detail = RoomDetail.objects.get(id = request.POST.get('roomdetail_id'))
+            buf = io.BytesIO()
+            context = {'room':room_detail}
+            create_acknowledge_form(buf, context)
+            buf.seek(0)
+            file = 'Acknowledgement_form-{}/{}.{}'.format(room_detail.__str__(), room_detail.student.regd_no,'pdf')
+            return FileResponse(buf, as_attachment=True, filename=file)
 
         return redirect(reverse_lazy('officials:blockSearch') + '?block={}'.format(block_id))
+
 
     if request.GET.get('block'):
         from django.core.serializers import serialize
