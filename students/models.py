@@ -1,4 +1,3 @@
-from asyncio.windows_events import NULL
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.core.validators import MinLengthValidator
