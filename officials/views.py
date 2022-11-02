@@ -395,10 +395,14 @@ def blockSearch(request):
     blocks = Block.objects.all()
 
     if request.POST:
-        print(request.POST)
         block_id = request.GET.get('block')
         if request.POST.get('Add'):
+            # from django.core.serializers import serialize
             block = Block.objects.get(id = request.POST.get('block_id'))
+            # block_json = serialize('json', [block])
+            # from json import dumps
+            # current_floor = request.POST.get('floor')
+            # current_floor_json = dumps(current_floor)
             try:
                 student = Student.objects.get(regd_no = request.POST.get('regd_no'))
                 if not student.is_hosteller:
@@ -419,13 +423,7 @@ def blockSearch(request):
                     fee_detail.amount_paid = request.POST.get('amount_paid')
                     fee_detail.dop = request.POST.get('date_of_payment')
                     fee_detail.save()
-                    buf = io.BytesIO()
-                    context = {'room':room_detail}
-                    create_acknowledge_form(buf, context)
-                    buf.seek(0)
-                    file = 'Acknowledgement_form-{}/{}.{}'.format(room_detail.__str__(), room_detail.student.regd_no,'pdf')
                     messages.success(request, f'Student {student.regd_no} successfully alloted room in {room_detail.block.name} {room_detail.room()}!')
-                    return FileResponse(buf, as_attachment=True, filename=file)
             except RoomDetail.DoesNotExist as error:
                 # Day Scholars have no room detail.
                 messages.error(request, "Cannot assign room to day scholars.")
@@ -434,6 +432,7 @@ def blockSearch(request):
                     messages.error(request, message)
             except Student.DoesNotExist:
                 messages.error(request, f'Student not found!')
+            # return render(request, 'officials/block_layout.html',{'blocks':blocks, 'current_block': block, 'current_block_json': block_json, 'current_floor_json':current_floor_json})
 
         if request.POST.get('remove'):
             room_detail = RoomDetail.objects.get(id = request.POST.get('roomdetail_id'))
@@ -450,8 +449,9 @@ def blockSearch(request):
         
         if request.POST.get('download'):
             room_detail = RoomDetail.objects.get(id = request.POST.get('roomdetail_id'))
+            fee_detail = FeeDetail.objects.get(student=room_detail.student, room_detail=room_detail)
             buf = io.BytesIO()
-            context = {'room':room_detail}
+            context = {'room':room_detail, 'fee':fee_detail}
             create_acknowledge_form(buf, context)
             buf.seek(0)
             file = 'Acknowledgement_form-{}/{}.{}'.format(room_detail.__str__(), room_detail.student.regd_no,'pdf')

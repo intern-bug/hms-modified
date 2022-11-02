@@ -210,6 +210,13 @@
 {% block script_links %}
 
 <script>
+  // {% if current_floor_json %}
+  // console.log(current_floor_json);
+  // window.onload = function(){
+  //   document.getElementById('floor').value = current_floor_json;
+  //   showFloor();
+  // }
+  // {% endif %}
   var current_block = JSON.parse('{{current_block_json|safe}}')[0];
   var current_block = {id: current_block.pk, ...current_block.fields}
   var room_capacity = parseInt('{{current_block.room_type|slice:"0:1"}}');
@@ -233,7 +240,6 @@
       }
     });
   {% endfor %}
-  console.log(roomdetails.length)
 </script>
 {% load static %}
 <script src="{% static 'officials/block_layout.js' %}"></script>
