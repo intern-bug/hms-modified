@@ -16,7 +16,7 @@ def create_vacation_form(filename, context):
     can.setFont('Times-Roman', 14)
     title = 'NATIONAL INSTITUTE OF TECHNOLOGY, ANDHRA PRADESH'
     can.drawCentredString(330, 740, title)
-    place = 'TADEPALLIGUDEM - 534102, WEST GODAVARI DIST., ANDHRA PRADESH, INDIA'
+    place = 'TADEPALLIGUDEM - 534101, WEST GODAVARI DIST., ANDHRA PRADESH, INDIA'
     can.setFontSize(10)
     can.setFillColor(blue)
     can.drawCentredString(330,725, place)
