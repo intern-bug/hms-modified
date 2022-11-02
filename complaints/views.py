@@ -57,7 +57,7 @@ class ComplaintCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         from django.core.mail import send_mail
         from django.conf import settings
         student=self.object.user.student
-        email = ['420237@student.nitandhra.ac.in']
+        email = ['']
         send_mail(
         subject='Civil Issue',
         message='Civil issue is raised by student',
@@ -70,7 +70,7 @@ class ComplaintCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         from django.core.mail import send_mail
         from django.conf import settings
         student=self.object.user.student
-        email = ['420237@student.nitandhra.ac.in']
+        email = ['']
         send_mail(
         subject='Electrical Issue',
         message='Electrical issue is raised by student',
@@ -83,7 +83,7 @@ class ComplaintCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         from django.core.mail import send_mail
         from django.conf import settings
         student=self.object.user.student
-        email = ['420237@student.nitandhra.ac.in']
+        email = ['']
         send_mail(
         subject='Network Issue',
         message='Network Issue is raised by student',
@@ -96,7 +96,7 @@ class ComplaintCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         from django.core.mail import send_mail
         from django.conf import settings
         student=self.object.user.student
-        email = ['420237@student.nitandhra.ac.in']
+        email = ['']
         send_mail(
         subject='Food Issue',
         message='Food issue is raised by student',
@@ -110,7 +110,7 @@ class ComplaintCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         from django.core.mail import send_mail
         from django.conf import settings
         student=self.object.user.student
-        email = ['420130@student.nitandhra.ac.in','420230@student.nitandhra.ac.in','420103@student.nitandhra.ac.in','420211@student.nitandhra.ac.in']
+        email = ['']
         send_mail(
         subject='Health Issue',
         message='Health issue is raised by student',
