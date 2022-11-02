@@ -1,10 +1,7 @@
-from asyncio.windows_events import NULL
 from django.db import models
 from django.core.exceptions import ValidationError
-from django.core.validators import MinLengthValidator
 from django.utils import timezone
 from institute.constants import FLOOR_OPTIONS
-from security.models import OutingInOutTimes
 from institute.validators import numeric_only
 
 # Create your models here.
@@ -13,6 +10,7 @@ class RoomDetail(models.Model):
     block = models.ForeignKey('institute.Block', on_delete=models.SET_NULL, null=True, blank=True)
     room_no = models.IntegerField(null=True, blank=True)
     floor = models.CharField(max_length=10, choices=list(map(lambda floor: (floor, floor), FLOOR_OPTIONS)), null=True, blank=True)
+    bed = models.IntegerField(null=True, blank=True)
     allotted_on = models.DateField(auto_now=True)
 
     def __str__(self):
@@ -288,11 +286,13 @@ class Document(models.Model):
 
 class FeeDetail(models.Model):
     student = models.OneToOneField('institute.Student', on_delete=models.CASCADE, null=False)
+    room_detail = models.ForeignKey('students.RoomDetail', on_delete=models.CASCADE, null=False)
     has_paid = models.BooleanField(null=True, default=False)
     amount_paid = models.FloatField(null=True, blank=True,default=0)
-    bank = models.CharField(max_length=100,null=True, blank=True)
-    challan_no = models.CharField(max_length=64,null=True, blank=True)
+    # bank = models.CharField(max_length=100,null=True, blank=True)
+    # challan_no = models.CharField(max_length=64,null=True, blank=True)
     dop = models.DateField(null=True, blank=True)
+    mode_of_payment = models.CharField(null=True, blank=True, max_length=255)
 
     def __str__(self) -> str:
         return 'Bank Detail: {} - {}'.format(self.id, self.student.regd_no)
