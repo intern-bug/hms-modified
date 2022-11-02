@@ -193,6 +193,7 @@
       <th>Regd No.</th>
       <th>Roll No.</th>
       <th>Name</th>
+      <th>Bed</th>
       <th>Year</th>
       <th>Branch</th>
       <th>Phone</th>
@@ -219,6 +220,7 @@
       id: parseInt('{{room.id}}'),
       room_no: parseInt('{{room.room_no}}'),
       floor: '{{room.floor}}',
+      bed:'{{room.bed}}',
       student: {
         id: parseInt('{{room.student.id}}'),
         regd_no: '{{room.student.regd_no}}',
@@ -231,6 +233,7 @@
       }
     });
   {% endfor %}
+  console.log(roomdetails.length)
 </script>
 {% load static %}
 <script src="{% static 'officials/block_layout.js' %}"></script>

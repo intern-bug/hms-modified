@@ -15,7 +15,9 @@ window.onload = function() {
     let [floor, no] = room_str.split("-");
     no = parseInt(no);
     floor = letterFloorMap.get(floor);
+    console.log(room.floor, room.no);
     let room_students = roomdetails.filter(room => room.floor == floor && room.room_no == no);
+    console.log(room_students)
     let count = room_students.length || 0;
     if (count == room_capacity) {
       filled_count += 1;
@@ -70,36 +72,66 @@ function showFloor() {
 function placeDetails(room_str, floor, no, room_students) {
   document.querySelector('#table-container h2#room').innerHTML = room_str;
   let tbody = document.querySelector('#table-container table > tbody');
+  let room_type = {'1S':1, '2S':2, '4S':4}
   tbody.innerHTML = "";
+  let bed_filled = [];
   room_students.forEach(room => {
     let row = document.createElement('tr');
+    bed_filled.push(parseInt(room.bed))
+    console.log(room); console.log(room.bed);
     row.innerHTML = `
       <td>${room.student.regd_no}</td>\
       <td>${room.student.roll_no}</td>\
       <td>${room.student.name}</td>\
+      <td>${room.bed}</td>\
       <td>${room.student.year}</td>\
       <td>${room.student.branch}</td>\
       <td>${room.student.phone}</td>\
       <td>${room.student.email}</td>\
       <td>\
-        <form method="POST" onsubmit="return confirm('Are you sure?')">
+        <form method="POST">
           <input type="hidden" name="roomdetail_id" value="${room.id}" />
-          <input type='submit' name='remove' value='Remove' class='btn btn-danger' />\
+          <input type='submit' name='remove' value='Remove' class='btn btn-danger' onclick="return confirm('Are you sure?')" />\
+          <input type='submit' name='download' value='Download' class='btn btn-primary' />\
         </form>
       </td>`;
     tbody.appendChild(row);
   })
-
+  bed_choices = ''
+  for (let i=1; i<=room_type[current_block.room_type]; i++){
+    if (bed_filled.includes(i)==false){
+      bed_choices = bed_choices + `<option value=\'${i}\'>${i}</option>`
+    }
+  }
   if (room_students.length < room_capacity) {
     let row = document.createElement('tr');
     row.innerHTML = `
       <td colspan='10' class='text-center'>\
         <form method="POST">
           Add Student to room :\
-          <input type='text' name='regd_no' class='ml-4'> \
+          <input type='text' name='regd_no' class='ml-3' required> \
+          Select Bed :\ 
+          <select name='bed' class='ml-3' required>\
+            <option value=''>----</option>
+            ${bed_choices}\
+          </select>\
           <input type='hidden' name='block_id' value='${current_block.id}' /> \
           <input type='hidden' name='floor' value='${floor}' /> \
           <input type='hidden' name='room_no' value='${no}' /> \
+          <br>
+          <br>
+          Amount Paid : \
+          <input type='number' name='amount_paid' class='ml-3' required>\
+          Mode of Payment :\
+          <select name='payment_mode' class='ml-3' required>\
+            <option value=''>-----</option>
+            <option value='sbi i-Collect'>sbi i-Collect</option>\
+            <option value='NEFT'>NEFT</option>\
+          </select>\
+          Date of Payment:
+          <input type='date' name='date_of_payment' required>
+          <br>
+          <br>
           <input type='submit' name='Add' value='Add' class='btn btn-primary ml-5'>\
         </form>
       </td>`;
