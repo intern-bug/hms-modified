@@ -44,7 +44,7 @@ class Student(models.Model):
         return 'Student-Photos/Year-{}/{}.{}'.format(instance.year, instance.regd_no, extension)
 
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
-    account_email = models.EmailField(unique=True, null=False)
+    account_email = models.EmailField(unique=True, null=True, blank=True)
     regd_no = models.CharField(unique=True, null=False, max_length=8, validators=[MinLengthValidator(6)])
     roll_no = models.CharField(unique=True, null=True, blank=True, max_length=8, validators=[MinLengthValidator(6)])
     name = models.CharField(max_length=100, null=False)
