@@ -397,12 +397,10 @@ def blockSearch(request):
     if request.POST:
         block_id = request.GET.get('block')
         if request.POST.get('Add'):
-            # from django.core.serializers import serialize
             block = Block.objects.get(id = request.POST.get('block_id'))
-            # block_json = serialize('json', [block])
-            # from json import dumps
-            # current_floor = request.POST.get('floor')
-            # current_floor_json = dumps(current_floor)
+            from json import dumps
+            current_floor = request.POST.get('floor')
+            current_floor_json = dumps(current_floor)
             try:
                 student = Student.objects.get(regd_no = request.POST.get('regd_no'))
                 if not student.is_hosteller:
@@ -432,7 +430,11 @@ def blockSearch(request):
                     messages.error(request, message)
             except Student.DoesNotExist:
                 messages.error(request, f'Student not found!')
-            # return render(request, 'officials/block_layout.html',{'blocks':blocks, 'current_block': block, 'current_block_json': block_json, 'current_floor_json':current_floor_json})
+            from django.core.serializers import serialize
+            block = Block.objects.get(id = request.POST.get('block_id'))
+            block_json = serialize('json', [block])
+            room_number_json = dumps(room_detail.room())
+            return render(request, 'officials/block_layout.html',{'blocks':blocks, 'current_block': block, 'current_block_json': block_json, 'current_floor_json':current_floor_json, 'room_number_json':room_number_json})
 
         if request.POST.get('remove'):
             room_detail = RoomDetail.objects.get(id = request.POST.get('roomdetail_id'))
@@ -463,7 +465,6 @@ def blockSearch(request):
     if request.GET.get('block'):
         from django.core.serializers import serialize
         block = Block.objects.get(id=request.GET.get('block'))
-        print(block)
         block_json = serialize('json', [block])
         return render(request, 'officials/block_layout.html',{'blocks':blocks, 'current_block': block, 'current_block_json': block_json})
 

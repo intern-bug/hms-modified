@@ -210,13 +210,30 @@
 {% block script_links %}
 
 <script>
-  // {% if current_floor_json %}
-  // console.log(current_floor_json);
-  // window.onload = function(){
-  //   document.getElementById('floor').value = current_floor_json;
-  //   showFloor();
-  // }
-  // {% endif %}
+  {% if current_floor_json %}
+  var current_floor = JSON.parse('{{current_floor_json|safe}}');
+  var current_room = JSON.parse('{{room_number_json|safe}}');
+  window.onload = function(){
+    loader();
+    document.getElementById('floor').value = current_floor;
+    showFloor();
+    console.log(current_floor.toLowerCase()+'-con');
+    console.log(document.getElementById(current_floor.toLowerCase()+'-con'));
+    var rooms = document.getElementById(current_floor.toLowerCase()+'-con').querySelectorAll('.room-card');
+    for (let i=0; i<rooms.length; i++){
+      console.log(rooms[i].innerHTML);
+      console.log(current_room);
+      console.log(rooms[i].innerHTML == current_room);
+      console.log(rooms[i]);
+      if (rooms[i].innerHTML == current_room){
+        // room[i].id = 'selected';
+        // document.getElementById('selected').click();
+        roomCardCompute(room[i]);
+        break;
+      }
+    }
+  }
+  {% endif %}
   var current_block = JSON.parse('{{current_block_json|safe}}')[0];
   var current_block = {id: current_block.pk, ...current_block.fields}
   var room_capacity = parseInt('{{current_block.room_type|slice:"0:1"}}');
