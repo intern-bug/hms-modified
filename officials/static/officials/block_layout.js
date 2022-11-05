@@ -52,31 +52,6 @@ function loader(){
   document.getElementById('ground-con').style.display = "block";
 }
 
-function roomCardCompute(room_card){
-  let room_str = room_card.innerHTML;
-  let [floor, no] = room_str.split("-");
-  no = parseInt(no);
-  floor = letterFloorMap.get(floor);
-  let room_students = roomdetails.filter(room => room.floor == floor && room.room_no == no);
-  let count = room_students.length || 0;
-  if (count == room_capacity) {
-    filled_count += 1;
-    room_card.classList.add('filled');
-  } else if (0 < count && count < room_capacity) {
-    room_card.classList.add("partial");
-    partial_count += 1;
-  } else if (count == 0) {
-    vacant_count += 1;
-  }
-  const table = document.getElementById("table-container");
-  placeDetails(room_str, floor, no, room_students);
-  if (table.classList.contains('d-none')) {
-    table.classList.add('d-block');
-    table.classList.remove('d-none');
-  }  
-  document.querySelector('#table-container table > tbody').scrollIntoView();
-}
-
 window.load = loader()
 
 function closeRoomTable() {
@@ -88,7 +63,6 @@ function closeRoomTable() {
 }
 
 function showFloor() {
-  console.log('show floor')
   const floor = document.getElementById("floor").value.toLowerCase();
   const floor_id = floor+"-con";
   document.querySelectorAll(".floor-con").forEach(floor_con => floor_con.style.display = "none");

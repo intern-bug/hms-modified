@@ -217,18 +217,27 @@
     loader();
     document.getElementById('floor').value = current_floor;
     showFloor();
-    console.log(current_floor.toLowerCase()+'-con');
-    console.log(document.getElementById(current_floor.toLowerCase()+'-con'));
     var rooms = document.getElementById(current_floor.toLowerCase()+'-con').querySelectorAll('.room-card');
     for (let i=0; i<rooms.length; i++){
-      console.log(rooms[i].innerHTML);
-      console.log(current_room);
-      console.log(rooms[i].innerHTML == current_room);
-      console.log(rooms[i]);
       if (rooms[i].innerHTML == current_room){
-        // room[i].id = 'selected';
-        // document.getElementById('selected').click();
-        roomCardCompute(room[i]);
+        let room_str = rooms[i].innerHTML;
+        let [floor, no] = room_str.split("-");
+        no = parseInt(no);
+        floor = letterFloorMap.get(floor);
+        let room_students = roomdetails.filter(room => room.floor == floor && room.room_no == no);
+        let count = room_students.length || 0;
+        if (count == room_capacity) {
+          rooms[i].classList.add('filled');
+        } else if (0 < count && count < room_capacity) {
+          rooms[i].classList.add("partial");
+        }
+        const table = document.getElementById("table-container");
+        placeDetails(room_str, floor, no, room_students);
+        if (table.classList.contains('d-none')) {
+          table.classList.add('d-block');
+          table.classList.remove('d-none');
+        }  
+        document.querySelector('#table-container table > tbody').scrollIntoView();
         break;
       }
     }
