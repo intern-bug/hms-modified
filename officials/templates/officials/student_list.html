@@ -103,7 +103,7 @@
         this.api().columns().every(function () {
           var column = this;
           // Change here to include other columns (index of columns are used)
-          if (column.index() == 2 || column.index() == 3 || column.index() == 4 || column.index() == 5) {
+          if (column.index() == 3 || column.index() == 4 || column.index() == 5 || column.index() == 6) {
             // Append label (get from header)
             var select = $(`#${column.header().innerText.toLowerCase()}_select`)
               .on('change', function () {
