@@ -42,6 +42,7 @@
   <table class="table table-hover table-muted table-striped text-center">
     <thead>
       <tr>
+        <th>S.No.</th>
         <th>Regd No</th>
         <th>Name</th>
         <th>Year</th>
@@ -61,8 +62,9 @@
       <tr data-row-href="{% url 'officials:student_detail' stud.id %}">
       {% endif %}
       {% if url_name == 'vacation_form_student_details' %}
-      <tr data-row-href="{% url 'officials:vacation-form' stud.roomdetail.id %}">
+        <tr data-row-href="{% url 'officials:vacation-form' stud.roomdetail.id %}">
       {% endif %}
+        <td>{{forloop.counter}}</td>
         <td>{{stud.regd_no}}</td>
         <td>{{stud.name}}</td>
         <td>{{stud.year}}</td>
