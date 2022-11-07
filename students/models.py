@@ -54,7 +54,7 @@ class RoomDetail(models.Model):
     def room(self):
         if self.floor and self.room_no:
             if self.floor == 'Fourth':
-                floor = self.floor[:2]
+                floor = 'FT'
             else:
                 floor = self.floor[0]
             return "{}-{}".format(floor, self.room_no)

@@ -3,7 +3,7 @@ letterFloorMap.set('G', 'Ground');
 letterFloorMap.set('F', 'First');
 letterFloorMap.set('S', 'Second');
 letterFloorMap.set('T', 'Third');
-letterFloorMap.set('Fo', 'Fourth');
+letterFloorMap.set('FT', 'Fourth');
 
 function loader(){
   var filled_count = 0;
