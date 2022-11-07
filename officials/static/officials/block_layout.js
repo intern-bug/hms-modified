@@ -48,8 +48,9 @@ function loader(){
   document.getElementById('filled_room').innerHTML = filled_count;
   document.getElementById('partial_room').innerHTML = partial_count;
   document.getElementById('vacant_room').innerHTML = vacant_count;
-
-  document.getElementById('ground-con').style.display = "block";
+  let floor = document.getElementById('floor').value.toLowerCase();
+  floor = floor+"-con";
+  document.getElementById(floor).style.display = "block";
 }
 
 window.load = loader()
