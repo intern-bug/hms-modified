@@ -34,7 +34,7 @@
       <h5 class="text-center">Download Attendance</h5>
     </div>
     <div class="col-12 col-md-6 mt-3 text-center">
-      {% if official.is_chief %}
+      {% if official.is_chief or official.is_hostel_office %}
       <form action="{% url 'officials:generate_attendance_sheet' %}" method="GET">
         <input type="month" name="year_month" class="form-control d-inline w-50" required>
         <input type="hidden" name="block_id" value="all">
@@ -61,7 +61,7 @@
       {% endif %}
     </div>
     <div class="col-12 col-md-2 mt-3 text-center">
-      {% if official.is_chief %}
+      {% if official.is_chief or official.is_hostel_office %}
       <form action="{% url 'officials:generate_attendance_sheet' %}" method="GET">
         <input type="hidden" name="year_month" value="all">
         <input type="hidden" name="block_id" value="all">
@@ -107,7 +107,7 @@
           <tr>
             <th>Roll No.</th>
             <th>Name</th>
-            {% if official.is_chief %}
+            {% if official.is_chief or official.is_hostel_office %}
             <th>Block</th>
             {% endif %}
             <th>Room</th>
@@ -118,7 +118,7 @@
           <tr>
             <td>{{ attendance.student.regd_no }}</td>
             <td>{{ attendance.student.name }}</td>
-            {% if official.is_chief %}
+            {% if official.is_chief or official.is_hostel_office %}
             <td>{{ attendance.student.roomdetail.block.short_name }}</td>
             {% endif %}
             <td>{{ attendance.student.roomdetail.room }}</td>
@@ -139,7 +139,7 @@
           <tr>
             <th>Roll No.</th>
             <th>Name</th>
-            {% if official.is_chief %}
+            {% if official.is_chief or official.is_hostel_office %}
             <th>Block</th>
             {% endif %}
             <th>Room</th>
@@ -150,7 +150,7 @@
           <tr>
             <td>{{ attendance.student.regd_no }}</td>
             <td>{{ attendance.student.name }}</td>
-            {% if official.is_chief %}
+            {% if official.is_chief or official.is_hostel_office %}
             <td>{{ attendance.student.roomdetail.block.short_name }}</td>
             {% endif %}
             <td>{{ attendance.student.roomdetail.room }}</td>

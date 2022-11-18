@@ -11,7 +11,7 @@
   
 <p style="text-align: center; font-size: large;">
   Hello <b>{{user_details.name}}</b>, <b>{{user_details.designation}}</b> 
-  of {% if user_details.is_chief %} NIT Andhra Pradesh {% else %} {{user_details.block.name}}{% endif %}!
+  of {% if user_details.is_chief or user_details.is_hostel_office %} NIT Andhra Pradesh {% else %} {{user_details.block.name}}{% endif %}!
 </p>
 
 <div id="test-carousel" class="carousel slide text-center announcements" data-bs-ride="carousel">

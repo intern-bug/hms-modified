@@ -6,6 +6,14 @@ from django.contrib.auth.decorators import user_passes_test, login_required
 def worker_check(user):
     return user.is_authenticated and user.is_worker
 
+
+# def mess_incharge_check(user):
+#     if user.is_worker:
+#         worker = user.worker
+#         return worker.designation == 'Mess Incharge'
+#     return False
+
+
 # Create your views here.
 @user_passes_test(worker_check)
 def home(request):

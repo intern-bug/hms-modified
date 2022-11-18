@@ -61,7 +61,7 @@
         <tbody>
             {% for vac in vacation_list %}
             {% if not vac.submitted %}
-            <tr {% if user.official.is_chief %}data-row-href="{% url 'officials:vacation_detail' vac.id %}"{% endif %}>
+            <tr {% if user.official.is_chief or user.official.is_hostel_office%}data-row-href="{% url 'officials:vacation_detail' vac.id %}"{% endif %}>
                 <td>{{ vac.id }}</td>
                 <td>{{ vac.room_detail.student.regd_no }}</td>
                 <td>{{ vac.room_detail.student.name }}</td>
@@ -108,7 +108,7 @@
         <tbody>
             {% for vac in vacation_list %}
             {% if vac.submitted %}
-            <tr {% if user.official.is_chief %}data-row-href="{% url 'officials:vacation_detail' vac.id %}"{% endif %}>
+            <tr {% if user.official.is_chief or user.official.is_hostel_office %}data-row-href="{% url 'officials:vacation_detail' vac.id %}"{% endif %}>
                 <td>{{ vac.id }}</td>
                 <td>{{ vac.room_detail.student.regd_no }}</td>
                 <td>{{ vac.room_detail.student.name }}</td>

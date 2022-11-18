@@ -10,19 +10,28 @@ from complaints.models import MedicalIssue
 
 class OutingForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        if 'request' in kwargs.keys():
-            self.request = kwargs.pop('request')
-        super(OutingForm, self).__init__(*args, **kwargs)
-        OUTING_CHOICES = [('','-----------'), ('Local','Local'), ('Non-Local', 'Non-Local'), ('Emergency', 'Emergency')]
-        if self.request.user.student.gender == 'Male':
-            OUTING_CHOICES = [('','-----------'), ('Local','Local'), ('Non-Local', 'Non-Local')]
-        self.fields['type'] = forms.ChoiceField(choices=OUTING_CHOICES)
-        if self.request.user.student.gender == 'Female':
+        if self.request.user.student.year==1:
+            if 'request' in kwargs.keys():
+                self.request = kwargs.pop('request')
+            super(OutingForm, self).__init__(*args, **kwargs)
+            self.fields['type'] = forms.ChoiceField(choices=[('','-----------'), ('Local','Local'), ('Non-Local', 'Non-Local'), ('Emergency', 'Emergency')])
             self.fields['emergency_medical_issue'] = forms.CharField(label='Medical Issue Id', validators=[numeric_only], widget=forms.TextInput(attrs={'size':5}))
             self.fields['emergency_medical_issue'].required = False
+            # self.fields['initial'] = 0
         else:
-            self.fields.pop('emergency_medical_issue')
-        # self.fields['initial'] = 0
+            if 'request' in kwargs.keys():
+                self.request = kwargs.pop('request')
+            super(OutingForm, self).__init__(*args, **kwargs)
+            OUTING_CHOICES = [('','-----------'), ('Local','Local'), ('Non-Local', 'Non-Local'), ('Emergency', 'Emergency')]
+            if self.request.user.student.gender == 'Male':
+                OUTING_CHOICES = [('','-----------'), ('Local','Local'), ('Non-Local', 'Non-Local')]
+            self.fields['type'] = forms.ChoiceField(choices=OUTING_CHOICES)
+            if self.request.user.student.gender == 'Female':
+                self.fields['emergency_medical_issue'] = forms.CharField(label='Medical Issue Id', validators=[numeric_only], widget=forms.TextInput(attrs={'size':5}))
+                self.fields['emergency_medical_issue'].required = False
+            else:
+                self.fields.pop('emergency_medical_issue')
+            # self.fields['initial'] = 0
     class Meta:
         model = Outing
         fields = ['type', 'fromDate', 'mode_of_journey_from', 'toDate', 'mode_of_journey_to', 'place_of_visit', 'purpose', 'emergency_medical_issue', 'emergency_contact']
@@ -55,12 +64,12 @@ class OutingForm(forms.ModelForm):
         return cleaned_data
 
     def clean_fromDate(self):
-        from_date = self.cleaned_data.get('fromDate')
-        type = self.cleaned_data.get('type')
-        if from_date <= timezone.now():
-            raise forms.ValidationError("From Date should be later than the moment!")
-        from_time = (from_date.hour*100)+from_date.minute
-        if self.request.user.student.gender == 'Female':
+        if self.request.user.student.year==1:
+            from_date = self.cleaned_data.get('fromDate')
+            type = self.cleaned_data.get('type')
+            if from_date <= timezone.now():
+                raise forms.ValidationError("From Date should be later than the moment!")
+            from_time = (from_date.hour*100)+from_date.minute
             if type == 'Local' and from_time < 630:
                 raise forms.ValidationError("Local Outing is allowed only after 06:30 hrs")
             if type == 'Local' and from_time > 1930:
@@ -70,21 +79,52 @@ class OutingForm(forms.ModelForm):
             elif type == 'Non-Local' and from_date.date() == timezone.now().date() and (timezone.now().hour*100 + timezone.now().minute) >= 1130:
                 raise forms.ValidationError("Can't apply for non-local outing for the current day after 17:00 hrs")
 
-        return from_date
+            return from_date
+        else:
+            from_date = self.cleaned_data.get('fromDate')
+            type = self.cleaned_data.get('type')
+            if from_date <= timezone.now():
+                raise forms.ValidationError("From Date should be later than the moment!")
+            from_time = (from_date.hour*100)+from_date.minute
+            if self.request.user.student.gender == 'Female': 
+                if type == 'Local' and from_time < 630:
+                    raise forms.ValidationError("Local Outing is allowed only after 06:30 hrs")
+                if type == 'Local' and from_time > 1930:
+                    raise forms.ValidationError("Local Outing from_time should not be after 19:30 hrs")
+                if type == 'Local' and from_date.date() == timezone.now().date() and (timezone.now().hour*100 + timezone.now().minute) >= 1400:
+                    raise forms.ValidationError("Can't apply for local outing for the current day after 19:30 hrs")
+                elif type == 'Non-Local' and from_date.date() == timezone.now().date() and (timezone.now().hour*100 + timezone.now().minute) >= 1130:
+                    raise forms.ValidationError("Can't apply for non-local outing for the current day after 17:00 hrs")
+
+            return from_date
     
     def clean_toDate(self):
-        type = self.cleaned_data.get('type')
-        to_date = self.cleaned_data.get('toDate')
-        user = User.objects.get(email=self.request.user)
-        to_time = (to_date.hour*100)+to_date.minute
-        if type == 'Local':
-            student = Student.objects.get(user_id=user.id)
-            gender = student.gender
-            # if gender == 'Male' and to_time > 2100:
-            #     raise forms.ValidationError("Local Outing is allowed only until 21:00 hrs")
-            if gender == 'Female' and to_time > 2130:
-                raise forms.ValidationError("Local Outing is allowed only until 21:30 hrs")
-        return to_date
+        if self.request.user.student.year==1:
+            type = self.cleaned_data.get('type')
+            to_date = self.cleaned_data.get('toDate')
+            user = User.objects.get(email=self.request.user)
+            to_time = (to_date.hour*100)+to_date.minute
+            if type == 'Local':
+                student = Student.objects.get(user_id=user.id)
+                gender = student.gender
+                if gender == 'Male' and to_time > 2100:
+                    raise forms.ValidationError("Local Outing is allowed only until 21:00 hrs")
+                elif gender == 'Female' and to_time > 2100:
+                    raise forms.ValidationError("Local Outing is allowed only until 21:00 hrs")
+            return to_date
+        else:
+            type = self.cleaned_data.get('type')
+            to_date = self.cleaned_data.get('toDate')
+            user = User.objects.get(email=self.request.user)
+            to_time = (to_date.hour*100)+to_date.minute
+            if type == 'Local':
+                student = Student.objects.get(user_id=user.id)
+                gender = student.gender
+                # if gender == 'Male' and to_time > 2100:
+                #     raise forms.ValidationError("Local Outing is allowed only until 21:00 hrs")
+                if gender == 'Female' and to_time > 2130:
+                    raise forms.ValidationError("Local Outing is allowed only until 21:30 hrs")
+            return to_date
 
     def clean_emergency_medical_issue(self):
         type = self.cleaned_data.get('type')
@@ -99,37 +139,62 @@ class OutingForm(forms.ModelForm):
 
 class OutingExtendForm(forms.ModelForm):
     def __init__(self, initial=None, *args, **kwargs):
-        from datetime import datetime
-        from django.utils import timezone
-        if 'request' in kwargs.keys():
-            self.request = kwargs.pop('request')
-            self.outing = kwargs.pop('object')
-        super(OutingExtendForm, self).__init__(*args, **kwargs)
-        self.fields['type'] = forms.CharField(label='Mode of Outing', widget=forms.Select(choices=Outing.OUTING_OPTIONS))
-        self.fields['type'].initial = self.outing.type
-        self.fields['type'].disabled = True
-        if self.outing.fromDate > timezone.now() or self.outing.status == 'In Outing':
+        if self.request.user.student.year==1:
+            if 'request' in kwargs.keys():
+                self.request = kwargs.pop('request')
+                self.outing = kwargs.pop('object')
+            super(OutingExtendForm, self).__init__(*args, **kwargs)
+            self.fields['type'] = forms.CharField(label='Mode of Outing', widget=forms.Select(choices=Outing.OUTING_OPTIONS))
+            self.fields['type'].initial = self.outing.type
+            self.fields['type'].disabled = True
             self.fields['fromDate'].initial = self.outing.fromDate
-        self.fields['mode_of_journey_from'].initial = self.outing.mode_of_journey_from
-        if self.outing.status == 'In Outing':
-            self.fields['fromDate'].disabled = True
-            self.fields['mode_of_journey_from'].disabled = True
-        self.fields['toDate'].initial = self.outing.toDate
-        self.fields['mode_of_journey_to'].initial = self.outing.mode_of_journey_to
-        self.fields['place_of_visit'] = forms.CharField(label='Place of Visit', initial=self.outing.place_of_visit)
-        self.fields['purpose'] = forms.CharField(label='Purpose', initial=self.outing.purpose)
-        self.fields['emergency_contact'].initial = self.outing.emergency_contact
-        if self.request.user.student.gender == 'Female':
+            self.fields['mode_of_journey_from'].initial = self.outing.mode_of_journey_from
+            if self.outing.status == 'In Outing':
+                self.fields['fromDate'].disabled = True
+                self.fields['mode_of_journey_from'].disabled = True
+            self.fields['toDate'].initial = self.outing.toDate
+            self.fields['mode_of_journey_to'].initial = self.outing.mode_of_journey_to
+            self.fields['place_of_visit'] = forms.CharField(label='Place of Visit', initial=self.outing.place_of_visit)
+            self.fields['purpose'] = forms.CharField(label='Purpose', initial=self.outing.purpose)
+            self.fields['emergency_contact'].initial = self.outing.emergency_contact
             self.fields['emergency_medical_issue'] = forms.CharField(label='Medical Issue Id', validators=[numeric_only], widget=forms.TextInput(attrs={'size':5}))
             self.fields['emergency_medical_issue'].required = False
             if self.outing.emergency_medical_issue:
                 self.fields['emergency_medical_issue'].initial = self.outing.emergency_medical_issue.id
             fields_keyOrder = ['type', 'fromDate', 'mode_of_journey_from', 'toDate', 'mode_of_journey_to', 'place_of_visit', 'purpose', 'emergency_medical_issue', 'emergency_contact']
+            self.fields = {key:self.fields[key] for key in fields_keyOrder}
         else:
-            fields_keyOrder = ['type', 'fromDate', 'mode_of_journey_from', 'toDate', 'mode_of_journey_to', 'place_of_visit', 'purpose', 'emergency_contact']
-            self.fields.pop('emergency_medical_issue')
-        self.fields = {key:self.fields[key] for key in fields_keyOrder}
-    
+            from datetime import datetime
+            from django.utils import timezone
+            if 'request' in kwargs.keys():
+                self.request = kwargs.pop('request')
+                self.outing = kwargs.pop('object')
+            super(OutingExtendForm, self).__init__(*args, **kwargs)
+            self.fields['type'] = forms.CharField(label='Mode of Outing', widget=forms.Select(choices=Outing.OUTING_OPTIONS))
+            self.fields['type'].initial = self.outing.type
+            self.fields['type'].disabled = True
+            if self.outing.fromDate > timezone.now() or self.outing.status == 'In Outing':
+                self.fields['fromDate'].initial = self.outing.fromDate
+            self.fields['mode_of_journey_from'].initial = self.outing.mode_of_journey_from
+            if self.outing.status == 'In Outing':
+                self.fields['fromDate'].disabled = True
+                self.fields['mode_of_journey_from'].disabled = True
+            self.fields['toDate'].initial = self.outing.toDate
+            self.fields['mode_of_journey_to'].initial = self.outing.mode_of_journey_to
+            self.fields['place_of_visit'] = forms.CharField(label='Place of Visit', initial=self.outing.place_of_visit)
+            self.fields['purpose'] = forms.CharField(label='Purpose', initial=self.outing.purpose)
+            self.fields['emergency_contact'].initial = self.outing.emergency_contact
+            if self.request.user.student.gender == 'Female':
+                self.fields['emergency_medical_issue'] = forms.CharField(label='Medical Issue Id', validators=[numeric_only], widget=forms.TextInput(attrs={'size':5}))
+                self.fields['emergency_medical_issue'].required = False
+                if self.outing.emergency_medical_issue:
+                    self.fields['emergency_medical_issue'].initial = self.outing.emergency_medical_issue.id
+                fields_keyOrder = ['type', 'fromDate', 'mode_of_journey_from', 'toDate', 'mode_of_journey_to', 'place_of_visit', 'purpose', 'emergency_medical_issue', 'emergency_contact']
+            else:
+                fields_keyOrder = ['type', 'fromDate', 'mode_of_journey_from', 'toDate', 'mode_of_journey_to', 'place_of_visit', 'purpose', 'emergency_contact']
+                self.fields.pop('emergency_medical_issue')
+            self.fields = {key:self.fields[key] for key in fields_keyOrder}
+        
     class Meta:
         model = ExtendOuting
         fields = ['fromDate', 'mode_of_journey_from', 'toDate', 'mode_of_journey_to', 'place_of_visit', 'purpose', 'emergency_medical_issue', 'emergency_contact']
@@ -155,14 +220,24 @@ class OutingExtendForm(forms.ModelForm):
         return cleaned_data
 
     def clean_fromDate(self):
-        from_date = self.cleaned_data.get('fromDate')
-        type = self.cleaned_data.get('type')
-        if from_date <= timezone.now():
-            if self.outing.status != 'In Outing':
-                raise forms.ValidationError("From Date should be later than the moment!")
-        if self.request.user.student.gender == 'Female' and  type != 'Emergency' and from_date.date() == timezone.now().date() and (timezone.now().hour*100 + timezone.now().minute) >= 1130:
-            raise forms.ValidationError("Can't apply for extension of outing for the current day after 17:00 hrs")
-        return from_date
+        if self.request.user.student.year==1:
+            from_date = self.cleaned_data.get('fromDate')
+            type = self.cleaned_data.get('type')
+            if from_date <= timezone.now():
+                if from_date != self.outing.fromDate:
+                    raise forms.ValidationError("From Date should be later than the moment!")
+            if type != 'Emergency' and from_date.date() == timezone.now().date() and (timezone.now().hour*100 + timezone.now().minute) >= 1030:
+                raise forms.ValidationError("Can't apply for outing for the current day after 16:00 hrs")
+            return from_date
+        else:
+            from_date = self.cleaned_data.get('fromDate')
+            type = self.cleaned_data.get('type')
+            if from_date <= timezone.now():
+                if self.outing.status != 'In Outing':
+                    raise forms.ValidationError("From Date should be later than the moment!")
+            if self.request.user.student.gender == 'Female' and  type != 'Emergency' and from_date.date() == timezone.now().date() and (timezone.now().hour*100 + timezone.now().minute) >= 1130:
+                raise forms.ValidationError("Can't apply for extension of outing for the current day after 17:00 hrs")
+            return from_date
     
     def clean_toDate(self):
         to_date = self.cleaned_data.get('toDate')

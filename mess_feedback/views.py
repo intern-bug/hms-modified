@@ -11,8 +11,18 @@ from django.utils import timezone
 def official_check(user):
     return user.is_authenticated and user.is_official
 def student_check(user):
-    return user.is_authenticated and user.is_student
+    return user.is_authenticated and user.is_student 
 
+def mess_incharge_check(user):
+    if user.is_worker:
+        worker = user.worker
+        return worker.designation == 'Mess Incharge'
+    return False
+
+def mess_feedback_check(user):
+    if(official_check(user) or mess_incharge_check(user)):
+        return True
+    return False
 
 # @user_passes_test(user_check)
 def mess_feedback_view(request):
