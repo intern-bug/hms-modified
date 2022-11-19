@@ -10,17 +10,18 @@ from complaints.models import MedicalIssue
 
 class OutingForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        if self.request.user.student.year==1:
-            if 'request' in kwargs.keys():
+        if 'request' in kwargs.keys():
                 self.request = kwargs.pop('request')
+        if self.request.user.student.year==1:
+            
             super(OutingForm, self).__init__(*args, **kwargs)
             self.fields['type'] = forms.ChoiceField(choices=[('','-----------'), ('Local','Local'), ('Non-Local', 'Non-Local'), ('Emergency', 'Emergency')])
             self.fields['emergency_medical_issue'] = forms.CharField(label='Medical Issue Id', validators=[numeric_only], widget=forms.TextInput(attrs={'size':5}))
             self.fields['emergency_medical_issue'].required = False
             # self.fields['initial'] = 0
         else:
-            if 'request' in kwargs.keys():
-                self.request = kwargs.pop('request')
+            # if 'request' in kwargs.keys():
+            #     self.request = kwargs.pop('request')
             super(OutingForm, self).__init__(*args, **kwargs)
             OUTING_CHOICES = [('','-----------'), ('Local','Local'), ('Non-Local', 'Non-Local'), ('Emergency', 'Emergency')]
             if self.request.user.student.gender == 'Male':
@@ -139,10 +140,10 @@ class OutingForm(forms.ModelForm):
 
 class OutingExtendForm(forms.ModelForm):
     def __init__(self, initial=None, *args, **kwargs):
-        if self.request.user.student.year==1:
-            if 'request' in kwargs.keys():
+        if 'request' in kwargs.keys():
                 self.request = kwargs.pop('request')
                 self.outing = kwargs.pop('object')
+        if self.request.user.student.year==1:
             super(OutingExtendForm, self).__init__(*args, **kwargs)
             self.fields['type'] = forms.CharField(label='Mode of Outing', widget=forms.Select(choices=Outing.OUTING_OPTIONS))
             self.fields['type'].initial = self.outing.type
@@ -166,9 +167,9 @@ class OutingExtendForm(forms.ModelForm):
         else:
             from datetime import datetime
             from django.utils import timezone
-            if 'request' in kwargs.keys():
-                self.request = kwargs.pop('request')
-                self.outing = kwargs.pop('object')
+            # if 'request' in kwargs.keys():
+            #     self.request = kwargs.pop('request')
+            #     self.outing = kwargs.pop('object')
             super(OutingExtendForm, self).__init__(*args, **kwargs)
             self.fields['type'] = forms.CharField(label='Mode of Outing', widget=forms.Select(choices=Outing.OUTING_OPTIONS))
             self.fields['type'].initial = self.outing.type
