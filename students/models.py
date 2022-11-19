@@ -212,7 +212,7 @@ class Outing(models.Model):
     
     def save(self, *args, **kwargs):
         import uuid
-        if self.student.gender == 'Male':
+        if self.student.gender == 'Male' and self.student.year != 1:
             if not self.id: 
                 self.permission = 'Granted'
                 self.uuid = uuid.uuid4()
