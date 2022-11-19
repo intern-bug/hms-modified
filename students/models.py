@@ -169,7 +169,10 @@ class Outing(models.Model):
                     (timezone.now().hour*100+timezone.now().minute) <= 1430:
                     return True
                 else:
-                    return False
+                    if self.student.year == 1 or self.student.gender == 'Female':
+                        return False
+                    else:
+                        return True
             elif self.type != 'Local':
                 if self.toDate > timezone.now():
                     return True
