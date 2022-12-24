@@ -42,15 +42,16 @@ class RoomDetail(models.Model):
             return student.gender == block.gender
         
         def valid_year(student, block):
-            return  ((student.year == 1 and block.room_type in ['4S', '2S', '1S']) or \
-                    (student.year == 2 and block.room_type in ['4S', '2S', '1S']) or \
-                    (student.year == 3 and block.room_type in ['4S', '2S', '1S']) or \
-                    (student.year == 4 and block.room_type == '1S'))
+            return  ((student.year == 1 and student.specialization == "B.Tech." and block.room_type in ['4S', '2S', '1S']) or \
+                    (student.year == 2 and student.specialization == "B.Tech." and block.room_type in ['4S', '2S', '1S']) or \
+                    (student.year == 3 and student.specialization == "B.Tech." and block.room_type in ['4S', '2S', '1S']) or \
+                    (student.year == 4 and student.specialization == "B.Tech." and block.room_type == '1S') or \
+                     (student.specialization != "B.Tech." and block.room_type == '1S')   )
 
         if block and not valid_gender(student, block):
             raise ValidationError("{} Student cannot be placed in {} block!".format(student.gender, block.gender))
         if block and not valid_year(student, block):
-            raise ValidationError("Year: {} Student cannot be placed in {} block!".format(student.year, block.room_type))
+            raise ValidationError("{} Year: {} Student cannot be placed in {} block!".format(student.specialization,student.year, block.room_type))
     
     def room(self):
         if self.floor and self.room_no:

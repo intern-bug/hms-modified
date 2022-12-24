@@ -28,7 +28,11 @@ class Command(BaseCommand):
             '(electrical([ ]*(and|&)?[ ]*electronics)?[ ]*(Engineering|engg)|EEE)': 'EEE',
             '(electronics[ ]*(and|&)?[ ]*(communication|comm)[ ]*(Engineering|engg)|ECE)': 'ECE',
             'mech([anical]?[ ]*(Engineering|engg))?': 'MECH',
-            '(metallurgical[ ]*(and|&)?[ ]*materials[ ]*(Engineering|engg)|MME)': 'MME'
+            '(metallurgical[ ]*(and|&)?[ ]*materials[ ]*(Engineering|engg)|MME)': 'MME',
+            'chemistry':'chemistry',
+            'mathematics':'mathematics',
+            'shm':'shm',
+            'physics':'physics',
         }
         for key in BRANCH_DICT.keys():
             if re.search(key, branch, re.IGNORECASE):
@@ -91,7 +95,7 @@ class Command(BaseCommand):
                         student.aadhar_number = data["AadharNumber"]
                         student.father_name = ' '.join([n.capitalize() for n in data["FatherName"].lower().split()])
                         student.mother_name = ' '.join([n.capitalize() for n in data["MotherName"].lower().split()])
-                        student.specialization = 'B.Tech.'
+                        student.specialization = data["Specialization"]
                         student.is_hosteller = True
                         student.photo = 'Student-Photos/Year-{}/placeholder.jpg'.format(data["year"])
                         student.save()
