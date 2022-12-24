@@ -43,8 +43,8 @@ class RoomDetail(models.Model):
         
         def valid_year(student, block):
             return  ((student.year == 1 and student.specialization == "B.Tech." and block.room_type in ['4S', '2S', '1S']) or \
-                    (student.year == 2 and student.specialization == "B.Tech." and block.room_type in ['4S', '2S', '1S']) or \
-                    (student.year == 3 and student.specialization == "B.Tech." and block.room_type in ['4S', '2S', '1S']) or \
+                    (student.year == 2 and student.specialization == "B.Tech." and block.room_type in ['4S', '2S']) or \
+                    (student.year == 3 and student.specialization == "B.Tech." and block.room_type in ['4S', '2S']) or \
                     (student.year == 4 and student.specialization == "B.Tech." and block.room_type == '1S') or \
                      (student.specialization != "B.Tech." and block.room_type == '1S')   )
 
