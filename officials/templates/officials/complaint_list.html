@@ -25,7 +25,13 @@
       <option value="">Select</option>
     </select>
   </div>
-  <div class="col-md  mt-3 text-center {% if not request.user.official.is_chief %} d-none {% endif %}">
+  <div class="col-md  mt-3 text-center {% if not request.user.official.is_chief  %} d-none {% endif %}">
+    Block:
+    <select class="ml-2 form-control w-50 d-inline" id="block_select">
+      <option value="">Select</option>
+    </select>
+  </div>
+  <div class="col-md  mt-3 text-center {% if not request.user.official.is_hostel_office %} d-none {% endif %}">
     Block:
     <select class="ml-2 form-control w-50 d-inline" id="block_select">
       <option value="">Select</option>

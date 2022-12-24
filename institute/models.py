@@ -97,7 +97,7 @@ class Student(models.Model):
                 elif ((outingInOutObj.inTime - outingInOutObj.outing.toDate).total_seconds()/60) > 60.0:
                     invalid+=1
                 elif ((outingInOutObj.inTime - outingInOutObj.outing.toDate).total_seconds()/60) > 15.0:
-                    invalid+=0.5
+                    invalid+=0.5 
         else:
             if outingInOutObj.inTime != None and ((outingInOutObj.inTime - outingInOutObj.outing.toDate).total_seconds()/3600) > 24:
                 invalid+=2
@@ -135,6 +135,8 @@ class Official(models.Model):
         ('Deputy Chief-Warden Boys', 'Deputy Chief-Warden Boys'),
         ('Deputy Chief-Warden Girls', 'Deputy Chief-Warden Girls'),
         ('Chief-Warden','Chief-Warden'),
+        ('Hostel Office','Hostel Office'),
+        
     )
 
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
@@ -161,8 +163,13 @@ class Official(models.Model):
     def is_girls_deputy_chief(self):
         return self.designation == 'Deputy Chief-Warden Girls'
 
+    
+
+    def is_hostel_office(self):
+        return self.designation == 'Hostel Office'
+
     def clean(self):
-        if (self.is_chief() or self.is_boys_deputy_chief() or self.is_girls_deputy_chief()) and self.block != None:
+        if (self.is_chief() or self.is_boys_deputy_chief() or self.is_girls_deputy_chief() or self.is_hostel_office()) and self.block != None:
             raise ValidationError('Chief Warden and Deputy Chief Warden cannot be assigned a block.')
     
     def related_outings(self):
@@ -176,7 +183,7 @@ class Official(models.Model):
             raise ValidationError('You are not authorized to view outings.')
 
     def related_complaints(self, pending=True):
-        if self.is_chief():
+        if self.is_chief() or self.is_hostel_office():
             if pending:
                 return complaints.models.Complaint.objects.filter(status__in=['Registered', 'Processing']) # | complaints.models.Complaint.objects.filter(status='Processing')
             else:
@@ -206,7 +213,7 @@ class Official(models.Model):
                 return complaints.models.Complaint.objects.filter(user__in=users) | self.user.complaint_set.all()
 
     def related_medical_issues(self, pending=True):
-        if self.is_chief():
+        if self.is_chief() or self.is_hostel_office():
             if pending:
                 return complaints.models.MedicalIssue.objects.filter(status='Registered')
             else:
@@ -232,7 +239,7 @@ class Official(models.Model):
                 return complaints.models.MedicalIssue.objects.filter(user__in=users) | self.user.medicalissue_set.all()
 
     def related_announcements(self):
-        if self.is_chief() or self.is_boys_deputy_chief() or self.is_girls_deputy_chief():
+        if self.is_chief() or self.is_hostel_office()or self.is_boys_deputy_chief() or self.is_girls_deputy_chief() :
             return Announcements.objects.all()
         else:
             warden = (self.block.warden() and self.block.warden().user.id) or None

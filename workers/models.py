@@ -28,6 +28,8 @@ class Worker(models.Model):
         super().save(*args, **kwargs)
         if not Attendance.objects.filter(worker = self).exists():
             att = Attendance.objects.create(worker = self)
+    def is_mess_incharge(self):
+        return self.designation == 'Mess Incharge'
 
 
 class Attendance(models.Model):

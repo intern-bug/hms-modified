@@ -9,8 +9,8 @@ Hosted at: http://hmsepc.herokuapp.com/
 **Requires python and pip**
 
 #### Setup Django and python packages(CMD/Terminal at PreferredDirectory)
- - `git clone https://github.com/Deepzzz54321/HMS_Django.git`
- - `cd HMS_Django`
+ - `git clone https://github.com/intern-bug/hms-modified.git`
+ - `cd hms`
  - `python -m venv myvenv`
  - `myvenv/Scripts/activate`
  - `pip install -r requirements.txt`
@@ -26,9 +26,8 @@ Key generated at https://miniwebtool.com/django-secret-key-generator/
 
 #### Setup MySQL DB(In MySQL CLI or Workbench)
  - `CREATE SCHEMA hosteldb;`
- - `CREATE USER 'hosteladmin'@'localhost' IDENTIFIED WITH mysql_native_password BY '12345';`
- - `grant all on hosteldb.* to 'hosteladmin'@'localhost';`
- - `flush privileges;`
+ - `CREATE USER 'hosteladmin' IDENTIFIED WITH mysql_native_password BY '12345';`
+ - `grant all privileges on hosteldb.* to 'hosteladmin';`
  - Please follow instructions given at https://medium.com/@omaraamir19966/connect-django-with-mysql-database-f946d0f6f9e3 to install **mysqlclient** inside PreferredDirectory/HMS_Django
 
 #### Migrate, Create Superuser and Run Server(CMD/Terminal at PreferredDirectory/HMS_Django)
@@ -41,3 +40,6 @@ Key generated at https://miniwebtool.com/django-secret-key-generator/
  - Visit **http://localhost:8000/** in another browser window and Sign Up with any of the previously entered emails of Officials or Students.
  - On sign up verification link will be sent through mail in production, in development visit the CMD/Terminal where you ran `python manage.py runserver` to find the verification link and open it in the browser.
  - Login using the credentials previously used to sign up.
+
+### Populate blocks
+ - `python manage.py importblocks`

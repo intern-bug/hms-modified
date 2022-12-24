@@ -170,7 +170,10 @@ class Outing(models.Model):
                     (timezone.now().hour*100+timezone.now().minute) <= 1430:
                     return True
                 else:
-                    return False
+                    if self.student.year == 1 or self.student.gender == 'Female':
+                        return False
+                    else:
+                        return True
             elif self.type != 'Local':
                 if self.toDate > timezone.now():
                     return True
@@ -198,7 +201,7 @@ class Outing(models.Model):
             return True
         elif self.status == 'Closed':
             return False
-        elif self.permission in viewable and self.fromDate <= timezone.now():
+        elif self.permission in viewable: # and self.fromDate <= timezone.now():
             return True
         elif self.permission in not_viewable:
             return False
@@ -210,7 +213,7 @@ class Outing(models.Model):
     
     def save(self, *args, **kwargs):
         import uuid
-        if self.student.gender == 'Male':
+        if self.student.gender == 'Male' and self.student.year != 1:
             if not self.id: 
                 self.permission = 'Granted'
                 self.uuid = uuid.uuid4()

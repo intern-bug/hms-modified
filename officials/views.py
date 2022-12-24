@@ -32,9 +32,19 @@ from django.http import Http404, FileResponse
 def official_check(user):
     return user.is_authenticated and user.is_official
 def chief_warden_check(user):
-    return official_check(user) and user.official.is_chief()
+    return official_check(user) and (user.official.is_chief() or user.official.is_hostel_office())
 
 
+def mess_incharge_check(user):
+    if user.is_worker:
+        worker = user.worker
+        return worker.designation == 'Mess Incharge'
+    return False
+    
+def mess_feedback_check(user):
+    if(official_check(user) or mess_incharge_check(user)):
+        return True
+    return False
 # Create your views here.
 @user_passes_test(official_check)
 def home(request):
@@ -42,14 +52,14 @@ def home(request):
     official = user.official
     outing_requests = ''
     announce_obj = None
-    if official.is_chief():
+    if official.is_chief() or official.is_hostel_office():
         present_students = Attendance.objects.filter(status='Present')
         absent_students = Attendance.objects.filter(status='Absent')
         complaints = official.related_complaints(pending=False)
         complaints_pending = complaints.filter(status__in = ['Registered', 'Processing'])
         complaints_resolved = complaints.filter(status = 'Resolved')
         announce_obj = Announcements.objects.all()[:5]
-
+     
     elif official.is_boys_deputy_chief():
         present_students = Attendance.objects.filter(status="Present", student__roomdetail__block__gender='Male')
         absent_students = Attendance.objects.filter(status="Absent", student__roomdetail__block__gender='Male')
@@ -198,7 +208,7 @@ def attendance_log(request):
     present_dates = None
     absent_dates = None
 
-    if official.is_chief():
+    if official.is_chief() or official.is_hostel_office():
         attendance_list = Attendance.objects.all()
     elif official.is_boys_deputy_chief():
         attendance_list = Attendance.objects.filter(student__roomdetail__block__gender='Male')
@@ -476,7 +486,7 @@ def outing_log(request):
     official = user.official
     student = None
     outing_list=None
-    if official.is_chief():
+    if official.is_chief() or official.is_hostel_office():
         valid_outing_list = OutingInOutTimes.objects.all()
     elif official.is_boys_deputy_chief():
         valid_outing_list = OutingInOutTimes.objects.filter(outing__student__roomdetail__block__gender = 'Male')
@@ -546,7 +556,7 @@ def get_outing_sheet(request):
         year_month_day = request.GET.get('dwnld_by_year') + '-0-0'
     elif request.GET.get('dwnld_by_all'):
         year_month_day = 'all'
-    if official.is_chief():
+    if official.is_chief() or official.is_hostel_office():
         block_id = 'all'
     elif official.is_boys_deputy_chief():
         block_id = 'boys'
@@ -564,7 +574,7 @@ def get_outing_sheet(request):
 
     return response
 
-@user_passes_test(official_check)
+@user_passes_test(mess_feedback_check)
 def mess_feedback_analysis(request):
     calendar_feedback = None
     type_feedback = None
@@ -802,7 +812,7 @@ def vacation_mess_report(request):
 def vacation_student_details(request):
     applied_students = None
     unapplied_students = None
-    if request.user.official.is_chief(): 
+    if request.user.official.is_chief() or request.user.official.is_hostel_office(): 
         applied_students = Vacation.objects.all().order_by('submitted')
     elif request.user.official.is_boys_deputy_chief():
         students =  Student.objects.filter(roomdetail__block__gender='Male')
@@ -930,19 +940,19 @@ class OfficialTestMixin(UserPassesTestMixin):
 class ChiefWardenTestMixin(OfficialTestMixin):
     def test_func(self):
         is_official = super().test_func() 
-        return is_official and self.request.user.official.is_chief()
+        return is_official and (self.request.user.official.is_chief() or self.request.user.official.is_hostel_office())
 
 class ChiefTestMixin(OfficialTestMixin):
     def test_func(self):
         is_official = super().test_func()
-        return is_official and (self.request.user.official.is_chief() or self.request.user.official.is_boys_deputy_chief() or self.request.user.official.is_girls_deputy_chief())
+        return is_official and (self.request.user.official.is_chief() or self.request.user.official.is_boys_deputy_chief() or self.request.user.official.is_girls_deputy_chief() or self.request.user.official.is_hostel_office())
 
 class StudentListView(OfficialTestMixin, ListView):
     model = Student
     template_name = 'officials/student_list.html'
 
     def get_queryset(self):
-        if self.request.user.official.is_chief(): return Student.objects.all()
+        if (self.request.user.official.is_chief() or self.request.user.official.is_hostel_office()): return Student.objects.all()
         elif self.request.user.official.is_boys_deputy_chief(): return Student.objects.filter(roomdetail__block__gender='Male')
         elif self.request.user.official.is_girls_deputy_chief(): return Student.objects.filter(roomdetail__block__gender='Female')
         else: return Student.objects.filter(roomdetail__block=self.request.user.official.block) 
@@ -953,7 +963,7 @@ class StudentDetailView(OfficialTestMixin, DetailView):
 
     def get(self, request, *args, **kwargs):
         response =  super().get(request, *args, **kwargs)
-        if not (self.request.user.official.is_chief() or self.request.user.official.is_boys_deputy_chief() or \
+        if not (self.request.user.official.is_chief() or self.request.user.official.is_boys_deputy_chief() or self.request.user.official.is_hostel_office() or \
             self.request.user.official.is_girls_deputy_chief()) and (self.object.roomdetail.block != self.request.user.official.block): 
             return HttpResponseForbidden()
         return response
@@ -990,7 +1000,7 @@ class OfficialListView(ChiefTestMixin, ListView):
     template_name = 'officials/official_list.html'
 
     def get_queryset(self):
-        if self.request.user.official.is_chief():
+        if self.request.user.official.is_chief() or self.request.user.official.is_hostel_office():
             return Official.objects.all()
         elif self.request.user.official.is_boys_deputy_chief():
             return Official.objects.filter(block__gender='Male')
@@ -1028,7 +1038,7 @@ class WorkerListView(ChiefTestMixin, ListView):
     template_name = 'officials/workers_list.html'
 
     def get_queryset(self):
-        if self.request.user.official.is_chief():
+        if self.request.user.official.is_chief() or self.request.user.official.is_hostel_office():
             return Worker.objects.all()
         elif self.request.user.official.is_boys_deputy_chief():
             return Worker.objects.filter(block__gender='Male')
@@ -1154,7 +1164,7 @@ class AnnouncementsEditView(OfficialTestMixin, SuccessMessageMixin, UpdateView):
 
 @user_passes_test(official_check)
 def announcement_delete(request, pk):
-    if not (request.user.official.is_chief() or request.user.official.is_boys_deputy_chief() or request.user.official.is_girls_deputy_chief()):
+    if not (request.user.official.is_chief() or request.user.official.is_boys_deputy_chief() or request.user.official.is_girls_deputy_chief() or request.user.official.is_hostel_office()):
         return redirect('officials:home')
     announcement = get_object_or_404(Announcements, id=pk)
     if request.user == announcement.created_by:

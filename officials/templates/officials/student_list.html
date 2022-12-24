@@ -6,7 +6,7 @@
 
 <div class="text-center">
   <h1>Students List</h1>
-  {% if request.user.entity.is_chief %}
+  {% if request.user.entity.is_chief or request.user.entity.is_hostel_office %}
     <a href="{% url 'officials:register_student' %}" class="btn btn-primary">+ Add Student</a>
   {% endif %}
 </div>
@@ -24,13 +24,26 @@
       <option value="">Select</option>
     </select>
   </div>
-  <div class="col-md  mt-3 text-center {% if not request.user.official.is_chief %} d-none {% endif %}">
+  <div class="col-md  mt-3 text-center {% if not request.user.official.is_chief  %} d-none {% endif %}">
     Gender:
     <select class="ml-2 form-control w-50 d-inline" id="gender_select">
       <option value="">Select</option>
     </select>
   </div>
-  <div class="col-md  mt-3 text-center {% if not request.user.official.is_chief %} d-none {% endif %}">
+
+  <div class="col-md  mt-3 text-center {% if not  request.user.official.is_hostel_office %} d-none {% endif %}">
+    Gender:
+    <select class="ml-2 form-control w-50 d-inline" id="gender_select">
+      <option value="">Select</option>
+    </select>
+  </div>
+  <div class="col-md  mt-3 text-center {% if not request.user.official.is_chief   %} d-none {% endif %}">
+    Block:
+    <select class="ml-2 form-control w-50 d-inline" id="block_select">
+      <option value="">Select</option>
+    </select>
+  </div>
+  <div class="col-md  mt-3 text-center {% if not  request.user.official.is_hostel_office %} d-none {% endif %}">
     Block:
     <select class="ml-2 form-control w-50 d-inline" id="block_select">
       <option value="">Select</option>
@@ -54,6 +67,9 @@
         {% if not url_name == 'vacation_form_student_details' and request.user.official.is_chief %}
         <th>Action</th>
         {% endif %}
+        {% if not url_name == 'vacation_form_student_details' and  request.user.official.is_hostel_office %}
+        <th>Action</th>
+        {% endif %}
       </tr>
     </thead>
     <tbody>
@@ -73,7 +89,15 @@
         <td>{{stud.roomdetail.block.short_name}}</td>
         <td>{{stud.roomdetail.room}}</td>
         <td>{{stud.phone}}</td>
-        {% if not url_name == 'vacation_form_student_details' and request.user.official.is_chief %}
+        {% if not url_name == 'vacation_form_student_details' and request.user.official.is_chief  %}
+        <td nowrap>
+          <a href="{% url 'officials:edit_student' stud.id %}" target="_blank" class="btn btn-primary px-3">Edit</a>
+          <form action="{% url 'officials:delete_student' stud.id %}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete {{stud.name}}?');">{% csrf_token %}
+            <input type="submit" class="btn btn-danger ml-3" value="Delete" />
+          </form>
+        </td>
+        {% endif %}
+        {% if not url_name == 'vacation_form_student_details' and  request.user.official.is_hostel_office %}
         <td nowrap>
           <a href="{% url 'officials:edit_student' stud.id %}" target="_blank" class="btn btn-primary px-3">Edit</a>
           <form action="{% url 'officials:delete_student' stud.id %}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete {{stud.name}}?');">{% csrf_token %}

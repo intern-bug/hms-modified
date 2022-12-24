@@ -21,7 +21,7 @@
         <th>Email</th>
         <th>Phone Number</th>
         <th>Block</th>
-        {% if request.user.entity.is_chief %}
+        {% if request.user.entity.is_chief or request.user.entity.is_hostel_office %}
         <th>Action</th>
         {% endif %}
       </tr>
@@ -35,7 +35,7 @@
         <td>{{stud.account_email}}</td>
         <td>{{stud.phone}}</td>
         <td>{{stud.block.short_name}}</td>
-        {% if request.user.entity.is_chief %}
+        {% if request.user.entity.is_chief or request.user.entity.is_hostel_office %}
         <td nowrap>
           <a href="{% url 'officials:edit_official' stud.id %}" target="_blank" class="btn btn-primary">Edit</a>
           <form action="{% url 'officials:delete_official' stud.id %}" method="POST" class="d-inline"
