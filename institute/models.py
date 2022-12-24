@@ -55,7 +55,7 @@ class Student(models.Model):
     pwd = models.BooleanField(null=False, default=False, blank=True)
     community = models.CharField(max_length=25, null=True, blank=True)
     aadhar_number = models.CharField(max_length=12, null=True, blank=True, validators=[MinLengthValidator(4)], default='0000')
-    dob = models.DateField(null=True, validators=[date_no_future], blank=True)
+    dob = models.DateField(null=True, default="2000-01-01",validators=[date_no_future], blank=True)
     blood_group = models.CharField(max_length=25, null=True, blank=True)
     father_name = models.CharField(max_length=100, null=True, blank=True)
     mother_name = models.CharField(max_length=100, null=True, blank=True)

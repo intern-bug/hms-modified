@@ -85,7 +85,7 @@ class Command(BaseCommand):
                         student.emergency_phone = data["EmergencyMobile"]
                         student.gender = data["Gender"]
                         student.community = data["Caste"].upper()
-                        student.dob = self.convert_date(data["BirthDate"])
+                        # student.dob = self.convert_date(data["BirthDate"])
                         student.blood_group = self.get_blood_group(data["Bgroup"])
                         student.pwd = data["Disability"] == "1"
                         student.aadhar_number = data["AadharNumber"]
