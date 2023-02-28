@@ -127,6 +127,9 @@ class Student(models.Model):
         deputy = (self.block().deputy_chief_warden() and self.block().deputy_chief_warden()[0].user.id) or None
         return Announcements.objects.filter(created_by__in=[warden, chief, deputy]).exclude(officials_only = True)
 
+    @property
+    def roomdetail(self):
+        return self.roomdetail_set.get(vacation__isnull=True)
 
 class Official(models.Model):
     EMP=(

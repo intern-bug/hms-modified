@@ -6,12 +6,13 @@ from institute.validators import numeric_only
 
 # Create your models here.
 class RoomDetail(models.Model):
-    student = models.OneToOneField('institute.Student', on_delete=models.CASCADE, null=False)
+    student = models.ForeignKey('institute.Student', on_delete=models.CASCADE, null=False)
     block = models.ForeignKey('institute.Block', on_delete=models.SET_NULL, null=True, blank=True)
     room_no = models.IntegerField(null=True, blank=True)
     floor = models.CharField(max_length=10, choices=list(map(lambda floor: (floor, floor), FLOOR_OPTIONS)), null=True, blank=True)
     bed = models.IntegerField(null=True, blank=True)
-    allotted_on = models.DateField(auto_now=True)
+    allotted_on = models.DateField(auto_now_add=True)
+    renewal_date = models.DateField(null=True)
 
     def __str__(self):
         if self.floor and self.room_no:
@@ -290,7 +291,7 @@ class Document(models.Model):
         return 'Document: {} - {}'.format(self.id, self.student.regd_no)
 
 class FeeDetail(models.Model):
-    student = models.OneToOneField('institute.Student', on_delete=models.CASCADE, null=False)
+    student = models.ForeignKey('institute.Student', on_delete=models.CASCADE, null=False)
     room_detail = models.ForeignKey('students.RoomDetail', on_delete=models.CASCADE, null=False)
     has_paid = models.BooleanField(null=True, default=False)
     amount_paid = models.FloatField(null=True, blank=True,default=0)
