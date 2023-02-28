@@ -426,10 +426,11 @@ def blockSearch(request):
                     room_detail.full_clean()
                     room_detail.save()
                     # fee_detail = FeeDetail.objects.filter(student=student, room_detail=room_detail)
-                    fee_detail = FeeDetail.objects.filter(student=student, room_detail=room_detail).first()
+                    fee_detail = FeeDetail(student=student, room_detail=room_detail)
                     fee_detail.mode_of_payment = request.POST.get('payment_mode')
                     fee_detail.amount_paid = request.POST.get('amount_paid')
                     fee_detail.dop = request.POST.get('date_of_payment')
+                    fee_detail.has_paid = True
                     fee_detail.save()
                     messages.success(request, f'Student {student.regd_no} successfully alloted room in {room_detail.block.name} {room_detail.room()}!')
             except RoomDetail.DoesNotExist as error:
@@ -461,13 +462,36 @@ def blockSearch(request):
         
         if request.POST.get('download'):
             room_detail = RoomDetail.objects.get(id = request.POST.get('roomdetail_id'))
-            fee_detail = FeeDetail.objects.get(student=room_detail.student, room_detail=room_detail)
+            fee_detail = FeeDetail.objects.filter(student=room_detail.student, room_detail=room_detail).latest('dop')
             buf = io.BytesIO()
             context = {'room':room_detail, 'fee':fee_detail}
             create_acknowledge_form(buf, context)
             buf.seek(0)
             file = 'Acknowledgement_form-{}/{}.{}'.format(room_detail.__str__(), room_detail.student.regd_no,'pdf')
             return FileResponse(buf, as_attachment=True, filename=file)
+        
+        if request.POST.get('renew'):
+            from json import dumps
+            current_floor = request.POST.get('floor')
+            current_floor_json = dumps(current_floor)
+            student = Student.objects.get(regd_no = request.POST.get('regd_no'))
+            if not student.is_hosteller:
+                raise ValidationError("Cannot assign room to day scholars.")
+            room_detail = RoomDetail.objects.get(id = request.POST.get('roomdetail_id'))
+            fee_detail = FeeDetail(student=room_detail.student, room_detail=room_detail)
+            fee_detail.mode_of_payment = request.POST.get('payment_mode')
+            fee_detail.amount_paid = request.POST.get('amount_paid')
+            fee_detail.dop = request.POST.get('date_of_payment')
+            fee_detail.has_paid = True
+            fee_detail.save()
+            room_detail.renewal_date = timezone.now()
+            room_detail.save()
+            messages.success(request, f'Student {student.regd_no} successfully renewed room in {room_detail.block.name} {room_detail.room()}!')
+            from django.core.serializers import serialize
+            block = Block.objects.get(id = request.POST.get('block_id'))
+            block_json = serialize('json', [block])
+            room_number_json = dumps(room_detail.room())
+            return render(request, 'officials/block_layout.html',{'blocks':blocks, 'current_block': block, 'current_block_json': block_json, 'current_floor_json':current_floor_json, 'room_number_json':room_number_json})
 
         return redirect(reverse_lazy('officials:blockSearch') + '?block={}'.format(block_id))
 
