@@ -200,6 +200,7 @@ function placeDetails(room_str, floor, no, room_students) {
 
 function renewRoomDetail(room, floor, no){
   let tbody = document.querySelector('#table-container table > tbody');
+  tbody.deleteRow(-1);
   let row = document.createElement('tr');
     row.innerHTML = `
       <td colspan='10' class='text-center'>\
