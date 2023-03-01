@@ -218,7 +218,7 @@ function renewRoomDetail(room, floor, no){
           <br>
           <br>
           Amount Paid : \
-          <input type='number' step=100 name='amount_paid' class='ml-3' required>\
+          <input type='number' step=0.01 name='amount_paid' class='ml-3' required>\
           Mode of Payment :\
           <select name='payment_mode' class='ml-3' required>\
             <option value=''>-----</option>
