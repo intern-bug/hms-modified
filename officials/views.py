@@ -120,24 +120,7 @@ def attendance(request):
     date = date_format.strftime('%Y-%m-%d')
 
     for item in attendance_list:
-        outingInOutTimes_obj = OutingInOutTimes.objects.filter(outing__student=item.student)[0]
-        if outingInOutTimes_obj.outing.status == 'In Outing':
-            item.outing_status = 'In Outing'
-        else:
-            item.outing_status = 'In College'
-        if item.present_dates:
-            present_dates = set(item.present_dates.split(','))
-            present_dates = [row.split('@')[0] for row in present_dates]
-            if date in present_dates: item.present_on_date = True
-        if item.absent_dates:
-            absent_dates = set(item.absent_dates.split(','))
-            absent_dates = [row.split('@')[0] for row in absent_dates]
-            if date in absent_dates: item.absent_on_date = True
-    if request.method == 'POST' and request.POST.get('submit'):
-        for attendance in attendance_list:
-            if request.POST.get(str(attendance.id)) and request.POST.get(str(attendance.id))!='not_marked': attendance.mark_attendance(date, request.POST.get(str(attendance.id)))
-        attendance_list  = Attendance.objects.filter(student__in=block.students())
-        for item in attendance_list:
+        if OutingInOutTimes.objects.filter(outing__student=item.student).exists():
             outingInOutTimes_obj = OutingInOutTimes.objects.filter(outing__student=item.student)[0]
             if outingInOutTimes_obj.outing.status == 'In Outing':
                 item.outing_status = 'In Outing'
@@ -151,6 +134,25 @@ def attendance(request):
                 absent_dates = set(item.absent_dates.split(','))
                 absent_dates = [row.split('@')[0] for row in absent_dates]
                 if date in absent_dates: item.absent_on_date = True
+    if request.method == 'POST' and request.POST.get('submit'):
+        for attendance in attendance_list:
+            if request.POST.get(str(attendance.id)) and request.POST.get(str(attendance.id))!='not_marked': attendance.mark_attendance(date, request.POST.get(str(attendance.id)))
+        attendance_list  = Attendance.objects.filter(student__in=block.students())
+        for item in attendance_list:
+            if OutingInOutTimes.objects.filter(outing__student=item.student).exists():
+                outingInOutTimes_obj = OutingInOutTimes.objects.filter(outing__student=item.student)[0]
+                if outingInOutTimes_obj.outing.status == 'In Outing':
+                    item.outing_status = 'In Outing'
+                else:
+                    item.outing_status = 'In College'
+                if item.present_dates:
+                    present_dates = set(item.present_dates.split(','))
+                    present_dates = [row.split('@')[0] for row in present_dates]
+                    if date in present_dates: item.present_on_date = True
+                if item.absent_dates:
+                    absent_dates = set(item.absent_dates.split(','))
+                    absent_dates = [row.split('@')[0] for row in absent_dates]
+                    if date in absent_dates: item.absent_on_date = True
 
         messages.success(request, f'Attendance marked for date: {date}')
 

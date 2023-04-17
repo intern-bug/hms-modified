@@ -85,15 +85,15 @@ class BlockOutingSheetGenerator:
                 
     def get_cell_color(self,outingInOutObj):
         if outingInOutObj.outing.type == 'Local':
-            if outingInOutObj.student.gender == 'Male' and outingInOutObj.inTime != None:
-                if ((outingInOutObj.inTime - outingInOutObj.outing.toTime).total_seconds()/60) > 15.0:
+            if outingInOutObj.outing.student.gender == 'Male' and outingInOutObj.inTime != None:
+                if ((outingInOutObj.inTime - outingInOutObj.outing.toDate).total_seconds()/60) > 15.0:
                     return 'DC3545'
                 if (outingInOutObj.inTime.hour*100 + outingInOutObj.inTime.minute) > 2115 :
                     return 'DC3545'
                 else:
                     return '28A745'
-            elif outingInOutObj.student.gender == 'Female' and outingInOutObj.inTime != None:
-                if ((outingInOutObj.inTime - outingInOutObj.outing.toTime).total_seconds()/60) > 15.0:
+            elif outingInOutObj.outing.student.gender == 'Female' and outingInOutObj.inTime != None:
+                if ((outingInOutObj.inTime - outingInOutObj.outing.toDate).total_seconds()/60) > 15.0:
                     return 'DC3545'
                 if (outingInOutObj.inTime.hour*100 + outingInOutObj.inTime.minute) > 2045 :
                     return 'DC3545'

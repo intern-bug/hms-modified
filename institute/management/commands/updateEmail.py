@@ -33,7 +33,7 @@ class Command(BaseCommand):
                         else:
                             student = Student()
 
-                        student.email = data["Institute email"]
+                        student.account_email = data["Institute email"]
                         student.save()
                         created += 1
 

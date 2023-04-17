@@ -71,12 +71,12 @@ class OutingForm(forms.ModelForm):
             if from_date <= timezone.now():
                 raise forms.ValidationError("From Date should be later than the moment!")
             from_time = (from_date.hour*100)+from_date.minute
-            if type == 'Local' and from_time < 630:
-                raise forms.ValidationError("Local Outing is allowed only after 06:30 hrs")
-            if type == 'Local' and from_time > 1930:
-                raise forms.ValidationError("Local Outing from_time should not be after 19:30 hrs")
-            if type == 'Local' and from_date.date() == timezone.now().date() and (timezone.now().hour*100 + timezone.now().minute) >= 1400:
-                raise forms.ValidationError("Can't apply for local outing for the current day after 19:30 hrs")
+            if type == 'Local' and from_time < 600:
+                raise forms.ValidationError("Local Outing is allowed only after 06:00 hrs")
+            if type == 'Local' and from_time > 2030:
+                raise forms.ValidationError("Local Outing from_time should not be after 20:30 hrs")
+            if type == 'Local' and from_date.date() == timezone.now().date() and (timezone.now().hour*100 + timezone.now().minute) >= 1500:
+                raise forms.ValidationError("Can't apply for local outing for the current day after 20:30 hrs")
             elif type == 'Non-Local' and from_date.date() == timezone.now().date() and (timezone.now().hour*100 + timezone.now().minute) >= 1130:
                 raise forms.ValidationError("Can't apply for non-local outing for the current day after 17:00 hrs")
 
@@ -88,15 +88,21 @@ class OutingForm(forms.ModelForm):
                 raise forms.ValidationError("From Date should be later than the moment!")
             from_time = (from_date.hour*100)+from_date.minute
             if self.request.user.student.gender == 'Female': 
-                if type == 'Local' and from_time < 630:
-                    raise forms.ValidationError("Local Outing is allowed only after 06:30 hrs")
-                if type == 'Local' and from_time > 1930:
-                    raise forms.ValidationError("Local Outing from_time should not be after 19:30 hrs")
-                if type == 'Local' and from_date.date() == timezone.now().date() and (timezone.now().hour*100 + timezone.now().minute) >= 1400:
+                if type == 'Local' and from_time < 600:
+                    raise forms.ValidationError("Local Outing is allowed only after 06:00 hrs")
+                if type == 'Local' and from_time > 2030:
+                    raise forms.ValidationError("Local Outing from_time should not be after 20:30 hrs")
+                if type == 'Local' and from_date.date() == timezone.now().date() and (timezone.now().hour*100 + timezone.now().minute) >= 1500:
                     raise forms.ValidationError("Can't apply for local outing for the current day after 19:30 hrs")
                 elif type == 'Non-Local' and from_date.date() == timezone.now().date() and (timezone.now().hour*100 + timezone.now().minute) >= 1130:
                     raise forms.ValidationError("Can't apply for non-local outing for the current day after 17:00 hrs")
-
+            elif self.request.user.student.gender == 'Male':
+                if type == 'Local' and from_time < 600:
+                    raise forms.ValidationError("Local Outing is allowed only after 06:00 hrs")
+                if type == 'Local' and from_time > 2030:
+                    raise forms.ValidationError("Local Outing from_time should not be after 20:30 hrs")
+                if type == 'Local' and from_date.date() == timezone.now().date() and (timezone.now().hour*100 + timezone.now().minute) >= 1500:
+                    raise forms.ValidationError("Can't apply for local outing for the current day after 19:30 hrs")
             return from_date
     
     def clean_toDate(self):
@@ -108,10 +114,10 @@ class OutingForm(forms.ModelForm):
             if type == 'Local':
                 student = Student.objects.get(user_id=user.id)
                 gender = student.gender
-                if gender == 'Male' and to_time > 2100:
-                    raise forms.ValidationError("Local Outing is allowed only until 21:00 hrs")
-                elif gender == 'Female' and to_time > 2100:
-                    raise forms.ValidationError("Local Outing is allowed only until 21:00 hrs")
+                if gender == 'Male' and to_time > 2200:
+                    raise forms.ValidationError("Local Outing is allowed only until 22:00 hrs")
+                elif gender == 'Female' and to_time > 2200:
+                    raise forms.ValidationError("Local Outing is allowed only until 22:00 hrs")
             return to_date
         else:
             type = self.cleaned_data.get('type')
@@ -121,10 +127,10 @@ class OutingForm(forms.ModelForm):
             if type == 'Local':
                 student = Student.objects.get(user_id=user.id)
                 gender = student.gender
-                # if gender == 'Male' and to_time > 2100:
-                #     raise forms.ValidationError("Local Outing is allowed only until 21:00 hrs")
-                if gender == 'Female' and to_time > 2130:
-                    raise forms.ValidationError("Local Outing is allowed only until 21:30 hrs")
+                if gender == 'Male' and to_time > 2200:
+                    raise forms.ValidationError("Local Outing is allowed only until 22:00 hrs")
+                if gender == 'Female' and to_time > 2200:
+                    raise forms.ValidationError("Local Outing is allowed only until 22:00 hrs")
             return to_date
 
     def clean_emergency_medical_issue(self):
