@@ -456,6 +456,7 @@ def blockSearch(request):
             room_detail.floor = None
             room_detail.room_no = None
             room_detail.allotted_on = None
+            room_detail.renewal_date = None
             room_detail.save()
             fee_detail = FeeDetail.objects.filter(student=room_detail.student, room_detail=room_detail).first()
             fee_detail.amount_paid = 0
