@@ -11,7 +11,7 @@ class RoomDetail(models.Model):
     room_no = models.IntegerField(null=True, blank=True)
     floor = models.CharField(max_length=10, choices=list(map(lambda floor: (floor, floor), FLOOR_OPTIONS)), null=True, blank=True)
     bed = models.IntegerField(null=True, blank=True)
-    allotted_on = models.DateField(auto_now_add=True)
+    allotted_on = models.DateField(null=True)
     renewal_date = models.DateField(null=True)
 
     def __str__(self):

@@ -425,6 +425,7 @@ def blockSearch(request):
                     room_detail.floor = request.POST.get('floor')
                     room_detail.room_no = request.POST.get('room_no')
                     room_detail.bed = request.POST.get('bed') 
+                    room_detail.allotted_on = timezone.now()
                     room_detail.full_clean()
                     room_detail.save()
                     # fee_detail = FeeDetail.objects.filter(student=student, room_detail=room_detail)
@@ -454,6 +455,7 @@ def blockSearch(request):
             room_detail.block = None
             room_detail.floor = None
             room_detail.room_no = None
+            room_detail.allotted_on = None
             room_detail.save()
             fee_detail = FeeDetail.objects.filter(student=room_detail.student, room_detail=room_detail).first()
             fee_detail.amount_paid = 0
