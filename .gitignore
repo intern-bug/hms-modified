@@ -8,7 +8,7 @@ migrations/*
 **/migrations/**
 !**/migrations
 !**/migrations/__init__.py
-
+*.csv
 .env
 requirements_dev.txt
 data/*

@@ -1,6 +1,0 @@
-"id","account_email","emp_id","name","designation","phone","email","block_id","user_id"
-1,"chiefwarden@nitandhra.ac.in","chiefwarden","Chiefwarden","Chief-Warden","7975624892",NULL,NULL,4
-2,"chiefwarden1@nitandhra.ac.in","cw1","cw1","Chief-Warden","0",NULL,NULL,5
-3,"chiefwarden2@nitandhra.ac.in","cw2","cw2","Chief-Warden","0",NULL,NULL,6
-4,"chiefwarden3@nitandhra.ac.in","cw3","cw3","Chief-Warden","0",NULL,NULL,7
-5,"chiefwarden4@nitandhra.ac.in","cw4","cw4","Chief-Warden","0",NULL,NULL,8
